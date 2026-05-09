@@ -988,21 +988,17 @@
       </p>
 
       <style>
-      .blink-btn {
-        animation: blinkPulse 1.5s infinite;
+      .btn-primary {
+        animation: blink 0.6s infinite;
       }
 
-      @keyframes blinkPulse {
-        0% {
+      @keyframes blink {
+        0%, 100% {
           opacity: 1;
         }
 
         50% {
-          opacity: 0.4;
-        }
-
-        100% {
-          opacity: 1;
+          opacity: 0.2;
         }
       }
       </style>
