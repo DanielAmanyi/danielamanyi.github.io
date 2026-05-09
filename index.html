@@ -952,16 +952,63 @@
         Amanyi<br>
         <span class="line2">Daniel</span>
       </h1>
+
       <div class="hero-role">
-        <span class="prompt">$ </span>whoami — Infrastructure / Platform Engineer<span class="cursor"></span>
+        <span class="prompt">$ </span>
+        <span id="typewriter"></span>
+        <span class="cursor"></span>
       </div>
+
       <p class="hero-desc">
         DevOps and Platform Engineer with 4+ years designing and operating Kubernetes-native systems across AWS and on-prem environments. Strong focus on reliability engineering, failure handling, and infrastructure consistency. Known for diagnosing complex infra failures, minimizing blast radius, and maintaining control plane stability under stress.
       </p>
+
       <div class="hero-actions">
         <a href="#projects" class="btn btn-primary">View Projects</a>
         <a href="#contact" class="btn btn-ghost">Get in Touch</a>
       </div>
+
+      <script>
+      const words = [
+        "whoami - Infrastructure Engineer",
+        "whoami - Platform Engineer",
+        "whoami - Kubernetes Administrator",
+        "whoami - AWS DevOps Engineer"
+      ];
+
+      let wordIndex = 0;
+      let charIndex = 0;
+      let currentText = "";
+      let isDeleting = false;
+
+      function typeEffect() {
+        const currentWord = words[wordIndex];
+
+        if (isDeleting) {
+          currentText = currentWord.substring(0, charIndex--);
+        } else {
+          currentText = currentWord.substring(0, charIndex++);
+        }
+
+        document.getElementById("typewriter").textContent = currentText;
+
+        let speed = isDeleting ? 50 : 100;
+
+        if (!isDeleting && charIndex === currentWord.length + 1) {
+          speed = 1500;
+          isDeleting = true;
+        }
+
+        if (isDeleting && charIndex === 0) {
+          isDeleting = false;
+          wordIndex = (wordIndex + 1) % words.length;
+        }
+
+        setTimeout(typeEffect, speed);
+      }
+
+      typeEffect();
+      </script>
       <div class="hero-stats">
         <div>
           <div class="stat-num">4+</div>
