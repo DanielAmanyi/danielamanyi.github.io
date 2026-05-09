@@ -943,7 +943,8 @@
 
 <nav>
   <div class="nav-inner">
-    <a href="#hero" class="nav-logo">AD<span>.io</span></a>
+    <a href="#hero" class="nav-logo blink-logo">AD<span>.io</span></a>
+
     <ul class="nav-links">
       <li><a href="#projects">Projects</a></li>
       <li><a href="#thinking">Thinking</a></li>
@@ -954,6 +955,22 @@
     </ul>
   </div>
 </nav>
+
+<style>
+.blink-logo {
+  animation: blink 2.5s infinite;
+}
+
+@keyframes blink {
+  0%, 96%, 100% {
+    opacity: 1;
+  }
+
+  98% {
+    opacity: 0;
+  }
+}
+</style>
 
 <!-- STATUS BAR -->
 <div class="status-bar">
