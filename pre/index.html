@@ -80,7 +80,57 @@ textarea{resize:vertical;min-height:80px}
 .btn-red{background:var(--rdim);color:var(--red);border-color:var(--rb)}
 .btn-red:hover{background:var(--red);color:#fff}
 #content{flex:1;overflow-y:auto;padding:24px}
-#content::-webkit-scrollbar{width:4px}
+#content
+/* CONFIDENCE POPUP */
+@keyframes confIn{from{opacity:0;transform:translateY(6px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes confOut{from{opacity:1;transform:translateY(0) scale(1)}to{opacity:0;transform:translateY(-4px) scale(.96)}}
+.conf-popup{
+  position:fixed;z-index:300;background:var(--bg3);border:1px solid var(--border2);
+  border-radius:var(--rl);padding:14px 16px;width:260px;
+  box-shadow:0 16px 48px rgba(0,0,0,.7);
+  animation:confIn .18s var(--ease) forwards;
+}
+.conf-popup.out{animation:confOut .15s var(--ease) forwards}
+.conf-title{font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px;line-height:1.4}
+.conf-sub{font-size:10px;color:var(--text3);margin-bottom:10px}
+.conf-levels{display:flex;gap:6px}
+.cl-btn{
+  flex:1;padding:7px 4px;border-radius:var(--r);border:1px solid var(--border2);
+  background:var(--bg4);font-size:10px;font-weight:600;cursor:pointer;
+  transition:all .12s;text-align:center;color:var(--text2);
+  font-family:var(--mono);letter-spacing:.03em;
+}
+.cl-btn:hover{border-color:currentColor}
+.cl-btn.l1{--c:#e05252}
+.cl-btn.l2{--c:#e8a020}
+.cl-btn.l3{--c:#5b8dee}
+.cl-btn.l4{--c:#2ec887}
+.cl-btn:hover,.cl-btn.sel{background:var(--c);border-color:var(--c);color:#fff}
+
+/* GAPS SECTION */
+.gap-item{
+  display:flex;align-items:flex-start;gap:10px;padding:10px 12px;
+  background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);
+  margin-bottom:6px;transition:border-color .15s;
+}
+.gap-item:hover{border-color:var(--border2)}
+.gap-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.gap-dot.shaky{background:var(--red)}
+.gap-dot.partial{background:var(--amber)}
+.gap-body{flex:1;min-width:0}
+.gap-name{font-size:12px;color:var(--text);margin-bottom:2px}
+.gap-track{font-size:10px;color:var(--text3)}
+.gap-conf{font-size:10px;font-weight:600;font-family:var(--mono);flex-shrink:0;margin-top:2px}
+.conf-shaky{color:var(--red)}
+.conf-unsure{color:var(--amber)}
+.conf-solid{color:var(--accent)}
+.conf-owned{color:var(--green)}
+
+/* DOCTRINE slow fade */
+@keyframes doctrineFade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.doctrine-enter{animation:doctrineFade .7s var(--ease) forwards}
+.doc-map .map-node{animation:doctrineFade .5s var(--ease) both}
+::-webkit-scrollbar{width:4px}
 #content::-webkit-scrollbar-thumb{background:var(--bg6);border-radius:2px}
 
 /* LAYOUT COMPONENTS */
@@ -201,11 +251,68 @@ textarea{resize:vertical;min-height:80px}
 .doc-map::-webkit-scrollbar{width:2px}
 .doc-map::-webkit-scrollbar-thumb{background:var(--bg6);border-radius:2px}
 .doc-scroll{flex:1;overflow-y:auto;padding:28px 36px;background:var(--bg)}
-.doc-scroll::-webkit-scrollbar{width:4px}
+.doc-scroll
+/* CONFIDENCE POPUP */
+@keyframes confIn{from{opacity:0;transform:translateY(6px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes confOut{from{opacity:1;transform:translateY(0) scale(1)}to{opacity:0;transform:translateY(-4px) scale(.96)}}
+.conf-popup{
+  position:fixed;z-index:300;background:var(--bg3);border:1px solid var(--border2);
+  border-radius:var(--rl);padding:14px 16px;width:260px;
+  box-shadow:0 16px 48px rgba(0,0,0,.7);
+  animation:confIn .18s var(--ease) forwards;
+}
+.conf-popup.out{animation:confOut .15s var(--ease) forwards}
+.conf-title{font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px;line-height:1.4}
+.conf-sub{font-size:10px;color:var(--text3);margin-bottom:10px}
+.conf-levels{display:flex;gap:6px}
+.cl-btn{
+  flex:1;padding:7px 4px;border-radius:var(--r);border:1px solid var(--border2);
+  background:var(--bg4);font-size:10px;font-weight:600;cursor:pointer;
+  transition:all .12s;text-align:center;color:var(--text2);
+  font-family:var(--mono);letter-spacing:.03em;
+}
+.cl-btn:hover{border-color:currentColor}
+.cl-btn.l1{--c:#e05252}
+.cl-btn.l2{--c:#e8a020}
+.cl-btn.l3{--c:#5b8dee}
+.cl-btn.l4{--c:#2ec887}
+.cl-btn:hover,.cl-btn.sel{background:var(--c);border-color:var(--c);color:#fff}
+
+/* GAPS SECTION */
+.gap-item{
+  display:flex;align-items:flex-start;gap:10px;padding:10px 12px;
+  background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);
+  margin-bottom:6px;transition:border-color .15s;
+}
+.gap-item:hover{border-color:var(--border2)}
+.gap-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.gap-dot.shaky{background:var(--red)}
+.gap-dot.partial{background:var(--amber)}
+.gap-body{flex:1;min-width:0}
+.gap-name{font-size:12px;color:var(--text);margin-bottom:2px}
+.gap-track{font-size:10px;color:var(--text3)}
+.gap-conf{font-size:10px;font-weight:600;font-family:var(--mono);flex-shrink:0;margin-top:2px}
+.conf-shaky{color:var(--red)}
+.conf-unsure{color:var(--amber)}
+.conf-solid{color:var(--accent)}
+.conf-owned{color:var(--green)}
+
+/* DOCTRINE slow fade */
+@keyframes doctrineFade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.doctrine-enter{animation:doctrineFade .7s var(--ease) forwards}
+.doc-map .map-node{animation:doctrineFade .5s var(--ease) both}
+::-webkit-scrollbar{width:4px}
 .doc-scroll::-webkit-scrollbar-thumb{background:var(--bg5);border-radius:2px}
 .map-node{display:flex;align-items:flex-start;gap:8px;padding:8px 10px;border-radius:var(--r);background:transparent;border:1px solid transparent;width:100%;text-align:left;cursor:pointer;transition:all .15s;margin-bottom:3px}
 .map-node:hover{background:var(--bg4);border-color:var(--border)}
 .map-node.active{border-color:currentColor}
+/* slow-mo transitions on all doctrine map nodes */
+.map-node{transition:background .6s ease, border-color .5s ease, color .5s ease}
+.map-node .map-node-num{transition:background .55s ease, color .5s ease, box-shadow .5s ease}
+.map-node .map-node-title{transition:color .5s ease}
+/* doc content cross-fade */
+@keyframes docContentFade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.doc-section-highlight{animation:docContentFade .6s ease forwards}
 .map-node-num{font-size:10px;font-weight:700;font-family:var(--mono);width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--bg5);color:var(--text3);transition:all .15s}
 .map-node.active .map-node-num{color:#fff}
 .map-node-text{}
@@ -256,6 +363,56 @@ textarea{resize:vertical;min-height:80px}
 #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--bg4);border:1px solid var(--border2);color:var(--text);padding:9px 16px;border-radius:var(--r);font-size:12px;box-shadow:0 12px 40px rgba(0,0,0,.6);opacity:0;transition:all .22s var(--ease);z-index:200;white-space:nowrap;pointer-events:none}
 #toast.show{transform:translateX(-50%) translateY(0);opacity:1}
 
+
+/* CONFIDENCE POPUP */
+@keyframes confIn{from{opacity:0;transform:translateY(6px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes confOut{from{opacity:1;transform:translateY(0) scale(1)}to{opacity:0;transform:translateY(-4px) scale(.96)}}
+.conf-popup{
+  position:fixed;z-index:300;background:var(--bg3);border:1px solid var(--border2);
+  border-radius:var(--rl);padding:14px 16px;width:260px;
+  box-shadow:0 16px 48px rgba(0,0,0,.7);
+  animation:confIn .18s var(--ease) forwards;
+}
+.conf-popup.out{animation:confOut .15s var(--ease) forwards}
+.conf-title{font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px;line-height:1.4}
+.conf-sub{font-size:10px;color:var(--text3);margin-bottom:10px}
+.conf-levels{display:flex;gap:6px}
+.cl-btn{
+  flex:1;padding:7px 4px;border-radius:var(--r);border:1px solid var(--border2);
+  background:var(--bg4);font-size:10px;font-weight:600;cursor:pointer;
+  transition:all .12s;text-align:center;color:var(--text2);
+  font-family:var(--mono);letter-spacing:.03em;
+}
+.cl-btn:hover{border-color:currentColor}
+.cl-btn.l1{--c:#e05252}
+.cl-btn.l2{--c:#e8a020}
+.cl-btn.l3{--c:#5b8dee}
+.cl-btn.l4{--c:#2ec887}
+.cl-btn:hover,.cl-btn.sel{background:var(--c);border-color:var(--c);color:#fff}
+
+/* GAPS SECTION */
+.gap-item{
+  display:flex;align-items:flex-start;gap:10px;padding:10px 12px;
+  background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);
+  margin-bottom:6px;transition:border-color .15s;
+}
+.gap-item:hover{border-color:var(--border2)}
+.gap-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.gap-dot.shaky{background:var(--red)}
+.gap-dot.partial{background:var(--amber)}
+.gap-body{flex:1;min-width:0}
+.gap-name{font-size:12px;color:var(--text);margin-bottom:2px}
+.gap-track{font-size:10px;color:var(--text3)}
+.gap-conf{font-size:10px;font-weight:600;font-family:var(--mono);flex-shrink:0;margin-top:2px}
+.conf-shaky{color:var(--red)}
+.conf-unsure{color:var(--amber)}
+.conf-solid{color:var(--accent)}
+.conf-owned{color:var(--green)}
+
+/* DOCTRINE slow fade */
+@keyframes doctrineFade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.doctrine-enter{animation:doctrineFade .7s var(--ease) forwards}
+.doc-map .map-node{animation:doctrineFade .5s var(--ease) both}
 ::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar-thumb{background:var(--bg6);border-radius:2px}
 </style>
@@ -642,6 +799,25 @@ const DOCTRINE_TEXT = [
 ].join('\n');
 
 
+
+// ── CONFIDENCE ────────────────────────────────────────────────────────────────
+const CONF_LABELS=['Shaky','Unsure','Solid','Owned'];
+const CONF_CLASSES=['conf-shaky','conf-unsure','conf-solid','conf-owned'];
+const CONF_SHORT=['S','U','+','O'];
+
+function isDone(k){const v=prog[k];return v===true||( v&&typeof v==='object'&&v.done);}
+function getConf(k){const v=prog[k];return(v&&typeof v==='object')?v.conf:null;}
+function setDone(k,val){
+  const cur=prog[k];
+  if(val){prog[k]={done:true,conf:(cur&&typeof cur==='object')?cur.conf:null};}
+  else{delete prog[k];}
+}
+function setConf(k,c){
+  const cur=prog[k];
+  if(cur&&typeof cur==='object'){prog[k]={done:cur.done,conf:c};}
+  else if(isDone(k)){prog[k]={done:true,conf:c};}
+}
+
 // ── STATE ─────────────────────────────────────────────────────────────────────
 let TRACKS=[], ROLES=[], prog={}, openPh={}, view='dash', _prevUnlocked=0;
 
@@ -661,7 +837,7 @@ function trackStats(tid){
   const t=TRACKS.find(x=>x.id===tid);
   if(!t)return{total:0,done:0,pct:0};
   let total=0,done=0;
-  t.phases.forEach((p,pi)=>p.items.forEach((_,ii)=>{total++;if(prog[pk(tid,pi,ii)])done++;}));
+  t.phases.forEach((p,pi)=>p.items.forEach((_,ii)=>{total++;if(isDone(pk(tid,pi,ii)))done++;}));
   return{total,done,pct:total?Math.round(done/total*100):0};
 }
 function allStats(){
@@ -738,54 +914,113 @@ function renderDash(){
   const {total,done,pct,bt}=allStats();
   const ur=ROLES.filter(r=>roleOk(r,bt).unlocked).length;
   const next=ROLES.find(r=>!roleOk(r,bt).unlocked);
+  const gaps=gapStats();
 
+  // Layout: two-column grid (progress+stats left, tracks right) then full-width career + gaps
   let h=`<div class="page-enter">
+
+  <!-- Row 1: master progress bar full width -->
   <div class="big-prog">
     <div class="bp-top"><div class="bp-lbl">Overall completion</div><div class="bp-nums">${done} / ${total} &nbsp; ${pct}%</div></div>
     <div class="bb"><div class="bbf" style="width:${pct}%"></div></div>
     <div class="mss">`;
   [0,10,25,50,75,95,100].forEach(m=>{h+=`<div class="ms${pct>=m?' hit':''}"><div class="ms-tick${pct>=m?' hit':''}"></div>${m}%</div>`;});
   h+=`</div></div>
+
+  <!-- Row 2: stat cards -->
   <div class="grid4">
     <div class="stat ca"><div class="stat-lbl">Completed</div><div class="stat-val">${done}</div><div class="stat-sub">of ${total} items</div></div>
     <div class="stat cg"><div class="stat-lbl">Active tracks</div><div class="stat-val">${TRACKS.filter(t=>bt[t.id]&&bt[t.id].done>0).length}</div><div class="stat-sub">of ${TRACKS.length}</div></div>
     <div class="stat cp"><div class="stat-lbl">Roles unlocked</div><div class="stat-val">${ur}</div><div class="stat-sub">of ${ROLES.length}</div></div>
-    <div class="stat camb"><div class="stat-lbl">Remaining</div><div class="stat-val">${total-done}</div><div class="stat-sub">items left</div></div>
+    <div class="stat camb" style="cursor:pointer" onclick="document.getElementById('gaps-section').scrollIntoView({behavior:'smooth'})">
+      <div class="stat-lbl">Gaps</div>
+      <div class="stat-val" style="color:${gaps.length>0?'var(--red)':'var(--text3)'}">${gaps.length}</div>
+      <div class="stat-sub">${gaps.length>0?'low confidence items':'no gaps logged'}</div>
+    </div>
   </div>
 
-  <div class="sec">Tracks</div>
-  <div class="tgrid">`;
+  <!-- Row 3: two-column — tracks left, next role right -->
+  <div style="display:grid;grid-template-columns:1fr 340px;gap:16px;margin-bottom:24px;align-items:start">
+    <div>
+      <div class="sec">Tracks</div>
+      <div style="display:flex;flex-direction:column;gap:8px">`;
 
   TRACKS.forEach(t=>{
     const d=bt[t.id]||{done:0,total:0,pct:0};
-    const barW=d.pct>0?d.pct:0;
-    h+=`<div class="tc" onclick="go('track:${t.id}')">
+    h+=`<div class="tc" onclick="go('track:${t.id}')" style="padding:12px 14px">
       <div class="tc-accent" style="background:${t.color}"></div>
-      <div class="tc-top">
-        <span class="tc-badge" style="background:${t.color}18;color:${t.color}">${t.icon}</span>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px">
+            <span class="tc-badge" style="background:${t.color}18;color:${t.color}">${t.icon}</span>
+            <span class="tc-name">${t.title}</span>
+          </div>
+          <div class="tc-meta">${d.done} / ${d.total} items &middot; ${t.phases.length} phases</div>
+        </div>
         <span class="tc-pct" style="color:${t.color}">${d.pct}%</span>
       </div>
-      <div class="tc-name">${t.title}</div>
-      <div class="tc-meta">${d.done} / ${d.total} items &middot; ${t.phases.length} phases</div>
-      <div class="tc-bar"><div class="tc-bar-f" style="width:${barW}%;background:${t.color}"></div></div>
+      <div class="tc-bar"><div class="tc-bar-f" style="width:${d.pct}%;background:${t.color}"></div></div>
     </div>`;
   });
-  h+=`</div>`;
 
-  // Career path section on dashboard
-  h+=`<div class="sec">Career path</div>
-  <div class="roles-section">
-    <div class="rgrid">`;
+  h+=`</div></div>
 
-  let nextShown=false;
+    <!-- Right column: next role + career summary -->
+    <div>
+      <div class="sec">Next role</div>`;
+
+  if(next){
+    const s=roleOk(next,bt);
+    h+=`<div class="card" style="border-color:var(--ab);background:var(--adim);margin-bottom:12px">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px">
+        <div>
+          <span class="rc-abbr" style="background:var(--adim);color:var(--accent);display:inline-flex;margin-bottom:6px">${next.abbr}</span>
+          <div style="font-size:13px;font-weight:500;color:var(--accent)">${next.name}</div>
+          <div style="font-size:10px;color:var(--text3);margin-top:2px;max-width:200px;line-height:1.5">${next.desc.slice(0,80)}...</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:7px">`;
+    s.results.forEach(res=>{
+      const fill=res.r.pct?Math.round(Math.min(res.a,res.r.pct)/res.r.pct*100):0;
+      h+=`<div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:${res.met?'var(--green)':'var(--accent)'};margin-bottom:3px">
+          <span>${res.r.lbl}</span><span style="font-family:var(--mono)">${res.a}%/${res.r.pct}%</span>
+        </div>
+        <div class="bw" style="height:2px"><div style="height:100%;border-radius:1px;width:${fill}%;background:${res.met?'var(--green)':'var(--accent)'};transition:width .5s var(--ease)"></div></div>
+      </div>`;
+    });
+    h+=`</div></div>`;
+  }
+
+  // Mini career ladder
+  h+=`<div class="sec">Career ladder</div>
+  <div style="display:flex;flex-direction:column;gap:4px">`;
+  let nxtShown=false;
   ROLES.forEach(r=>{
     const s=roleOk(r,bt);
-    const isNext=!s.unlocked&&!nextShown;
-    if(isNext)nextShown=true;
+    const isN=!s.unlocked&&!nxtShown;if(isN)nxtShown=true;
+    const col=s.unlocked?'var(--green)':isN?'var(--accent)':'var(--text3)';
+    h+=`<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:var(--r);background:${s.unlocked?'var(--gdim)':isN?'var(--adim)':'transparent'};border:1px solid ${s.unlocked?'var(--gb)':isN?'var(--ab)':'transparent'}">
+      <div style="width:6px;height:6px;border-radius:50%;background:${col};flex-shrink:0"></div>
+      <span style="font-size:11px;color:${col};flex:1">${r.name}</span>
+      <span style="font-size:9px;font-weight:600;font-family:var(--mono);color:${col};opacity:.7">${r.abbr}</span>
+    </div>`;
+  });
+  h+=`</div>
+    </div>
+  </div>
+
+  <!-- Row 4: full-width career path detail -->
+  <div class="sec">Career path</div>
+  <div class="rgrid" style="margin-bottom:24px">`;
+
+  nxtShown=false;
+  ROLES.forEach(r=>{
+    const s=roleOk(r,bt);
+    const isNext=!s.unlocked&&!nxtShown;if(isNext)nxtShown=true;
     const cls=s.unlocked?'unlocked':isNext?'next':'locked';
     h+=`<div class="rc ${cls}">
-      <div class="rc-header">
-        <span class="rc-abbr">${r.abbr}</span>
+      <div class="rc-header"><span class="rc-abbr">${r.abbr}</span>
         <span class="rc-status" style="color:${s.unlocked?'var(--green)':isNext?'var(--accent)':'var(--text3)'}">${s.unlocked?'Unlocked':isNext?'Next':'Locked'}</span>
       </div>
       <div class="rc-name">${r.name}</div>
@@ -795,40 +1030,51 @@ function renderDash(){
       const fill=res.r.pct?Math.round(Math.min(res.a,res.r.pct)/res.r.pct*100):0;
       h+=`<div class="req-row">
         <div class="req-meta${res.met?' met':isNext?' active':''}">
-          <span>${res.r.lbl}</span>
-          <span style="font-family:var(--mono)">${res.a}%</span>
+          <span>${res.r.lbl}</span><span style="font-family:var(--mono)">${res.a}%</span>
         </div>
-        <div class="req-bar"><div class="req-barf" style="width:${fill}%;background:${res.met?'var(--green)':isNext?'var(--accent)':'var(--text3)'}"></div></div>
+        <div class="req-bar"><div class="req-barf" style="width:${fill}%;background:${res.met?'var(--green)':isNext?'var(--accent)':'var(--border2)'}"></div></div>
       </div>`;
     });
     h+=`</div></div>`;
   });
-  h+=`</div></div>`;
+  h+=`</div>
 
-  // Next role callout
-  if(next){
-    const s=roleOk(next,bt);
-    h+=`<div class="sec">Next milestone</div>
-    <div class="card" style="border-color:var(--ab);background:var(--adim);margin-bottom:24px">
-      <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:14px">
-        <span class="rc-abbr" style="background:var(--adim);color:var(--accent);margin-top:2px">${next.abbr}</span>
-        <div>
-          <div style="font-size:14px;font-weight:500;color:var(--accent);margin-bottom:3px">${next.name}</div>
-          <div style="font-size:11px;color:var(--text3)">${next.desc}</div>
-        </div>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:8px">`;
-    s.results.forEach(res=>{
-      const fill=res.r.pct?Math.round(Math.min(res.a,res.r.pct)/res.r.pct*100):0;
-      h+=`<div>
-        <div style="display:flex;justify-content:space-between;font-size:10px;color:${res.met?'var(--green)':'var(--accent)'};margin-bottom:3px">
-          <span>${res.r.lbl}</span><span style="font-family:var(--mono)">${res.a}% / ${res.r.pct}%</span>
-        </div>
-        <div class="bw" style="height:3px"><div style="height:100%;border-radius:2px;width:${fill}%;background:${res.met?'var(--green)':'var(--accent)'};transition:width .5s var(--ease)"></div></div>
-      </div>`;
-    });
-    h+=`</div></div>`;
+  <!-- Row 5: gaps -->
+  <div class="sec" id="gaps-section">Gaps <span id="gap-badge" style="font-size:10px;font-family:var(--mono);font-weight:700;padding:1px 7px;border-radius:4px;background:var(--rdim);color:var(--red);margin-left:6px">${gaps.length>0?gaps.length:''}</span></div>`;
+
+  if(gaps.length===0){
+    h+=`<div style="padding:20px 0;text-align:center;color:var(--text3);font-size:12px">
+      No gaps yet. Tick items in a track and rate your confidence — anything below Solid appears here.
+    </div>`;
+  } else {
+    h+=`<div style="margin-bottom:24px">`;
+    // Group by confidence level: shaky first
+    const shaky=gaps.filter(g=>g.conf===1), unsure=gaps.filter(g=>g.conf===2);
+    if(shaky.length){
+      h+=`<div style="font-size:10px;font-weight:600;color:var(--red);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">Shaky — needs re-work</div>`;
+      shaky.forEach(g=>{
+        const t=TRACKS.find(x=>x.id===g.trackId);
+        h+=`<div class="gap-item">
+          <div class="gap-dot shaky"></div>
+          <div class="gap-body"><div class="gap-name">${esc(g.item)}</div><div class="gap-track">${t?t.title:g.trackId} &middot; ${t?.phases[g.pi]?.name||''}</div></div>
+          <div class="gap-conf conf-shaky">Shaky</div>
+        </div>`;
+      });
+    }
+    if(unsure.length){
+      h+=`<div style="font-size:10px;font-weight:600;color:var(--amber);text-transform:uppercase;letter-spacing:.08em;margin:10px 0 6px">Unsure — revisit soon</div>`;
+      unsure.forEach(g=>{
+        const t=TRACKS.find(x=>x.id===g.trackId);
+        h+=`<div class="gap-item">
+          <div class="gap-dot partial"></div>
+          <div class="gap-body"><div class="gap-name">${esc(g.item)}</div><div class="gap-track">${t?t.title:g.trackId} &middot; ${t?.phases[g.pi]?.name||''}</div></div>
+          <div class="gap-conf conf-unsure">Unsure</div>
+        </div>`;
+      });
+    }
+    h+=`</div>`;
   }
+
   h+=`</div>`;
   document.getElementById('content').innerHTML=h;
 }
@@ -863,7 +1109,7 @@ function renderTrack(tid){
       </div>
       <div class="labs${io?' open':''}" id="labs_${pid}">`;
     p.items.forEach((item,ii)=>{
-      const k=pk(tid,pi,ii),ks=k.replace(/:/g,'_'),on=!!prog[k];
+      const k=pk(tid,pi,ii),ks=k.replace(/:/g,'_'),on=isDone(k);
       h+=`<div class="lab" onclick="tog('${tid}',${pi},${ii})">
         <div class="chk${on?' on':''}" id="chk_${ks}"></div>
         <div class="ln${on?' done':''}" id="lbl_${ks}">${esc(item)}</div>
@@ -882,15 +1128,22 @@ function tph(pid){
   if(c)c.className='ph-chv'+(openPh[pid]?' open':'');
 }
 
-function tog(tid,pi,ii){
-  const k=pk(tid,pi,ii);prog[k]=!prog[k];persist();
+function tog(tid,pi,ii,skipConf){
+  const k=pk(tid,pi,ii);
+  const wasOn=isDone(k);
+  setDone(k,!wasOn);persist();
   const ks=k.replace(/:/g,'_');
   const chk=document.getElementById('chk_'+ks),lbl=document.getElementById('lbl_'+ks);
-  if(chk)chk.className='chk'+(prog[k]?' on':'');
-  if(lbl)lbl.className='ln'+(prog[k]?' done':'');
+  if(chk)chk.className='chk'+(isDone(k)?' on':'');
+  if(lbl)lbl.className='ln'+(isDone(k)?' done':'');
+  if(!wasOn&&!skipConf){
+    const t=TRACKS.find(x=>x.id===tid);
+    const item=t?.phases[pi]?.items[ii]||'';
+    showConfPopup(k,item,chk);
+  }
   const p=TRACKS.find(x=>x.id===tid)?.phases[pi];
   if(p){
-    let pD=0;p.items.forEach((_,jj)=>{if(prog[pk(tid,pi,jj)])pD++;});
+    let pD=0;p.items.forEach((_,jj)=>{if(isDone(pk(tid,pi,jj)))pD++;});
     const pid='ph_'+tid+'_'+pi,pp=p.items.length?Math.round(pD/p.items.length*100):0;
     const dot=document.getElementById('dot_'+pid),cnt=document.getElementById('cnt_'+pid);
     const pb=document.getElementById('pb_'+pid),pbf=document.getElementById('pbf_'+pid);
@@ -900,6 +1153,72 @@ function tog(tid,pi,ii){
     if(pbf){pbf.style.width=pp+'%';pbf.className='ph-barf'+(pD===p.items.length&&pD>0?' done':'');}
   }
   refreshBadges();checkUnlock();
+}
+
+
+function showConfPopup(k, itemName, anchorEl){
+  // Remove any existing popup
+  const old=document.getElementById('conf-popup');if(old)old.remove();
+  const popup=document.createElement('div');
+  popup.className='conf-popup';popup.id='conf-popup';
+  const curConf=getConf(k);
+  popup.innerHTML=`
+    <div class="conf-title">${esc(itemName.length>40?itemName.slice(0,38)+'...':itemName)}</div>
+    <div class="conf-sub">How confident are you with this?</div>
+    <div class="conf-levels">
+      <button class="cl-btn l1${curConf===1?' sel':''}" onclick="pickConf('${k}',1)">Shaky</button>
+      <button class="cl-btn l2${curConf===2?' sel':''}" onclick="pickConf('${k}',2)">Unsure</button>
+      <button class="cl-btn l3${curConf===3?' sel':''}" onclick="pickConf('${k}',3)">Solid</button>
+      <button class="cl-btn l4${curConf===4?' sel':''}" onclick="pickConf('${k}',4)">Owned</button>
+    </div>`;
+  // Position near anchor
+  if(anchorEl){
+    const rect=anchorEl.getBoundingClientRect();
+    const top=Math.min(rect.bottom+8, window.innerHeight-160);
+    const left=Math.min(rect.left, window.innerWidth-276);
+    popup.style.top=top+'px';popup.style.left=Math.max(8,left)+'px';
+  } else {
+    popup.style.top='50%';popup.style.left='50%';popup.style.transform='translate(-50%,-50%)';
+  }
+  document.body.appendChild(popup);
+  // Auto-dismiss after 6s if no pick
+  popup._timer=setTimeout(()=>dismissConf(),6000);
+  // Click outside to dismiss
+  setTimeout(()=>{document.addEventListener('click',outsideConf,{once:true,capture:true});},50);
+}
+function outsideConf(e){if(!document.getElementById('conf-popup')?.contains(e.target))dismissConf();}
+function dismissConf(){
+  const p=document.getElementById('conf-popup');
+  if(!p)return;p.classList.add('out');
+  clearTimeout(p._timer);
+  setTimeout(()=>p.remove(),150);
+}
+function pickConf(k,c){
+  setConf(k,c);persist();dismissConf();
+  // Re-render gap badge if on dashboard
+  if(view==='dash') renderGapBadge();
+}
+
+function gapStats(){
+  const gaps=[];
+  TRACKS.forEach(t=>{
+    t.phases.forEach((p,pi)=>{
+      p.items.forEach((item,ii)=>{
+        const k=pk(t.id,pi,ii);
+        if(isDone(k)){
+          const c=getConf(k);
+          if(c&&c<=2) gaps.push({k,item,conf:c,track:t.title,trackId:t.id,pi,ii});
+        }
+      });
+    });
+  });
+  return gaps;
+}
+
+function renderGapBadge(){
+  const gaps=gapStats();
+  const el=document.getElementById('gap-badge');
+  if(el)el.textContent=gaps.length>0?gaps.length:'';
 }
 
 function checkUnlock(){
@@ -940,7 +1259,7 @@ function doResetTrack(tid){
 
 // ── DOCTRINE ──────────────────────────────────────────────────────────────────
 function renderDoctrine(){
-  document.getElementById('content').innerHTML=`<div class="page-enter doc-layout">
+  document.getElementById('content').innerHTML=`<div class="doctrine-enter doc-layout">
     <div class="doc-map" id="doc-map"></div>
     <div class="doc-scroll"><div class="doc-body" id="doc-body"></div></div>
   </div>`;
@@ -957,6 +1276,8 @@ function renderDoctrine(){
         <div class="map-node-desc">${s.desc.slice(0,55)}...</div>
       </div>`;
     btn.addEventListener('click',()=>activateSection(s.id));
+    btn.style.animationDelay=(DOC_SECTIONS.indexOf(s)*0.04)+'s';
+    btn.style.opacity='0';
     mapEl.appendChild(btn);
   });
 
@@ -976,30 +1297,60 @@ function renderDoctrine(){
 }
 
 function activateSection(id){
+  // Deactivate all nodes (transitions handled by CSS .6s ease)
   DOC_SECTIONS.forEach(s=>{
     const btn=document.getElementById('mn_'+s.id);
     const num=document.getElementById('mnum_'+s.id);
-    if(btn){btn.classList.remove('active');btn.style.background='';}
-    if(num){num.style.background='var(--bg5)';num.style.color='var(--text3)';}
+    const title=btn?.querySelector('.map-node-title');
+    if(btn){btn.classList.remove('active');btn.style.background='';btn.style.borderColor='';}
+    if(num){num.style.background='var(--bg5)';num.style.color='var(--text3)';num.style.boxShadow='';}
+    if(title)title.style.color='';
   });
+
   const sec=DOC_SECTIONS.find(x=>x.id===id);
   const btn=document.getElementById('mn_'+id);
   const num=document.getElementById('mnum_'+id);
+  const title=btn?.querySelector('.map-node-title');
+
   if(btn&&sec){
     btn.classList.add('active');
-    btn.style.background=sec.color+'11';
+    // Delay the color fill slightly so the deactivation finishes first
+    setTimeout(()=>{
+      btn.style.background=sec.color+'14';
+      btn.style.borderColor=sec.color+'55';
+    },40);
   }
   if(num&&sec){
-    num.style.background=sec.color;
-    num.style.color='#fff';
+    setTimeout(()=>{
+      num.style.background=sec.color;
+      num.style.color='#fff';
+      num.style.boxShadow='0 0 10px '+sec.color+'66';
+    },80);
   }
+  if(title&&sec){
+    setTimeout(()=>{title.style.color=sec.color;},60);
+  }
+
+  // Scroll the doc panel with a brief delay so the node animation plays first
   const target=document.getElementById('sec_'+id);
   if(target){
-    target.scrollIntoView({behavior:'smooth',block:'start'});
-    const orig=target.style.background;
-    target.style.transition='background .3s';
-    target.style.background=(sec?sec.color:'#5b8dee')+'18';
-    setTimeout(()=>{target.style.background=orig;},1600);
+    setTimeout(()=>{
+      target.scrollIntoView({behavior:'smooth',block:'start'});
+    },120);
+
+    // Slow heading highlight — fade in, hold, fade out
+    setTimeout(()=>{
+      target.style.transition='background 0.5s ease, padding-left 0.5s ease';
+      target.style.background=(sec?sec.color:'#5b8dee')+'1a';
+      target.style.paddingLeft='10px';
+      target.style.borderLeft='2px solid '+(sec?sec.color:'#5b8dee');
+      setTimeout(()=>{
+        target.style.transition='background 1.2s ease, padding-left 0.8s ease, border-left 0.8s ease';
+        target.style.background='';
+        target.style.paddingLeft='';
+        target.style.borderLeft='';
+      },1800);
+    },400);
   }
 }
 
@@ -1202,7 +1553,7 @@ function doExport(){
   const payload={_meta:{exportedAt:new Date().toISOString(),v:5,total,done,pct},tracks:TRACKS,roles:ROLES,prog};
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}));
-  a.download='pretitan-'+new Date().toISOString().slice(0,10)+'.json';a.click();
+  a.download='PRE-'+new Date().toISOString().slice(0,10)+'.json';a.click();
   toast('Exported');
 }
 function doImport(evt){
