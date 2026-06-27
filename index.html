@@ -1,2180 +1,1285 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Amanyi Daniel — DevOps / MLOps Engineer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>PRE-TITAN</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
-  :root {
-    --bg: #080b10;
-    --bg2: #0c1118;
-    --bg3: #111820;
-    --border: #1a2535;
-    --border2: #243045;
-    --accent: #00d4ff;
-    --accent2: #0088bb;
-    --accent3: #004466;
-    --amber: #f5a623;
-    --amber-dim: #7a5212;
-    --green: #00ff88;
-    --green-dim: #00442200;
-    --red: #ff4444;
-    --text: #c8d8e8;
-    --text-dim: #5a7080;
-    --text-bright: #eaf4ff;
-    --mono: 'Space Mono', monospace;
-    --sans: 'Syne', sans-serif;
-    --code: 'DM Mono', monospace;
-    --grid: rgba(0, 212, 255, 0.03);
-  }
-
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  html { scroll-behavior: smooth; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 14px;
-    line-height: 1.7;
-    overflow-x: hidden;
-  }
-
-  /* GRID OVERLAY */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(var(--grid) 1px, transparent 1px),
-      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  /* SCANLINE */
-  body::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(0,0,0,0.08) 2px,
-      rgba(0,0,0,0.08) 4px
-    );
-    pointer-events: none;
-    z-index: 1000;
-  }
-
-  /* NOISE TEXTURE */
-  .noise {
-    position: fixed;
-    inset: 0;
-    opacity: 0.025;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 999;
-  }
-
-  /* LAYOUT */
-  .container { max-width: 1100px; margin: 0 auto; padding: 0 32px; position: relative; z-index: 2; }
-
-  /* NAV */
-  nav {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 100;
-    border-bottom: 1px solid var(--border);
-    background: rgba(8,11,16,0.92);
-    backdrop-filter: blur(12px);
-  }
-
-  .nav-inner {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 0 32px;
-    height: 56px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .nav-logo {
-    font-family: var(--sans);
-    font-weight: 800;
-    font-size: 15px;
-    color: var(--accent);
-    letter-spacing: 0.05em;
-    text-decoration: none;
-  }
-
-  .nav-logo span { color: var(--text-dim); font-weight: 400; }
-
-  .nav-links { display: flex; gap: 32px; list-style: none; }
-
-  .nav-links a {
-    color: var(--text-dim);
-    text-decoration: none;
-    font-size: 12px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    transition: color 0.2s;
-  }
-
-  .nav-links a:hover { color: var(--accent); }
-
-  /* STATUS BAR */
-  .status-bar {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    z-index: 100;
-    height: 28px;
-    border-top: 1px solid var(--border);
-    background: rgba(8,11,16,0.95);
-    display: flex;
-    align-items: center;
-    padding: 0 24px;
-    gap: 24px;
-    font-size: 11px;
-    color: var(--text-dim);
-    font-family: var(--code);
-  }
-
-  .status-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--green);
-    box-shadow: 0 0 6px var(--green);
-    animation: pulse 2s infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-  }
-
-  .status-item { display: flex; align-items: center; gap: 8px; }
-  .status-accent { color: var(--accent); }
-
-  /* HERO */
-  #hero {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    padding-top: 56px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  #hero.pinned {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 50;
-  }
-
-  #heroSpacer {
-    display: none;
-  }
-
-  #heroSpacer.active {
-    display: block;
-  }
-
-  .hero-glow {
-    position: absolute;
-    top: -200px; left: -200px;
-    width: 700px; height: 700px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(0,212,255,0.06) 0%, transparent 70%);
-    pointer-events: none;
-    will-change: transform;
-  }
-
-  .hero-glow-2 {
-    position: absolute;
-    bottom: -200px; right: -100px;
-    width: 500px; height: 500px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(0,136,187,0.04) 0%, transparent 70%);
-    pointer-events: none;
-    will-change: transform;
-  }
-
-  .hero-glow-3 {
-    position: absolute;
-    top: 40%; left: 60%;
-    width: 400px; height: 400px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(245,166,35,0.03) 0%, transparent 70%);
-    pointer-events: none;
-    will-change: transform;
-  }
-
-  .section-glow {
-    position: absolute;
-    width: 600px; height: 600px;
-    border-radius: 50%;
-    pointer-events: none;
-    will-change: transform;
-    z-index: 0;
-  }
-
-  .hero-content { padding: 80px 0; }
-
-  .hero-top {
-    display: grid;
-    grid-template-columns: 70% 30%;
-    gap: 40px;
-    align-items: center;
-    margin-bottom: 36px;
-  }
-
-  @media (max-width: 760px) {
-    .hero-top { grid-template-columns: 1fr; }
-    .hero-portrait-wrap { order: -1; max-width: 200px; margin: 0 auto 24px; }
-  }
-
-  .hero-portrait-wrap {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 1;
-    border: 1px solid var(--border2);
-    background: var(--bg2);
-    overflow: hidden;
-  }
-
-  .hero-portrait-wrap::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border: 1px solid var(--accent3);
-    z-index: 3;
-    pointer-events: none;
-  }
-
-  .frame-corner {
-    position: absolute;
-    width: 16px; height: 16px;
-    z-index: 4;
-    pointer-events: none;
-  }
-
-  .frame-corner.tl { top: 0; left: 0; border-top: 2px solid var(--accent); border-left: 2px solid var(--accent); }
-  .frame-corner.tr { top: 0; right: 0; border-top: 2px solid var(--accent); border-right: 2px solid var(--accent); }
-  .frame-corner.bl { bottom: 0; left: 0; border-bottom: 2px solid var(--accent); border-left: 2px solid var(--accent); }
-  .frame-corner.br { bottom: 0; right: 0; border-bottom: 2px solid var(--accent); border-right: 2px solid var(--accent); }
-
-  .hero-portrait-wrap.attention .frame-corner {
-    animation: corner-blink 0.9s ease-in-out infinite;
-  }
-
-  @keyframes corner-blink {
-    0%, 100% { opacity: 1; border-color: var(--accent); }
-    50% { opacity: 0.25; border-color: var(--accent); }
-  }
-
-  .hero-portrait-wrap.lit .frame-corner {
-    animation: none;
-    opacity: 1;
-    border-color: var(--accent);
-  }
-
-  .scroll-down-arrow {
-    position: fixed;
-    bottom: 28px;
-    left: 32px;
-    z-index: 60;
-    opacity: 0;
-    pointer-events: none;
-    color: var(--accent);
-  }
-
-  .scroll-down-arrow.show {
-    opacity: 1;
-    animation: arrow-blink 0.5s steps(1) infinite;
-  }
-
-  @keyframes arrow-blink {
-    0%, 49% { opacity: 1; }
-    50%, 100% { opacity: 0; }
-  }
-
-  .hero-portrait {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    filter: brightness(0.15) saturate(0.6) contrast(1.05);
-  }
-
-  .portrait-tag {
-    position: absolute;
-    bottom: 8px; left: 8px;
-    font-family: var(--code);
-    font-size: 9px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--accent);
-    background: rgba(8,11,16,0.8);
-    padding: 3px 7px;
-    z-index: 3;
-    opacity: 0;
-    transition: opacity 0.6s ease;
-  }
-
-  .hero-portrait-wrap.lit .portrait-tag { opacity: 1; }
-
-  .hero-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    border: 1px solid var(--border2);
-    background: var(--bg2);
-    padding: 6px 14px;
-    font-size: 11px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 32px;
-  }
-
-  .hero-tag::before {
-    content: '';
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--accent);
-    box-shadow: 0 0 8px var(--accent);
-    animation: pulse 2s infinite;
-  }
-
-  h1.hero-name {
-    font-family: var(--sans);
-    font-weight: 800;
-    font-size: clamp(38px, 6vw, 68px);
-    line-height: 0.95;
-    color: var(--text-bright);
-    letter-spacing: -0.02em;
-    margin-bottom: 0;
-  }
-
-  h1.hero-name .line2 {
-    color: transparent;
-    -webkit-text-stroke: 1px rgba(0,212,255,0.4);
-  }
-
-  /* TERMINAL */
-  .hero-terminal {
-    border: 1px solid var(--border2);
-    background: var(--bg2);
-    max-width: 640px;
-    margin-bottom: 40px;
-  }
-
-  .terminal-bar {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 12px;
-    border-bottom: 1px solid var(--border);
-    background: var(--bg3);
-  }
-
-  .terminal-dot {
-    width: 9px; height: 9px;
-    border-radius: 50%;
-    background: var(--border2);
-  }
-
-  .terminal-bar-label {
-    margin-left: 8px;
-    font-family: var(--code);
-    font-size: 10px;
-    color: var(--text-dim);
-    letter-spacing: 0.05em;
-  }
-
-  .terminal-body {
-    padding: 18px 20px;
-    font-family: var(--code);
-    font-size: 13px;
-    line-height: 1.85;
-    min-height: 140px;
-  }
-
-  .term-prompt-line { color: var(--text-dim); margin-bottom: 6px; }
-  .term-prompt-line .term-accent { color: var(--accent); }
-
-  .term-output {
-    color: var(--text);
-  }
-
-  .term-output .tc { color: var(--text); }
-
-  .term-cursor {
-    display: inline-block;
-    width: 7px; height: 13px;
-    background: var(--accent);
-    vertical-align: -2px;
-    margin-left: 1px;
-    animation: blink 1s infinite;
-  }
-
-  .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; }
-
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 24px;
-    font-family: var(--mono);
-    font-size: 12px;
-    letter-spacing: 0.08em;
-    text-decoration: none;
-    text-transform: uppercase;
-    cursor: pointer;
-    border: none;
-    transition: all 0.2s;
-    position: relative;
-  }
-
-  .btn-primary {
-    background: var(--accent);
-    color: var(--bg);
-    font-weight: 700;
-    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
-  }
-
-  .btn-primary:hover {
-    background: #33dfff;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 20px rgba(0,212,255,0.3);
-  }
-
-  .btn-ghost {
-    background: transparent;
-    color: var(--text);
-    border: 1px solid var(--border2);
-    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
-  }
-
-  .btn-ghost:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-  }
-
-  .hero-stats {
-    display: flex;
-    gap: 40px;
-    margin-top: 60px;
-    padding-top: 32px;
-    border-top: 1px solid var(--border);
-  }
-
-  .stat-num {
-    font-family: var(--sans);
-    font-weight: 800;
-    font-size: 28px;
-    color: var(--text-bright);
-    line-height: 1;
-    margin-bottom: 4px;
-  }
-
-  .stat-label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.1em; }
-
-  /* SECTION COMMONS */
-  section { padding: 100px 0; position: relative; z-index: 2; overflow: hidden; }
-
-  .section-header { margin-bottom: 56px; }
-
-  .section-tag {
-    font-family: var(--code);
-    font-size: 11px;
-    color: var(--accent);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .section-tag::before { content: '//'; color: var(--text-dim); }
-
-  h2.section-title {
-    font-family: var(--sans);
-    font-weight: 800;
-    font-size: clamp(28px, 4vw, 42px);
-    color: var(--text-bright);
-    letter-spacing: -0.02em;
-    line-height: 1.1;
-  }
-
-  h2.section-title.pulse-title {
-    animation: title-pulse 3.4s ease-in-out infinite;
-  }
-
-  @keyframes title-pulse {
-    0%, 100% { color: var(--text-dim); text-shadow: none; }
-    50% { color: var(--text-bright); text-shadow: 0 0 18px rgba(0,212,255,0.35); }
-  }
-
-  .section-sub {
-    margin-top: 12px;
-    font-size: 13px;
-    color: var(--text-dim);
-    max-width: 480px;
-  }
-
-  /* DIVIDER */
-  .divider {
-    border: none;
-    border-top: 1px solid var(--border);
-    position: relative;
-    z-index: 2;
-  }
-
-  /* PROJECTS */
-  #projects { background: var(--bg); }
-
-  .project-card {
-    border: 1px solid var(--border);
-    background: var(--bg2);
-    margin-bottom: 2px;
-    cursor: pointer;
-    transition: border-color 0.2s;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .project-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0;
-    width: 3px; height: 0;
-    background: var(--accent);
-    transition: height 0.3s;
-  }
-
-  .project-card:hover { border-color: var(--border2); }
-  .project-card:hover::before { height: 100%; }
-  .project-card.active { border-color: var(--accent); }
-  .project-card.active::before { height: 100%; }
-
-  .project-header {
-    padding: 24px 28px;
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 20px;
-  }
-
-  .project-meta { flex: 1; }
-
-  .project-id {
-    font-family: var(--code);
-    font-size: 10px;
-    color: var(--accent);
-    letter-spacing: 0.1em;
-    margin-bottom: 6px;
-  }
-
-  .project-name {
-    font-family: var(--sans);
-    font-weight: 700;
-    font-size: 18px;
-    color: var(--text-bright);
-    margin-bottom: 6px;
-  }
-
-  .project-tagline { font-size: 12px; color: var(--text-dim); }
-
-  .project-badges {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-    align-items: flex-start;
-  }
-
-  .badge {
-    padding: 3px 9px;
-    font-size: 10px;
-    font-family: var(--code);
-    letter-spacing: 0.06em;
-    border: 1px solid var(--border2);
-    color: var(--text-dim);
-    text-transform: uppercase;
-    background: var(--bg3);
-  }
-
-  .badge-accent { border-color: var(--accent3); color: var(--accent); background: rgba(0,212,255,0.05); }
-  .badge-amber { border-color: var(--amber-dim); color: var(--amber); background: rgba(245,166,35,0.05); }
-
-  .expand-icon {
-    font-size: 18px;
-    color: var(--text-dim);
-    transition: transform 0.3s, color 0.2s;
-    flex-shrink: 0;
-    margin-top: 2px;
-  }
-
-  .project-card.active .expand-icon { transform: rotate(45deg); color: var(--accent); }
-
-  .project-body {
-    display: none;
-    padding: 0 28px 28px;
-    border-top: 1px solid var(--border);
-    margin-top: 0;
-  }
-
-  .project-card.active .project-body { display: block; }
-
-  .project-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
-    margin-top: 24px;
-  }
-
-  @media (max-width: 680px) { .project-grid { grid-template-columns: 1fr; } }
-
-  .proj-section { margin-bottom: 0; }
-
-  .proj-section-label {
-    font-family: var(--code);
-    font-size: 10px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 10px;
-    padding-bottom: 6px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .proj-section p { font-size: 13px; color: var(--text); line-height: 1.75; }
-
-  .proj-section ul {
-    list-style: none;
-    padding: 0;
-  }
-
-  .proj-section ul li {
-    font-size: 13px;
-    color: var(--text);
-    padding: 3px 0;
-    padding-left: 16px;
-    position: relative;
-  }
-
-  .proj-section ul li::before {
-    content: '›';
-    position: absolute;
-    left: 0;
-    color: var(--accent);
-  }
-
-  .failure-note {
-    margin-top: 16px;
-    padding: 14px 16px;
-    background: rgba(255,68,68,0.05);
-    border: 1px solid rgba(255,68,68,0.2);
-    border-left: 3px solid var(--red);
-    font-size: 12px;
-    color: var(--text);
-  }
-
-  .failure-note .fn-label {
-    font-family: var(--code);
-    font-size: 10px;
-    color: var(--red);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    margin-bottom: 6px;
-  }
-
-  .stack-chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-top: 4px;
-  }
-
-  .chip {
-    padding: 4px 10px;
-    font-family: var(--code);
-    font-size: 11px;
-    background: var(--bg3);
-    border: 1px solid var(--border2);
-    color: var(--text-dim);
-  }
-
-  /* SYSTEMS THINKING */
-  #thinking { background: var(--bg2); }
-
-  .insights-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 2px;
-  }
-
-  .insight-card {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    padding: 28px;
-    position: relative;
-    transition: border-color 0.2s, background 0.2s;
-  }
-
-  .insight-card:hover {
-    border-color: var(--border2);
-    background: var(--bg3);
-  }
-
-  .insight-num {
-    font-family: var(--code);
-    font-size: 11px;
-    color: var(--text-dim);
-    margin-bottom: 16px;
-  }
-
-  .insight-topic {
-    font-family: var(--sans);
-    font-weight: 700;
-    font-size: 15px;
-    color: var(--text-bright);
-    margin-bottom: 12px;
-    line-height: 1.3;
-  }
-
-  .insight-body { font-size: 13px; color: var(--text); line-height: 1.8; }
-
-  .insight-tag {
-    display: inline-block;
-    margin-top: 16px;
-    font-family: var(--code);
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--amber);
-    border: 1px solid var(--amber-dim);
-    padding: 2px 8px;
-    background: rgba(245,166,35,0.04);
-  }
-
-  /* STACK */
-  #stack { background: var(--bg); }
-
-  .stack-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 2px;
-  }
-
-  .stack-group {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    padding: 24px;
-  }
-
-  .stack-group-title {
-    font-family: var(--code);
-    font-size: 10px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 16px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .stack-items { display: flex; flex-wrap: wrap; gap: 6px; }
-
-  .stack-item {
-    font-family: var(--code);
-    font-size: 12px;
-    color: var(--text);
-    padding: 5px 10px;
-    border: 1px solid var(--border2);
-    background: var(--bg3);
-    transition: border-color 0.2s, color 0.2s, background 0.2s;
-    filter: brightness(0.25) saturate(0.4);
-  }
-
-  .stack-item.flicker {
-    animation-name: chip-flicker;
-    animation-timing-function: ease-in-out;
-    animation-iteration-count: infinite;
-    animation-direction: alternate;
-  }
-
-  @keyframes chip-flicker {
-    0% { filter: brightness(0.25) saturate(0.4); }
-    20% { filter: brightness(0.55) saturate(0.6); }
-    40% { filter: brightness(0.35) saturate(0.5); }
-    60% { filter: brightness(0.9) saturate(0.95); }
-    80% { filter: brightness(0.45) saturate(0.55); }
-    100% { filter: brightness(1) saturate(1); }
-  }
-
-  .stack-item:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: rgba(0,212,255,0.04);
-    filter: brightness(1) saturate(1) !important;
-    animation-play-state: paused;
-  }
-
-  .stack-item.core {
-    border-color: rgba(0,212,255,0.3);
-    color: var(--accent);
-    background: rgba(0,212,255,0.06);
-  }
-
-  /* CERTS */
-  #certs { background: var(--bg2); }
-
-  .certs-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 2px;
-  }
-
-  .cert-item {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    padding: 20px 24px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    transition: border-color 0.2s, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.7s ease;
-    opacity: 0;
-  }
-
-  .cert-item.fly-in {
-    opacity: 1;
-    transform: translate(0, 0) rotate(0deg) !important;
-  }
-
-  .cert-item:hover { border-color: var(--border2); }
-
-  .cert-icon {
-    width: 36px; height: 36px;
-    border: 1px solid var(--border2);
-    background: var(--bg3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    flex-shrink: 0;
-    color: var(--accent);
-    font-family: var(--code);
-    font-size: 10px;
-    font-weight: 500;
-  }
-
-  .cert-name { font-size: 13px; color: var(--text-bright); font-weight: 600; margin-bottom: 2px; }
-  .cert-issuer { font-size: 11px; color: var(--text-dim); font-family: var(--code); }
-
-  /* EXPERIENCE */
-  #experience { background: var(--bg); }
-
-  .timeline { position: relative; padding-left: 32px; }
-
-  .timeline::before {
-    content: '';
-    position: absolute;
-    left: 0; top: 8px; bottom: 0;
-    width: 1px;
-    background: linear-gradient(to bottom, var(--accent), var(--border), transparent);
-  }
-
-  .timeline-item {
-    position: relative;
-    margin-bottom: 48px;
-  }
-
-  .timeline-item::before {
-    content: '';
-    position: absolute;
-    left: -36px; top: 8px;
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--accent);
-    box-shadow: 0 0 10px rgba(0,212,255,0.5);
-  }
-
-  .timeline-period {
-    font-family: var(--code);
-    font-size: 11px;
-    color: var(--accent);
-    letter-spacing: 0.08em;
-    margin-bottom: 6px;
-  }
-
-  .timeline-role {
-    font-family: var(--sans);
-    font-weight: 700;
-    font-size: 17px;
-    color: var(--text-bright);
-    margin-bottom: 2px;
-  }
-
-  .timeline-company {
-    font-size: 13px;
-    color: var(--text-dim);
-    margin-bottom: 14px;
-  }
-
-  .timeline-points { list-style: none; }
-
-  .timeline-points li {
-    font-size: 13px;
-    color: var(--text);
-    padding: 4px 0;
-    padding-left: 18px;
-    position: relative;
-    line-height: 1.6;
-  }
-
-  .timeline-points li::before {
-    content: '→';
-    position: absolute;
-    left: 0;
-    color: var(--accent);
-    font-size: 11px;
-  }
-
-  /* ABOUT */
-  #about { background: var(--bg2); }
-
-  .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
-
-  @media (max-width: 700px) { .about-grid { grid-template-columns: 1fr; } }
-
-  .about-text p {
-    font-size: 14px;
-    color: var(--text);
-    line-height: 1.9;
-    margin-bottom: 20px;
-  }
-
-  .about-text strong { color: var(--text-bright); }
-
-  .principles { }
-
-  .principle-item {
-    padding: 18px 0;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .principle-item:first-child { border-top: 1px solid var(--border); }
-
-  .principle-title {
-    font-family: var(--sans);
-    font-weight: 700;
-    font-size: 14px;
-    color: var(--text-bright);
-    margin-bottom: 4px;
-  }
-
-  .principle-desc { font-size: 12px; color: var(--text-dim); line-height: 1.6; }
-
-  /* CONTACT */
-  #contact { background: var(--bg); }
-
-  .contact-wrap {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 64px;
-    align-items: start;
-  }
-
-  @media (max-width: 700px) { .contact-wrap { grid-template-columns: 1fr; } }
-
-  .contact-statement {
-    font-family: var(--sans);
-    font-weight: 700;
-    font-size: clamp(22px, 3vw, 32px);
-    color: var(--text-bright);
-    line-height: 1.3;
-    margin-bottom: 20px;
-  }
-
-  .contact-statement span { color: var(--accent); }
-
-  .contact-note { font-size: 13px; color: var(--text-dim); line-height: 1.7; }
-
-  .contact-links { display: flex; flex-direction: column; gap: 12px; margin-top: 8px; }
-
-  .contact-link {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 16px 20px;
-    border: 1px solid var(--border);
-    background: var(--bg2);
-    text-decoration: none;
-    color: var(--text);
-    transition: background 0.2s, color 0.2s;
-    box-shadow: 0 0 0 0 transparent;
-  }
-
-  .contact-link.police {
-    animation: police-flash 1.2s steps(1) infinite;
-  }
-
-  .contact-link.police:nth-of-type(1) { animation-delay: 0s; }
-  .contact-link.police:nth-of-type(2) { animation-delay: 0.3s; }
-  .contact-link.police:nth-of-type(3) { animation-delay: 0.6s; }
-  .contact-link.police:nth-of-type(4) { animation-delay: 0.9s; }
-
-  @keyframes police-flash {
-    0%, 24% { border-color: var(--red); box-shadow: 0 0 12px -2px rgba(255,68,68,0.5); }
-    25%, 49% { border-color: var(--border); box-shadow: 0 0 0 0 transparent; }
-    50%, 74% { border-color: var(--accent); box-shadow: 0 0 12px -2px rgba(0,212,255,0.5); }
-    75%, 100% { border-color: var(--border); box-shadow: 0 0 0 0 transparent; }
-  }
-
-  .contact-link:hover {
-    border-color: var(--accent);
-    color: var(--text-bright);
-    background: var(--bg3);
-  }
-
-  .contact-link-icon {
-    width: 32px; height: 32px;
-    border: 1px solid var(--border2);
-    background: var(--bg3);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px;
-    flex-shrink: 0;
-  }
-
-  .contact-link-label { font-family: var(--code); font-size: 11px; color: var(--text-dim); }
-  .contact-link-value { font-size: 13px; color: var(--text-bright); }
-
-  /* FOOTER */
-  footer {
-    border-top: 1px solid var(--border);
-    padding: 24px 0 50px;
-    position: relative;
-    z-index: 2;
-  }
-
-  .footer-inner {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 0 32px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 11px;
-    color: var(--text-dim);
-    font-family: var(--code);
-  }
-
-  /* SCROLL REVEAL */
-  .reveal {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.6s ease, transform 0.6s ease;
-  }
-
-  .reveal.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  /* TERMINAL CURSOR */
-  .cursor {
-    display: inline-block;
-    width: 8px; height: 14px;
-    background: var(--accent);
-    animation: blink 1s infinite;
-    vertical-align: middle;
-    margin-left: 2px;
-  }
-
-  @keyframes blink {
-    0%, 49% { opacity: 1; }
-    50%, 100% { opacity: 0; }
-  }
-
-  /* ARCHITECTURE DIAGRAM */
-  .arch-diagram {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    padding: 24px;
-    margin-top: 24px;
-    overflow-x: auto;
-  }
-
-  .arch-diagram pre {
-    font-family: var(--code);
-    font-size: 12px;
-    color: var(--text-dim);
-    line-height: 1.6;
-    white-space: pre;
-  }
-
-  .arch-diagram pre .hl { color: var(--accent); }
-  .arch-diagram pre .hl2 { color: var(--amber); }
-  .arch-diagram pre .hl3 { color: var(--green); }
-
-  /* RESPONSIVE */
-  @media (max-width: 600px) {
-    .nav-links { display: none; }
-    .hero-stats { gap: 24px; flex-wrap: wrap; }
-    .container { padding: 0 20px; }
-    .nav-inner { padding: 0 20px; }
-  }
+:root{
+  --bg:#07090f;--bg2:#0d1017;--bg3:#131720;--bg4:#191e28;--bg5:#1f2535;--bg6:#262d3d;
+  --border:rgba(255,255,255,0.055);--border2:rgba(255,255,255,0.11);--border3:rgba(255,255,255,0.18);
+  --text:#dde1ed;--text2:#7d849a;--text3:#454d63;
+  --accent:#5b8dee;--adim:rgba(91,141,238,0.09);--ab:rgba(91,141,238,0.28);
+  --green:#2ec887;--gdim:rgba(46,200,135,0.09);--gb:rgba(46,200,135,0.28);
+  --amber:#e8a020;--ambdim:rgba(232,160,32,0.09);--ambb:rgba(232,160,32,0.28);
+  --red:#e05252;--rdim:rgba(224,82,82,0.09);--rb:rgba(224,82,82,0.28);
+  --purple:#9b7fe8;--pdim:rgba(155,127,232,0.09);--pb:rgba(155,127,232,0.28);
+  --pink:#d46fa0;
+  --r:6px;--rl:10px;--sw:248px;--hh:52px;
+  --font:'Inter',system-ui,sans-serif;--mono:'JetBrains Mono',monospace;
+  --ease:cubic-bezier(.4,0,.2,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button{font-family:var(--font);cursor:pointer;border:none;background:none;color:inherit}
+input,textarea,select{font-family:var(--font);color:var(--text);background:var(--bg4);border:1px solid var(--border2);border-radius:var(--r);padding:7px 10px;font-size:13px;outline:none;transition:border-color .15s;width:100%}
+input:focus,textarea:focus,select:focus{border-color:var(--accent)}
+textarea{resize:vertical;min-height:80px}
+
+/* PAGE TRANSITION */
+@keyframes pageIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+@keyframes barGrow{from{width:0!important}to{}}
+.page-enter{animation:pageIn .22s var(--ease) forwards}
+.fade-in{animation:fadeIn .18s var(--ease) forwards}
+.slide-in{animation:slideIn .18s var(--ease) forwards}
+
+#app{display:flex;height:100vh;overflow:hidden}
+
+/* SIDEBAR */
+#sb{width:var(--sw);flex-shrink:0;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.sb-logo{height:var(--hh);display:flex;align-items:center;gap:11px;padding:0 16px;border-bottom:1px solid var(--border);flex-shrink:0}
+.lm{width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,var(--accent),var(--purple));display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;font-family:var(--mono);letter-spacing:.05em;flex-shrink:0}
+.lt{font-size:13px;font-weight:600;letter-spacing:.02em;color:var(--text)}
+.ls{font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-top:1px}
+.sb-nav{flex:1;overflow-y:auto;padding:8px 0}
+.sb-nav::-webkit-scrollbar{width:2px}
+.sb-nav::-webkit-scrollbar-thumb{background:var(--bg6);border-radius:2px}
+.nsec{padding:16px 14px 4px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.09em;color:var(--text3)}
+.ni{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:var(--r);margin:1px 6px;cursor:pointer;transition:background .12s,color .12s;color:var(--text2);font-size:12px;font-weight:400;border:1px solid transparent;width:calc(100% - 12px);text-align:left}
+.ni:hover{background:var(--bg4);color:var(--text)}
+.ni.active{background:var(--adim);color:var(--accent);border-color:var(--ab);font-weight:500}
+.ni-ico{font-size:11px;width:16px;text-align:center;flex-shrink:0;font-family:var(--mono);font-weight:500;color:var(--text3)}
+.ni.active .ni-ico{color:var(--accent)}
+.ni-lbl{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nbadge{font-size:10px;font-weight:500;padding:1px 6px;border-radius:4px;background:var(--bg5);color:var(--text3);font-family:var(--mono);flex-shrink:0}
+.nbadge.done{background:var(--gdim);color:var(--green)}
+.nbadge.partial{background:var(--ambdim);color:var(--amber)}
+.sb-foot{padding:10px;border-top:1px solid var(--border);flex-shrink:0}
+.mini-prog{background:var(--bg3);border-radius:var(--r);padding:10px 12px;border:1px solid var(--border)}
+.mp-top{display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-bottom:6px}
+.mp-pct{color:var(--accent);font-weight:600;font-family:var(--mono)}
+.bw{height:3px;background:var(--bg6);border-radius:2px;overflow:hidden}
+.bf{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--accent),var(--purple));transition:width .45s var(--ease)}
+
+/* HEADER */
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+#hdr{height:var(--hh);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;flex-shrink:0;background:var(--bg2)}
+.ht{font-size:14px;font-weight:500;color:var(--text)}
+.hs{font-size:11px;color:var(--text3);margin-top:1px}
+.ha{display:flex;align-items:center;gap:6px}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:var(--r);font-size:12px;font-weight:500;border:1px solid var(--border2);background:var(--bg4);color:var(--text2);cursor:pointer;transition:all .12s}
+.btn:hover{background:var(--bg5);color:var(--text);border-color:var(--border3)}
+.btn-sm{padding:3px 8px;font-size:11px}
+.btn-accent{background:var(--accent);color:#fff;border-color:transparent}
+.btn-accent:hover{filter:brightness(1.1);color:#fff}
+.btn-green{background:var(--green);color:#07090f;border-color:transparent;font-weight:600}
+.btn-green:hover{filter:brightness(1.1);color:#07090f}
+.btn-red{background:var(--rdim);color:var(--red);border-color:var(--rb)}
+.btn-red:hover{background:var(--red);color:#fff}
+#content{flex:1;overflow-y:auto;padding:24px}
+#content::-webkit-scrollbar{width:4px}
+#content::-webkit-scrollbar-thumb{background:var(--bg6);border-radius:2px}
+
+/* LAYOUT COMPONENTS */
+.card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--rl);padding:20px 22px}
+.sec{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.sec::after{content:'';flex:1;height:1px;background:var(--border)}
+.grid4{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:24px}
+.stat{background:var(--bg3);border:1px solid var(--border);border-radius:var(--rl);padding:16px 18px;position:relative;overflow:hidden}
+.stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:2px 2px 0 0}
+.stat.ca::before{background:var(--accent)}
+.stat.cg::before{background:var(--green)}
+.stat.cp::before{background:var(--purple)}
+.stat.camb::before{background:var(--amber)}
+.stat-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}
+.stat-val{font-size:28px;font-weight:300;font-family:var(--mono);line-height:1;letter-spacing:-.02em}
+.stat-sub{font-size:11px;color:var(--text3);margin-top:4px}
+.ca .stat-val{color:var(--accent)}
+.cg .stat-val{color:var(--green)}
+.cp .stat-val{color:var(--purple)}
+.camb .stat-val{color:var(--amber)}
+
+/* BIG PROGRESS */
+.big-prog{background:var(--bg3);border:1px solid var(--border);border-radius:var(--rl);padding:20px 22px;margin-bottom:24px}
+.bp-top{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:12px}
+.bp-lbl{font-size:13px;font-weight:500;color:var(--text)}
+.bp-nums{font-size:11px;color:var(--text3);font-family:var(--mono)}
+.bb{height:6px;background:var(--bg6);border-radius:3px;overflow:hidden;margin-bottom:8px}
+.bbf{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent),var(--purple),var(--pink));transition:width .5s var(--ease)}
+.mss{display:flex}
+.ms{flex:1;text-align:center;font-size:9px;color:var(--text3);font-family:var(--mono)}
+.ms.hit{color:var(--green)}
+.ms-tick{width:1px;height:3px;background:var(--border2);margin:0 auto 2px}
+.ms-tick.hit{background:var(--green)}
+
+/* TRACK CARDS */
+.tgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:24px}
+.tc{background:var(--bg3);border:1px solid var(--border);border-radius:var(--rl);padding:16px 18px;cursor:pointer;transition:border-color .15s,background .15s;position:relative;overflow:hidden}
+.tc:hover{border-color:var(--border3);background:var(--bg4)}
+.tc-accent{position:absolute;top:0;left:0;right:0;height:2px;border-radius:2px 2px 0 0}
+.tc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.tc-badge{font-size:10px;font-weight:600;font-family:var(--mono);padding:2px 7px;border-radius:4px;letter-spacing:.02em}
+.tc-pct{font-size:20px;font-weight:300;font-family:var(--mono);letter-spacing:-.02em}
+.tc-name{font-size:12px;font-weight:500;color:var(--text);margin-bottom:2px}
+.tc-meta{font-size:10px;color:var(--text3)}
+.tc-bar{height:2px;background:var(--bg6);border-radius:1px;overflow:hidden;margin-top:12px;position:relative}
+.tc-bar::before{content:'';position:absolute;inset:0;background:var(--border2)}
+.tc-bar-f{height:100%;border-radius:1px;transition:width .5s var(--ease);position:relative;z-index:1;min-width:0}
+
+/* PHASES + LABS */
+.pw{margin-bottom:6px}
+.ph{display:flex;align-items:center;gap:9px;padding:9px 13px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);cursor:pointer;user-select:none;transition:background .12s}
+.ph:hover{background:var(--bg4)}
+.ph-dot{width:8px;height:8px;border-radius:50%;border:1.5px solid var(--border3);flex-shrink:0;transition:all .2s}
+.ph-dot.partial{border-color:var(--amber);background:var(--ambdim)}
+.ph-dot.done{border-color:var(--green);background:var(--green)}
+.ph-name{flex:1;font-size:12px;font-weight:500;color:var(--text)}
+.ph-cnt{font-size:10px;color:var(--text3);font-family:var(--mono)}
+.ph-chv{font-size:9px;color:var(--text3);transition:transform .2s;width:10px;text-align:center}
+.ph-chv.open{transform:rotate(90deg)}
+.ph-bar{height:2px;background:var(--bg6);margin:0 13px;border-radius:1px;overflow:hidden;display:none}
+.ph-bar.vis{display:block}
+.ph-barf{height:100%;border-radius:1px;background:var(--amber);transition:width .3s var(--ease)}
+.ph-barf.done{background:var(--green)}
+.labs{padding:0 13px 0 30px;display:none}
+.labs.open{display:block}
+.lab{display:flex;align-items:center;gap:9px;padding:6px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:opacity .1s}
+.lab:last-child{border-bottom:none}
+.lab:hover{opacity:.85}
+.chk{width:15px;height:15px;border-radius:3px;border:1.5px solid var(--border3);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .12s;background:transparent}
+.chk.on{background:var(--green);border-color:var(--green)}
+.chk.on::after{content:'✓';font-size:9px;color:#07090f;font-weight:700}
+.ln{font-size:12px;color:var(--text2);flex:1;transition:color .12s}
+.ln.done{color:var(--text3);text-decoration:line-through}
+
+/* ROLES — resume-grade */
+.roles-section{margin-bottom:24px}
+.rgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.rc{background:var(--bg3);border:1px solid var(--border);border-radius:var(--rl);padding:16px 18px;transition:all .25s;position:relative;overflow:hidden}
+.rc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;opacity:0;transition:opacity .3s}
+.rc.unlocked{border-color:var(--gb);background:rgba(46,200,135,.04)}
+.rc.unlocked::before{opacity:1;background:var(--green)}
+.rc.next{border-color:var(--ab);background:var(--adim)}
+.rc.next::before{opacity:1;background:var(--accent)}
+.rc.locked{opacity:.35}
+.rc-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px}
+.rc-abbr{font-size:10px;font-weight:700;font-family:var(--mono);padding:2px 7px;border-radius:4px;letter-spacing:.06em;background:var(--bg5);color:var(--text3)}
+.rc.unlocked .rc-abbr{background:var(--gdim);color:var(--green)}
+.rc.next .rc-abbr{background:var(--adim);color:var(--accent)}
+.rc-status{font-size:10px;font-weight:600}
+.rc-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
+.rc.unlocked .rc-name{color:var(--green)}
+.rc.next .rc-name{color:var(--accent)}
+.rc-desc{font-size:11px;color:var(--text2);line-height:1.55;margin-bottom:10px}
+.rc-reqs{display:flex;flex-direction:column;gap:5px}
+.req-row{display:flex;flex-direction:column;gap:3px}
+.req-meta{display:flex;justify-content:space-between;font-size:10px;color:var(--text3)}
+.req-meta.met{color:var(--green)}
+.req-meta.active{color:var(--accent)}
+.req-bar{height:2px;background:var(--bg6);border-radius:1px;overflow:hidden}
+.req-barf{height:100%;border-radius:1px;transition:width .5s var(--ease)}
+
+/* ADMIN */
+.agrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:22px}
+@media(max-width:680px){.agrid{grid-template-columns:1fr}}
+.ac{background:var(--bg3);border:1px solid var(--border);border-radius:var(--rl);padding:16px 18px}
+.ac-title{font-size:12px;font-weight:600;color:var(--text);margin-bottom:3px}
+.ac-sub{font-size:11px;color:var(--text3);margin-bottom:12px;line-height:1.5}
+.fl{margin-bottom:10px}
+.fl-lbl{font-size:11px;color:var(--text3);margin-bottom:4px;font-weight:500}
+.fl-lbl span{color:var(--red)}
+.editor-item{display:flex;align-items:center;gap:8px;padding:6px 8px;background:var(--bg4);border-radius:5px;font-size:11px;margin-bottom:4px}
+.editor-item .name{flex:1;color:var(--text2)}
+.editor-item .meta{font-family:var(--mono);color:var(--text3);font-size:10px}
+
+/* DOCTRINE */
+.doc-layout{display:flex;gap:0;height:calc(100vh - var(--hh) - 48px);overflow:hidden}
+.doc-map{width:220px;flex-shrink:0;border-right:1px solid var(--border);overflow-y:auto;padding:12px 8px;background:var(--bg2)}
+.doc-map::-webkit-scrollbar{width:2px}
+.doc-map::-webkit-scrollbar-thumb{background:var(--bg6);border-radius:2px}
+.doc-scroll{flex:1;overflow-y:auto;padding:28px 36px;background:var(--bg)}
+.doc-scroll::-webkit-scrollbar{width:4px}
+.doc-scroll::-webkit-scrollbar-thumb{background:var(--bg5);border-radius:2px}
+.map-node{display:flex;align-items:flex-start;gap:8px;padding:8px 10px;border-radius:var(--r);background:transparent;border:1px solid transparent;width:100%;text-align:left;cursor:pointer;transition:all .15s;margin-bottom:3px}
+.map-node:hover{background:var(--bg4);border-color:var(--border)}
+.map-node.active{border-color:currentColor}
+.map-node-num{font-size:10px;font-weight:700;font-family:var(--mono);width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--bg5);color:var(--text3);transition:all .15s}
+.map-node.active .map-node-num{color:#fff}
+.map-node-text{}
+.map-node-title{font-size:11px;font-weight:600;color:var(--text2);line-height:1.3;transition:color .15s}
+.map-node.active .map-node-title{color:var(--text)}
+.map-node-desc{font-size:10px;color:var(--text3);line-height:1.4;margin-top:2px}
+.doc-body{max-width:680px;color:var(--text2);font-size:13px;line-height:1.75}
+.doc-body h1{font-size:22px;font-weight:300;color:var(--text);margin-bottom:6px;letter-spacing:-.02em}
+.doc-body .doc-tagline{font-size:13px;color:var(--text3);margin-bottom:28px}
+.doc-body h2{font-size:15px;font-weight:500;color:var(--text);margin:36px 0 10px;padding-bottom:8px;border-bottom:1px solid var(--border2);scroll-margin-top:20px}
+.doc-body h3{font-size:13px;font-weight:600;color:var(--text);margin:20px 0 8px}
+.doc-body p{margin:8px 0;color:var(--text2)}
+.doc-body strong{color:var(--text);font-weight:500}
+.doc-body ul{list-style:none;padding:0 0 0 0;margin:8px 0}
+.doc-body li{padding:3px 0 3px 16px;position:relative;color:var(--text2);font-size:13px}
+.doc-body li::before{content:'';position:absolute;left:0;top:11px;width:5px;height:1px;background:var(--text3)}
+.doc-body table{width:100%;border-collapse:collapse;margin:12px 0;border-radius:var(--r);overflow:hidden;border:1px solid var(--border)}
+.doc-body th{padding:7px 12px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);border-bottom:1px solid var(--border2);text-align:left;background:var(--bg3)}
+.doc-body td{padding:7px 12px;font-size:12px;color:var(--text2);border-bottom:1px solid var(--border)}
+.doc-body tr:last-child td{border-bottom:none}
+.doc-body tr:hover td{background:var(--bg3);color:var(--text)}
+.doc-body code{font-family:var(--mono);font-size:11px;background:var(--bg4);border:1px solid var(--border2);padding:1px 5px;border-radius:3px;color:var(--accent)}
+.doc-body pre{font-family:var(--mono);font-size:11px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;overflow-x:auto;color:var(--text2);margin:10px 0;line-height:1.6}
+.doc-body hr{border:none;border-top:1px solid var(--border);margin:28px 0}
+.doc-body .callout{background:var(--adim);border:1px solid var(--ab);border-radius:var(--r);padding:10px 14px;margin:12px 0;font-size:12px;color:var(--text2)}
+
+/* DANGER */
+.danger-box{background:var(--rdim);border:1px solid var(--rb);border-radius:var(--r);padding:14px 16px;margin:12px 0}
+.danger-box p{font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:8px}
+.danger-stats{display:flex;gap:14px;font-size:11px;color:var(--text3);font-family:var(--mono)}
+.danger-stats b{color:var(--red)}
+.step-row{display:flex;align-items:center;gap:6px;margin-bottom:14px}
+.sdot{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--text3);flex-shrink:0;transition:all .2s}
+.sdot.active{border-color:var(--red);color:var(--red);background:var(--rdim)}
+.sdot.done{border-color:var(--green);background:var(--green);color:#07090f}
+.sline{flex:1;height:1px;background:var(--border)}
+.type-confirm{border-color:var(--rb)!important}
+.type-confirm:focus{border-color:var(--red)!important}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(7,9,15,.8);display:flex;align-items:center;justify-content:center;z-index:100;backdrop-filter:blur(4px);animation:fadeIn .15s var(--ease)}
+.modal{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--rl);padding:22px 24px;width:500px;max-width:calc(100vw - 32px);max-height:82vh;overflow-y:auto;animation:pageIn .18s var(--ease)}
+.modal-title{font-size:15px;font-weight:500;margin-bottom:3px;color:var(--text)}
+.modal-sub{font-size:11px;color:var(--text3);margin-bottom:16px}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px;padding-top:14px;border-top:1px solid var(--border)}
+
+/* TOAST */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--bg4);border:1px solid var(--border2);color:var(--text);padding:9px 16px;border-radius:var(--r);font-size:12px;box-shadow:0 12px 40px rgba(0,0,0,.6);opacity:0;transition:all .22s var(--ease);z-index:200;white-space:nowrap;pointer-events:none}
+#toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-thumb{background:var(--bg6);border-radius:2px}
 </style>
 </head>
 <body>
-
-<div class="noise"></div>
-
-<!-- NAV -->
-<nav>
-  <div class="nav-inner">
-    <a href="#hero" class="nav-logo">AD<span>.engineer</span></a>
-    <ul class="nav-links">
-      <li><a href="#projects">Projects</a></li>
-      <li><a href="#thinking">Thinking</a></li>
-      <li><a href="#stack">Stack</a></li>
-      <li><a href="#experience">Experience</a></li>
-      <li><a href="#about">About</a></li>
-      <li><a href="#contact">Contact</a></li>
-    </ul>
+<div id="app">
+  <nav id="sb">
+    <div class="sb-logo">
+      <div class="lm">PT</div>
+      <div><div class="lt">PRE-TITAN</div><div class="ls">Training Tracker</div></div>
+    </div>
+    <div class="sb-nav" id="sb-nav"></div>
+    <div class="sb-foot">
+      <div class="mini-prog">
+        <div class="mp-top"><span>Overall</span><span class="mp-pct" id="mini-pct">0%</span></div>
+        <div class="bw"><div class="bf" id="mini-bar" style="width:0%"></div></div>
+      </div>
+    </div>
+  </nav>
+  <div id="main">
+    <div id="hdr">
+      <div><div class="ht" id="hdr-t">Dashboard</div><div class="hs" id="hdr-s">PRE-TITAN</div></div>
+      <div class="ha" id="hdr-a"></div>
+    </div>
+    <div id="content"></div>
   </div>
-</nav>
-
-<!-- STATUS BAR -->
-<div class="status-bar">
-  <div class="status-item">
-    <div class="status-dot"></div>
-    <span class="status-accent">AVAILABLE</span> for senior roles
-  </div>
-  <div class="status-item">Lagos, Nigeria → Remote / Relocation</div>
-  <div class="status-item" style="margin-left:auto">CKA · CKAD · AWS · Terraform</div>
 </div>
-
-<!-- HERO -->
-<section id="hero">
-  <div class="hero-glow" data-parallax="0.15"></div>
-  <div class="hero-glow-2" data-parallax="0.3"></div>
-  <div class="hero-glow-3" data-parallax="0.45"></div>
-  <div class="scroll-down-arrow" id="scrollDownArrow">
-    <svg width="22" height="34" viewBox="0 0 22 34" fill="none">
-      <path d="M11 2 V28 M11 28 L3 20 M11 28 L19 20" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-  </div>
-  <div class="container">
-    <div class="hero-content">
-
-      <div class="hero-top">
-        <div>
-          <div class="hero-tag">DevOps · MLOps · Platform Engineering</div>
-          <h1 class="hero-name">
-            Amanyi<br>
-            <span class="line2">Daniel</span>
-          </h1>
-        </div>
-        <div class="hero-portrait-wrap attention" id="portraitWrap">
-          <img class="hero-portrait" id="heroPortrait" src="https://placehold.co/480x480/0c1118/5a7080?text=AD" alt="Amanyi Daniel">
-          <span class="frame-corner tl"></span>
-          <span class="frame-corner tr"></span>
-          <span class="frame-corner bl"></span>
-          <span class="frame-corner br"></span>
-          <div class="portrait-tag">ID: AD-001 · VERIFIED</div>
-        </div>
-      </div>
-
-      <div class="hero-terminal" id="heroTerminal">
-        <div class="terminal-bar">
-          <div class="terminal-dot"></div>
-          <div class="terminal-dot"></div>
-          <div class="terminal-dot"></div>
-          <span class="terminal-bar-label">session — whoami</span>
-        </div>
-        <div class="terminal-body">
-          <div class="term-prompt-line"><span class="term-accent">$</span> whoami — Senior Platform Engineer</div>
-          <div class="term-output" id="termOutput"><span class="term-cursor"></span></div>
-        </div>
-      </div>
-
-      <div class="hero-actions">
-        <a href="#projects" class="btn btn-primary">View Projects</a>
-        <a href="#contact" class="btn btn-ghost">Get in Touch</a>
-      </div>
-      <div class="hero-stats">
-        <div>
-          <div class="stat-num">4+</div>
-          <div class="stat-label">Years Production</div>
-        </div>
-        <div>
-          <div class="stat-num">7</div>
-          <div class="stat-label">Certifications</div>
-        </div>
-        <div>
-          <div class="stat-num">5</div>
-          <div class="stat-label">Projects Shipped</div>
-        </div>
-        <div>
-          <div class="stat-num">∞</div>
-          <div class="stat-label">Incidents Survived</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-<div id="heroSpacer"></div>
-
-<hr class="divider">
-
-<!-- PROJECTS -->
-<section id="projects">
-  <div class="section-glow" data-parallax="0.2" style="top:-100px; left:-150px; background:radial-gradient(circle, rgba(0,212,255,0.04) 0%, transparent 70%);"></div>
-  <div class="container">
-    <div class="section-header reveal">
-      <div class="section-tag">Engineering Work</div>
-      <h2 class="section-title">Project Case Studies</h2>
-      <p class="section-sub">Each project documented as an engineering breakdown — problem context, design decisions, trade-offs, and what I'd change.</p>
-    </div>
-
-    <!-- PROJECT 1: TITAN -->
-    <div class="project-card reveal" onclick="toggleProject(this)">
-      <div class="project-header">
-        <div class="project-meta">
-          <div class="project-id">PROJ-001 · INFRASTRUCTURE RESEARCH</div>
-          <div class="project-name">TITAN — Bare-Metal Kubernetes Testbed</div>
-          <div class="project-tagline">Fault tolerance semantics and controlled failure injection on a 3-node KVM/libvirt cluster</div>
-        </div>
-        <div class="project-badges">
-          <span class="badge badge-accent">In Progress</span>
-          <span class="badge">Kubernetes</span>
-          <span class="badge">Bare-Metal</span>
-        </div>
-        <div class="expand-icon">+</div>
-      </div>
-      <div class="project-body">
-        <div class="project-grid">
-          <div class="proj-section">
-            <div class="proj-section-label">Problem Context</div>
-            <p>Managed Kubernetes services (EKS, GKE) abstract too much. When production incidents happen, I need to understand what the control plane is actually doing — not just what the cloud vendor reports. TITAN exists to study cluster behavior under real failure conditions: node loss, network partition, etcd degradation, and resource exhaustion.</p>
-          </div>
-          <div class="proj-section">
-            <div class="proj-section-label">Architecture Thinking</div>
-            <p>Three KVM guests on a single physical host. One control plane node, two workers. Libvirt manages VM lifecycle; networking is intentionally constrained to simulate real inter-node latency. The point is not to replicate production — it's to create a controlled environment where I can inject failures and observe cascading behavior without paging anyone at 2am.</p>
-          </div>
-          <div class="proj-section">
-            <div class="proj-section-label">Stack</div>
-            <div class="stack-chips">
-              <span class="chip">KVM / libvirt</span>
-              <span class="chip">kubeadm</span>
-              <span class="chip">Cilium CNI</span>
-              <span class="chip">Prometheus</span>
-              <span class="chip">Grafana</span>
-              <span class="chip">Chaos Mesh</span>
-              <span class="chip">etcd</span>
-            </div>
-          </div>
-          <div class="proj-section">
-            <div class="proj-section-label">Constraints & Trade-offs</div>
-            <ul>
-              <li>Single-host colocation — failure domains overlap (intentional for this phase)</li>
-              <li>No cloud networking — must simulate latency and partition manually</li>
-              <li>Runbook-first discipline: every failure injection has a pre-defined runbook before execution</li>
-              <li>Phase (-1) is purely a fluency gate — no research claims until baseline competency is verified</li>
-            </ul>
-          </div>
-        </div>
-        <div class="failure-note">
-          <div class="fn-label">⚠ What I'd Do Differently</div>
-          Three nodes on one host gives you operational control but loses true failure domain isolation. The next evolution requires physical separation — either dedicated mini-PCs or rented bare-metal. I'm documenting this limitation explicitly so that any research output from TITAN carries the correct caveats.
-        </div>
-      </div>
-    </div>
-
-    <!-- PROJECT 2: TELEMETRY STREAMLINE -->
-    <div class="project-card reveal" onclick="toggleProject(this)">
-      <div class="project-header">
-        <div class="project-meta">
-          <div class="project-id">PROJ-002 · DATA PIPELINE</div>
-          <div class="project-name">Telemetry Streamline — Serverless Event Pipeline</div>
-          <div class="project-tagline">Real-time telemetry ingestion on AWS: Kinesis → Lambda → DynamoDB / S3 / OpenSearch</div>
-        </div>
-        <div class="project-badges">
-          <span class="badge badge-accent">Shipped</span>
-          <span class="badge">AWS</span>
-          <span class="badge">Serverless</span>
-        </div>
-        <div class="expand-icon">+</div>
-      </div>
-      <div class="project-body">
-        <div class="project-grid">
-          <div class="proj-section">
-            <div class="proj-section-label">Problem Context</div>
-            <p>The brief was to ingest high-velocity telemetry events, fan them out across three storage backends (hot, cold, and search), and do it without managing servers. The real constraint: the cost model had to stay predictable — no provisioned capacity bills appearing at end of month.</p>
-          </div>
-          <div class="proj-section">
-            <div class="proj-section-label">Architecture Decisions</div>
-            <p>Kinesis Data Streams as the ingest buffer gives replay capability and decouples producers from consumers. Lambda shards off the stream — one function per concern. DynamoDB for hot read access (single-digit ms latency SLA), S3 for cold archival, OpenSearch for full-text query. The fan-out happens inside Lambda, not via SNS — this reduces hop count and keeps the critical path tight.</p>
-          </div>
-          <div class="proj-section">
-            <div class="proj-section-label">Stack</div>
-            <div class="stack-chips">
-              <span class="chip">AWS Kinesis</span>
-              <span class="chip">Lambda (Python)</span>
-              <span class="chip">DynamoDB</span>
-              <span class="chip">S3</span>
-              <span class="chip">OpenSearch</span>
-              <span class="chip">IAM</span>
-              <span class="chip">CloudWatch</span>
-            </div>
-          </div>
-          <div class="proj-section">
-            <div class="proj-section-label">Challenges</div>
-            <ul>
-              <li>Lambda cold start latency on the OpenSearch write path needed a keep-warm strategy</li>
-              <li>DynamoDB write amplification from hot partition keys — resolved with composite key design</li>
-              <li>IAM scope creep: initial role was too permissive; hardened to resource-level least privilege</li>
-              <li>OpenSearch cluster sizing: started too small, index rotation policy required mid-flight</li>
-            </ul>
-          </div>
-        </div>
-        <div class="failure-note">
-          <div class="fn-label">⚠ Failure Log</div>
-          First deployment had no dead-letter queue. An upstream schema change caused Lambda to throw silently — events dropped with no alert. Lesson: every event pipeline needs a DLQ and an alarm on it before anything else ships. This is now a checklist item I apply to every async architecture.
-        </div>
-      </div>
-    </div>
-
-    <!-- PROJECT 3: PKI/mTLS -->
-    <div class="project-card reveal" onclick="toggleProject(this)">
-      <div class="project-header">
-        <div class="project-meta">
-          <div class="project-id">PROJ-003 · SECURITY ENGINEERING</div>
-          <div class="project-name">PKI / mTLS Service Mesh Engagement</div>
-          <div class="project-tagline">Zero-trust service identity for a client microservices environment using mutual TLS and internal CA</div>
-        </div>
-        <div class="project-badges">
-          <span class="badge badge-accent">Consulting</span>
-          <span class="badge">Security</span>
-          <span class="badge">Kubernetes</span>
-        </div>
-        <div class="expand-icon">+</div>
-      </div>
-      <div class="project-body">
-        <div class="project-grid">
-          <div class="proj-section">
-            <div class="proj-section-label">Problem Context</div>
-            <p>Client had 14 microservices communicating over plain HTTP inside a Kubernetes cluster. Compliance requirements mandated in-transit encryption with mutual authentication — not just TLS, but provable service identity. The team had no PKI experience and needed an operational solution, not a proof of concept.</p>
-          </div>
-          <div class="proj-section">
-            <div class="proj-section-label">Design Approach</div>
-            <p>Internal CA provisioned via cert-manager on the cluster. Certificates issued per-service using workload identity (SPIFFE). mTLS enforced at the sidecar proxy layer — no application code changes required. Certificate rotation automated with a 24-hour TTL; rotation failures trigger PagerDuty before expiry. Root CA stored offline; intermediate CA rotated annually.</p>
-          </div>
-          <div class="proj-section">
-            <div class="proj-section-label">Stack</div>
-            <div class="stack-chips">
-              <span class="chip">cert-manager</span>
-              <span class="chip">Istio</span>
-              <span class="chip">SPIFFE/SPIRE</span>
-              <span class="chip">Vault PKI</span>
-              <span class="chip">Kubernetes</span>
-              <span class="chip">OpenSSL</span>
-            </div>
-          </div>
-          <div class="proj-section">
-            <div class="proj-section-label">Trade-offs Made</div>
-            <ul>
-              <li>Sidecar proxy adds ~15ms p99 latency per hop — acceptable given compliance requirement</li>
-              <li>Vault PKI backend chosen over self-managed CA for audit trail and secrets governance</li>
-              <li>Short-lived certs (24h) increase rotation ops burden — mitigated by full automation</li>
-              <li>SPIFFE over manual CN — harder to implement, but eliminates human error in cert naming</li>
-            </ul>
-          </div>
-        </div>
-        <div class="failure-note">
-          <div class="fn-label">⚠ What Almost Went Wrong</div>
-          During rollout, a misconfigured NetworkPolicy blocked the cert-manager webhook from reaching the API server. Services that failed cert renewal silently degraded instead of erroring loudly. Root cause: no integration test for cert issuance path in staging. Added a synthetic cert-request probe to the monitoring stack immediately after.
-        </div>
-      </div>
-    </div>
-
-    <!-- PROJECT 4: SRIM -->
-    <div class="project-card reveal" onclick="toggleProject(this)">
-      <div class="project-header">
-        <div class="project-meta">
-          <div class="project-id">PROJ-004 · PRACTITIONER WRITING</div>
-          <div class="project-name">SRIM — Systems Resilience Infrastructure Manual</div>
-          <div class="project-tagline">21-chapter practitioner manuscript on infrastructure resilience engineering</div>
-        </div>
-        <div class="project-badges">
-          <span class="badge badge-amber">Writing</span>
-          <span class="badge">Resilience</span>
-          <span class="badge">Architecture</span>
-        </div>
-        <div class="expand-icon">+</div>
-      </div>
-      <div class="project-body">
-        <div class="project-grid">
-          <div class="proj-section">
-            <div class="proj-section-label">What It Is</div>
-            <p>A 21-chapter practitioner-focused manual covering infrastructure resilience from first principles. Five main parts plus a philosophy chapter and bridge chapter — written from operational experience, not theory. Covers failure modes, recovery design, observability, runbook discipline, and the human factors in incident response.</p>
-          </div>
-          <div class="proj-section">
-            <div class="proj-section-label">Why I Wrote It</div>
-            <p>Most resilience content is either too abstract (academic papers) or too narrow (vendor documentation). SRIM is the resource I wished existed when I started dealing with production incidents — opinionated, practitioner-grade, and grounded in systems that actually failed. Writing it forced me to articulate assumptions I'd been operating on implicitly for years.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- PROJECT 5: SMART INVOICE AI PIPELINE -->
-    <div class="project-card reveal" onclick="toggleProject(this)">
-      <div class="project-header">
-        <div class="project-meta">
-          <div class="project-id">PROJ-005 · AI/ML INFRASTRUCTURE</div>
-          <div class="project-name">Smart Invoice AI Pipeline</div>
-          <div class="project-tagline">Cloud-native ML document processing: S3 → Textract → Bedrock → DynamoDB, fully Terraform-managed</div>
-        </div>
-        <div class="project-badges">
-          <span class="badge badge-accent">Shipped</span>
-          <span class="badge">AWS</span>
-          <span class="badge badge-amber">AI/ML</span>
-        </div>
-        <div class="expand-icon">+</div>
-      </div>
-      <div class="project-body">
-        <div class="project-grid">
-          <div class="proj-section">
-            <div class="proj-section-label">Problem Context</div>
-            <p>Invoice processing is a high-volume, error-prone manual operation in most finance workflows. The goal was to build a production-ready serverless pipeline that handles raw document uploads, extracts structured fields using real AI services, and persists results — all with pay-per-use cost characteristics and zero server management.</p>
-          </div>
-          <div class="proj-section">
-            <div class="proj-section-label">Architecture Design</div>
-            <p>Two Lambda functions — one for upload handling (API Gateway → S3), one for inference — decoupled via S3 event trigger. Textract handles OCR and form extraction; Bedrock (Claude 3 Haiku) runs intelligent field normalization for vendor names, amounts, and dates that rule-based extraction misses. Results land in DynamoDB for downstream consumption. All infra is modular Terraform — six discrete modules covering compute, storage, IAM, API Gateway, and both Lambda functions.</p>
-          </div>
-          <div class="proj-section">
-            <div class="proj-section-label">Stack</div>
-            <div class="stack-chips">
-              <span class="chip">AWS Lambda (Python)</span>
-              <span class="chip">AWS Textract</span>
-              <span class="chip">Amazon Bedrock</span>
-              <span class="chip">Claude 3 Haiku</span>
-              <span class="chip">S3</span>
-              <span class="chip">DynamoDB</span>
-              <span class="chip">API Gateway</span>
-              <span class="chip">Terraform</span>
-              <span class="chip">IAM</span>
-            </div>
-          </div>
-          <div class="proj-section">
-            <div class="proj-section-label">Trade-offs & Design Decisions</div>
-            <ul>
-              <li>Hybrid extraction strategy — rule-based for common patterns, AI for edge cases — keeps Bedrock costs to ~$0.0005/invoice</li>
-              <li>S3 event trigger over SNS: fewer hops, tighter coupling acceptable here since upload and inference are always paired</li>
-              <li>DynamoDB as output store: optimized for downstream single-key reads, not analytics — a warehouse would be added for reporting use</li>
-              <li>Modular Terraform over a monolith: each AWS resource category is independently versioned and reusable across projects</li>
-              <li>Total per-invoice cost: ~$0.002 — Textract dominates at $0.0015/page</li>
-            </ul>
-          </div>
-        </div>
-        <div class="failure-note">
-          <div class="fn-label">⚠ What I'd Do Differently</div>
-          No dead-letter queue on the inference Lambda in v1 — a Bedrock throttle or Textract failure would silently drop the event. Also, confidence scoring from Textract isn't surfaced in the final output schema yet; adding a <code style="font-family:var(--code);font-size:11px;color:var(--accent)">confidence_breakdown</code> field per extracted field would make result quality auditable downstream. Both are documented as v2 items.
-        </div>
-        <div style="margin-top:14px">
-          <a href="https://github.com/DanielAmanyi/smart-invoice-infra" target="_blank" class="btn btn-ghost" style="font-size:11px;padding:8px 16px;display:inline-flex">
-            ↗ View on GitHub
-          </a>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</section>
-<section id="thinking">
-  <div class="section-glow" data-parallax="0.25" style="top:20%; right:-200px; background:radial-gradient(circle, rgba(245,166,35,0.035) 0%, transparent 70%);"></div>
-  <div class="container">
-    <div class="section-header reveal">
-      <div class="section-tag">Engineering Philosophy</div>
-      <h2 class="section-title">How I Think About Systems</h2>
-      <p class="section-sub">Opinionated takes from real operational experience. Not definitions — how I actually approach problems.</p>
-    </div>
-
-    <div class="insights-grid">
-      <div class="insight-card reveal">
-        <div class="insight-num">01</div>
-        <div class="insight-topic">Observability is a design decision, not a retrofit</div>
-        <div class="insight-body">If you're adding metrics after an incident, you've already lost. Observability needs to be specified at design time — what questions will operators ask at 3am? Those questions determine your instrumentation. Logs that don't answer operational questions are just storage costs.</div>
-        <div class="insight-tag">Observability</div>
-      </div>
-
-      <div class="insight-card reveal">
-        <div class="insight-num">02</div>
-        <div class="insight-topic">Runbooks that aren't tested aren't runbooks</div>
-        <div class="insight-body">A runbook written during a postmortem and never executed again is documentation theater. Every runbook in my environments has an associated drill schedule. If the steps are wrong when it's calm, they're catastrophically wrong when it's not. This is the TITAN doctrine applied operationally.</div>
-        <div class="insight-tag">Operations</div>
-      </div>
-
-      <div class="insight-card reveal">
-        <div class="insight-num">03</div>
-        <div class="insight-topic">Toil is a capacity problem disguised as a process problem</div>
-        <div class="insight-body">Teams that do a lot of manual operational work usually frame it as "we just need better runbooks." The real problem is that every hour spent on toil is an hour not spent on reliability improvements. Automation isn't about laziness — it's about preserving engineering capacity for work that actually requires thinking.</div>
-        <div class="insight-tag">Platform Engineering</div>
-      </div>
-
-      <div class="insight-card reveal">
-        <div class="insight-num">04</div>
-        <div class="insight-topic">Blast radius matters more than failure probability</div>
-        <div class="insight-body">I care less about how likely a failure is than about how much damage it causes. A 0.01% probability event that takes down your entire data plane is more dangerous than a 10% probability event affecting one service. Architecture decisions should be driven by consequence, not likelihood.</div>
-        <div class="insight-tag">Reliability</div>
-      </div>
-
-      <div class="insight-card reveal">
-        <div class="insight-num">05</div>
-        <div class="insight-topic">CI/CD pipelines are the first indicator of team health</div>
-        <div class="insight-body">Show me a team's deployment pipeline and I can tell you how they work. Flaky tests that "everyone knows to ignore," multi-hour build times, no staging parity — these aren't CI/CD problems. They're signals about code ownership, test discipline, and whether engineering leadership is measuring the right things.</div>
-        <div class="insight-tag">CI/CD</div>
-      </div>
-
-      <div class="insight-card reveal">
-        <div class="insight-num">06</div>
-        <div class="insight-topic">Kubernetes is not a deployment target — it's an operating model</div>
-        <div class="insight-body">Organizations that treat Kubernetes as "just a better way to deploy containers" consistently struggle with it. The operational model — declarative state, controller reconciliation, pod lifecycle — requires a different mental model than traditional server-based thinking. You're not managing machines anymore; you're managing desired state.</div>
-        <div class="insight-tag">Infrastructure</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<hr class="divider">
-
-<!-- STACK -->
-<section id="stack">
-  <div class="section-glow" data-parallax="0.2" style="bottom:-150px; left:30%; background:radial-gradient(circle, rgba(0,212,255,0.035) 0%, transparent 70%);"></div>
-  <div class="container">
-    <div class="section-header reveal">
-      <div class="section-tag">Technology</div>
-      <h2 class="section-title">Technical Stack</h2>
-      <p class="section-sub">Grouped by function. Everything listed has been used in production systems.</p>
-    </div>
-
-    <div class="stack-grid">
-      <div class="stack-group reveal">
-        <div class="stack-group-title">☁ Cloud Platforms</div>
-        <div class="stack-items">
-          <span class="stack-item core">AWS</span>
-          <span class="stack-item">GCP</span>
-          <span class="stack-item">Azure</span>
-        </div>
-      </div>
-
-      <div class="stack-group reveal">
-        <div class="stack-group-title">⎈ Container Orchestration</div>
-        <div class="stack-items">
-          <span class="stack-item core">Kubernetes (EKS)</span>
-          <span class="stack-item core">Rancher</span>
-          <span class="stack-item">Bare-Metal K8s</span>
-          <span class="stack-item">Helm</span>
-          <span class="stack-item">ArgoCD</span>
-          <span class="stack-item">Docker</span>
-        </div>
-      </div>
-
-      <div class="stack-group reveal">
-        <div class="stack-group-title">⚙ Infrastructure as Code</div>
-        <div class="stack-items">
-          <span class="stack-item core">Terraform</span>
-          <span class="stack-item">Ansible</span>
-          <span class="stack-item">CloudFormation</span>
-          <span class="stack-item">Pulumi</span>
-        </div>
-      </div>
-
-      <div class="stack-group reveal">
-        <div class="stack-group-title">📡 Observability</div>
-        <div class="stack-items">
-          <span class="stack-item core">Prometheus</span>
-          <span class="stack-item core">Grafana</span>
-          <span class="stack-item">OpenTelemetry</span>
-          <span class="stack-item">Loki</span>
-          <span class="stack-item">CloudWatch</span>
-          <span class="stack-item">PagerDuty</span>
-        </div>
-      </div>
-
-      <div class="stack-group reveal">
-        <div class="stack-group-title">🔄 CI/CD</div>
-        <div class="stack-items">
-          <span class="stack-item core">Jenkins</span>
-          <span class="stack-item">GitHub Actions</span>
-          <span class="stack-item">GitLab CI</span>
-          <span class="stack-item">ArgoCD</span>
-          <span class="stack-item">Tekton</span>
-        </div>
-      </div>
-
-      <div class="stack-group reveal">
-        <div class="stack-group-title">🔐 Security & Networking</div>
-        <div class="stack-items">
-          <span class="stack-item core">cert-manager</span>
-          <span class="stack-item core">Vault</span>
-          <span class="stack-item">Istio</span>
-          <span class="stack-item">Cilium</span>
-          <span class="stack-item">SPIFFE</span>
-          <span class="stack-item">OPA</span>
-        </div>
-      </div>
-
-      <div class="stack-group reveal">
-        <div class="stack-group-title">🤖 AI / ML Platform (Emerging)</div>
-        <div class="stack-items">
-          <span class="stack-item">vLLM</span>
-          <span class="stack-item">Triton</span>
-          <span class="stack-item">Kubeflow</span>
-          <span class="stack-item">MLflow</span>
-          <span class="stack-item">Ray</span>
-        </div>
-      </div>
-
-      <div class="stack-group reveal">
-        <div class="stack-group-title">💻 Languages & Scripting</div>
-        <div class="stack-items">
-          <span class="stack-item core">Python</span>
-          <span class="stack-item core">Bash</span>
-          <span class="stack-item">Go</span>
-          <span class="stack-item">YAML</span>
-          <span class="stack-item">HCL</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<hr class="divider">
-
-<!-- CERTIFICATIONS -->
-<section id="certs">
-  <div class="container">
-    <div class="section-header reveal">
-      <div class="section-tag">Credentials</div>
-      <h2 class="section-title">Certifications</h2>
-    </div>
-    <div class="certs-list">
-      <div class="cert-item cert-fly">
-        <div class="cert-icon">CKA</div>
-        <div>
-          <div class="cert-name">Certified Kubernetes Administrator</div>
-          <div class="cert-issuer">CNCF / Linux Foundation</div>
-        </div>
-      </div>
-      <div class="cert-item cert-fly">
-        <div class="cert-icon">CKAD</div>
-        <div>
-          <div class="cert-name">Certified Kubernetes App Developer</div>
-          <div class="cert-issuer">CNCF / Linux Foundation</div>
-        </div>
-      </div>
-      <div class="cert-item cert-fly">
-        <div class="cert-icon">SAA</div>
-        <div>
-          <div class="cert-name">AWS Solutions Architect Associate</div>
-          <div class="cert-issuer">Amazon Web Services</div>
-        </div>
-      </div>
-      <div class="cert-item cert-fly">
-        <div class="cert-icon">DVA</div>
-        <div>
-          <div class="cert-name">AWS Developer Associate</div>
-          <div class="cert-issuer">Amazon Web Services</div>
-        </div>
-      </div>
-      <div class="cert-item cert-fly">
-        <div class="cert-icon">SOA</div>
-        <div>
-          <div class="cert-name">AWS SysOps Administrator Associate</div>
-          <div class="cert-issuer">Amazon Web Services</div>
-        </div>
-      </div>
-      <div class="cert-item cert-fly">
-        <div class="cert-icon">TF</div>
-        <div>
-          <div class="cert-name">HashiCorp Terraform Associate</div>
-          <div class="cert-issuer">HashiCorp</div>
-        </div>
-      </div>
-      <div class="cert-item cert-fly">
-        <div class="cert-icon">N+</div>
-        <div>
-          <div class="cert-name">CompTIA Network+</div>
-          <div class="cert-issuer">CompTIA</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<hr class="divider">
-
-<!-- EXPERIENCE -->
-<section id="experience">
-  <div class="container">
-    <div class="section-header reveal">
-      <div class="section-tag">Work History</div>
-      <h2 class="section-title" id="experienceTitle">Experience</h2>
-    </div>
-
-    <div class="timeline">
-      <div class="timeline-item reveal">
-        <div class="timeline-period">Jan 2026 – Present</div>
-        <div class="timeline-role">DevOps / Platform Engineer — Consultant</div>
-        <div class="timeline-company">Networksx (Australia)</div>
-        <ul class="timeline-points">
-          <li>Designed mTLS-based identity architecture for distributed AI agent communication — evaluated CRL vs OCSP trade-offs under failure and latency conditions</li>
-          <li>Built certificate lifecycle and key rotation strategies for large-scale deployments; identified trust-chain and control-plane failure risks</li>
-          <li>Advised on resilience patterns and blast radius containment strategies across distributed systems</li>
-        </ul>
-      </div>
-
-      <div class="timeline-item reveal">
-        <div class="timeline-period">May 2024 – May 2025</div>
-        <div class="timeline-role">DevOps Engineer</div>
-        <div class="timeline-company">Capshall</div>
-        <ul class="timeline-points">
-          <li>Designed and operated AWS infrastructure with Terraform across multiple environments — resolved state drift, enforced IaC consistency</li>
-          <li>Built CI/CD pipelines (Jenkins, CodePipeline) improving deployment reliability and eliminating manual intervention</li>
-          <li>Managed Kubernetes workloads on EKS: scheduling issues, resource contention, networking misconfigurations</li>
-          <li>Deployed observability stack (Prometheus, Grafana, ELK) for real-time monitoring and incident debugging</li>
-          <li>Hardened IAM boundaries and improved reliability across production workloads</li>
-        </ul>
-      </div>
-
-      <div class="timeline-item reveal">
-        <div class="timeline-period">Oct 2022 – Apr 2024</div>
-        <div class="timeline-role">Cloud Engineer</div>
-        <div class="timeline-company">Cloudboosta</div>
-        <ul class="timeline-points">
-          <li>Provisioned multi-AZ AWS infrastructure with Terraform and CloudFormation, reducing manual provisioning overhead</li>
-          <li>Supported serverless and microservices systems across Lambda, API Gateway, and ECS</li>
-          <li>Designed secure VPC architectures, IAM policies, and network isolation strategies</li>
-          <li>Optimized cloud cost and performance through right-sizing and resource planning</li>
-        </ul>
-      </div>
-
-      <div class="timeline-item reveal">
-        <div class="timeline-period">Jun 2020 – Oct 2022</div>
-        <div class="timeline-role">Systems Engineer</div>
-        <div class="timeline-company">Urban Cloudworks</div>
-        <ul class="timeline-points">
-          <li>Managed Linux-based infrastructure and web hosting environments (Nginx, Apache)</li>
-          <li>Automated operational workflows using Bash and Python</li>
-          <li>Maintained system uptime and resolved production issues across client environments</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</section>
-
-<hr class="divider">
-
-<!-- ABOUT -->
-<section id="about">
-  <div class="container">
-    <div class="section-header reveal">
-      <div class="section-tag">Identity</div>
-      <h2 class="section-title">About</h2>
-    </div>
-
-    <div class="about-grid">
-      <div class="about-text reveal">
-        <p>
-          I'm a DevOps and Platform Engineer based in Lagos, Nigeria, with 4+ years of production experience across AWS, Kubernetes, and distributed infrastructure. My work sits at the intersection of <strong>systems reliability, platform automation, and operational engineering</strong>.
-        </p>
-        <p>
-          I'm not a tool operator — I'm an engineer who understands why systems fail and how to build them so that when they do, the damage is contained and the recovery is fast. I've designed mTLS identity architectures, built serverless AI pipelines, operated EKS and bare-metal Kubernetes, and written the runbooks that others follow.
-        </p>
-        <p>
-          Currently building toward <strong>AI Platform Engineering</strong> — specifically the infrastructure layer for inference systems: GPU-aware scheduling, serving stacks (vLLM, Triton), and AI-specific observability. Also actively building TITAN, a bare-metal Kubernetes research testbed focused on distributed system behavior and fault tolerance semantics.
-        </p>
-        <p>
-          BSc Computer Science, Crawford University Nigeria (CGPA 4.3/5.0). Open to senior roles with relocation to Europe or Canada.
-        </p>
-      </div>
-
-      <div class="principles reveal">
-        <div class="principle-item">
-          <div class="principle-title">Ownership over process</div>
-          <div class="principle-desc">I take end-to-end responsibility for systems I build. If something I deployed caused an incident, I'm the first call — not the last.</div>
-        </div>
-        <div class="principle-item">
-          <div class="principle-title">Depth over breadth</div>
-          <div class="principle-desc">I'd rather understand five tools deeply than have surface familiarity with twenty. Real operational judgment comes from seeing the failure modes, not the happy path.</div>
-        </div>
-        <div class="principle-item">
-          <div class="principle-title">Production is the only ground truth</div>
-          <div class="principle-desc">Staging environments lie. The real behavior of a distributed system only emerges under real load, real failures, and real operators making real decisions under pressure.</div>
-        </div>
-        <div class="principle-item">
-          <div class="principle-title">Documentation is engineering output</div>
-          <div class="principle-desc">Runbooks, architecture decisions, postmortems — these are as much a part of the system as the code. A system that only one person understands is a liability.</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<hr class="divider">
-
-<!-- CONTACT -->
-<section id="contact">
-  <div class="container">
-    <div class="contact-wrap">
-      <div class="reveal">
-        <div class="section-tag" style="margin-bottom:16px">Contact</div>
-        <div class="contact-statement">
-          If you're building serious infrastructure,<br>
-          let's <span>talk</span>.
-        </div>
-        <p class="contact-note">
-          Available for senior DevOps, Platform Engineering, and MLOps roles. Open to remote positions and relocation to Europe or Canada. Response time: usually within 24 hours.
-        </p>
-      </div>
-
-      <div class="contact-links reveal">
-        <a href="mailto:amanyidaniel.io@gmail.com" class="contact-link police">
-          <div class="contact-link-icon">✉</div>
-          <div>
-            <div class="contact-link-label">Email</div>
-            <div class="contact-link-value">amanyidaniel.io@gmail.com</div>
-          </div>
-        </a>
-        <a href="https://github.com/DanielAmanyi" target="_blank" class="contact-link police">
-          <div class="contact-link-icon">⌥</div>
-          <div>
-            <div class="contact-link-label">GitHub</div>
-            <div class="contact-link-value">github.com/DanielAmanyi</div>
-          </div>
-        </a>
-        <a href="https://www.linkedin.com/in/daniel-amanyi-87169472/" target="_blank" class="contact-link police">
-          <div class="contact-link-icon">in</div>
-          <div>
-            <div class="contact-link-label">LinkedIn</div>
-            <div class="contact-link-value">linkedin.com/in/daniel-amanyi-87169472</div>
-          </div>
-        </a>
-        <a href="https://drive.google.com/file/d/117H8aZBLxY6oqdsjl64aFsa2QfM53GJi/view?usp=sharing" target="_blank" class="contact-link police">
-          <div class="contact-link-icon">↓</div>
-          <div>
-            <div class="contact-link-label">Resume</div>
-            <div class="contact-link-value">Download CV (PDF)</div>
-          </div>
-        </a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- FOOTER -->
-<footer>
-  <div class="footer-inner">
-    <span>Amanyi Daniel — Platform Engineer · amanyidaniel.io@gmail.com</span>
-    <span>Lagos, Nigeria · <span style="color:var(--accent)">Open to Relocation</span></span>
-  </div>
-</footer>
-
+<div id="toast"></div>
 <script>
-  // Parallax engine — elements drift at a fraction of scroll speed via data-parallax
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const parallaxEls = prefersReducedMotion ? [] : Array.from(document.querySelectorAll('[data-parallax]')).map(el => ({
-    el,
-    speed: parseFloat(el.getAttribute('data-parallax'))
-  }));
+const DT=[
+  {id:'cicd',title:'CI/CD Learning Roadmap',icon:'CI',color:'#4f8ef7',phases:[
+    {name:'Phase 1 — CI Foundation',items:['Lab 1 — Basic CI','Lab 1B — Lint + Matrix','Lab 1C — Workflow Mechanics']},
+    {name:'Phase 2 — Language & Build Systems',items:['Lab 2 — Python CI','Lab 3 — Docker CI','Lab 3.5 — Registry Push']},
+    {name:'Phase 3 — Infrastructure CI',items:['Lab 4 — Terraform','Lab 5 — Kubernetes','Lab 6 — Helm']},
+    {name:'Phase 4 — Security & Quality',items:['Lab 7 — Security CI','Lab 7A — Security Governance','Lab 7B — Complete DevSecOps Pipeline','Lab 7C — Container Hardening','Lab 8 — Quality Gates']},
+    {name:'Phase 5 — Real Pipeline Design',items:['Lab 9 — Build Once','Lab 10 — Artifact Promotion','Lab 10A — Secretless Authentication','Lab 11 — Deployment Governance','Lab 11A — Pipeline Observability']},
+    {name:'Phase 6 — Capstone',items:['Lab 12 — Production Delivery Pipeline']},
+  ]},
+  {id:'gitops',title:'GitOps Learning Roadmap',icon:'GO',color:'#34c78a',phases:[
+    {name:'Phase 1 — Declarative Operations',items:['Lab 1 — Declarative Thinking','Lab 2 — Desired State Engineering']},
+    {name:'Phase 2 — Git as Source of Truth',items:['Lab 3 — Git-Controlled Infrastructure','Lab 4 — Repository Strategy']},
+    {name:'Phase 3 — Continuous Reconciliation',items:['Lab 5 — Drift & Reconciliation','Lab 6 — Self-Healing Systems']},
+    {name:'Phase 4 — Safe Platform Operations',items:['Lab 7 — Promotion & Rollback','Lab 8 — Operational Governance']},
+    {name:'Phase 5 — Production GitOps',items:['Lab 9 — Multi-Environment Operations','Lab 10 — Operational Safety']},
+    {name:'Phase 6 — Capstone',items:['Lab 11 — Production GitOps Workflow','Lab 12 — Complete Declarative Platform']},
+  ]},
+  {id:'friction',title:'Phase -2 · Friction Elimination',icon:'F2',color:'#f59e0b',phases:[
+    {name:'Week 1 — Kubeadm Muscle Memory',items:['Goal','Tasks','Drills','Pass Criteria']},
+    {name:'Week 2 — CI/CD Pipeline Confidence',items:['Goal','Tasks','Drills','Pass Criteria']},
+    {name:'Week 3 — Observability Familiarity',items:['Goal','Tasks','Drills','Pass Criteria']},
+    {name:'Week 4 — Failure Thinking',items:['Goal','Tasks','Drills','Mental Simulations','Pass Criteria','Exit Condition']},
+  ]},
+  {id:'platform',title:'Phase -1 · Platform Normalization',icon:'F1',color:'#a78bfa',phases:[
+    {name:'Week 1 — Mechanical Fluency',items:['Goal','Tasks','Drills','Artifact Output']},
+    {name:'Week 2 — Control Plane Internals',items:['Goal','Tasks','Drills','Artifact Output']},
+    {name:'Week 3 — Worker Node Pressure',items:['Goal','Tasks','Drills','Artifact Output']},
+    {name:'Week 4 — Observability Mastery',items:['Goal','Tasks','Drills','Artifact Output']},
+    {name:'Week 5 — CI/CD & Deployment Failure',items:['Goal','Tasks','Drills','Artifact Output']},
+    {name:'Week 6 — Chaos Week',items:['Goal','Scenarios','Artifact Output']},
+    {name:'Supporting Components',items:['Incident Report Template','Exit Gate','Runbook Library','Platform History']},
+  ]},
+  {id:'mlops',title:'MLOps Primer',icon:'ML',color:'#f472b6',phases:[
+    {name:'Core Concepts',items:['Data Versioning (DVC)','Experiment Tracking (MLflow)','Model Registry & Promotion','Lineage & Reproducibility','Batch Inference','Online Inference','Drift Detection & Monitoring']},
+    {name:'Feature Engineering',items:['Feature Engineering Fundamentals','Feature Stores','Training-Serving Consistency']},
+    {name:'Success Criteria Review',items:['Training vs Inference','Dataset Versioning','DVC','MLflow','Model Registry','Champion vs Challenger','Lineage & Reproducibility','Batch vs Online Inference','Data Drift','Concept Drift','Model Monitoring','Feature Stores','Training-Serving Skew','End-to-End MLOps Lifecycle']},
+    {name:'Parallel Tracks',items:['Application Lifecycle Mastery','Systems Reliability & Incident Management','Designing Data-Intensive Applications','Site Reliability Engineering','System Design Interview','Distributed Systems']},
+    {name:'Programs',items:['Fire Drills','Interview Season','Portfolio Development','Public Visibility']},
+  ]},
+];
 
-  let ticking = false;
-  function updateParallax() {
-    const scrollY = window.scrollY;
-    parallaxEls.forEach(({ el, speed }) => {
-      el.style.transform = `translateY(${scrollY * speed * -1}px)`;
+
+
+const DR=[
+  {id:'r1',name:'DevOps Engineer',abbr:'DevOps',
+   desc:'Designs and maintains CI/CD pipelines, automates build, test, and deployment workflows across cloud infrastructure.',
+   reqs:[{tid:'cicd',pct:25,lbl:'CI/CD foundations'}]},
+  {id:'r2',name:'CI/CD Platform Engineer',abbr:'CI/CD',
+   desc:'Architects multi-stage pipelines with security scanning, registry management, quality gates, and deployment governance.',
+   reqs:[{tid:'cicd',pct:75,lbl:'CI/CD — advanced'}]},
+  {id:'r3',name:'GitOps Engineer',abbr:'GitOps',
+   desc:'Operates Git-driven infrastructure with declarative state management, drift detection, and automated reconciliation via ArgoCD.',
+   reqs:[{tid:'gitops',pct:50,lbl:'GitOps — core'}]},
+  {id:'r4',name:'Platform Engineer',abbr:'Platform',
+   desc:'Designs and operates Kubernetes-based delivery platforms, owns infrastructure-as-code, and enables engineering teams at scale.',
+   reqs:[{tid:'cicd',pct:75,lbl:'CI/CD advanced'},{tid:'friction',pct:50,lbl:'Kubernetes operations'}]},
+  {id:'r5',name:'Site Reliability Engineer',abbr:'SRE',
+   desc:'Owns system reliability through SLOs, incident response, chaos engineering, and Prometheus/Grafana observability stacks.',
+   reqs:[{tid:'friction',pct:100,lbl:'Operational fluency'},{tid:'platform',pct:50,lbl:'Platform normalization'}]},
+  {id:'r6',name:'DevSecOps Engineer',abbr:'SecOps',
+   desc:'Embeds security into CI/CD and GitOps pipelines via supply-chain hardening, SBOM generation, Trivy/Checkov scanning, and RBAC governance.',
+   reqs:[{tid:'cicd',pct:100,lbl:'CI/CD complete'},{tid:'gitops',pct:75,lbl:'GitOps advanced'}]},
+  {id:'r7',name:'MLOps Engineer',abbr:'MLOps',
+   desc:'Operates ML model lifecycle on Kubernetes — versioning with DVC, experiment tracking with MLflow, drift monitoring, and feature store management.',
+   reqs:[{tid:'mlops',pct:75,lbl:'MLOps core'},{tid:'platform',pct:75,lbl:'Platform normalization'}]},
+  {id:'r8',name:'AI Platform Engineer',abbr:'AI Infra',
+   desc:'Designs and operates production AI infrastructure: model serving, agent orchestration, GPU governance, multi-tenant security, and FinOps on Kubernetes.',
+   reqs:[{tid:'cicd',pct:100,lbl:'CI/CD 100%'},{tid:'gitops',pct:100,lbl:'GitOps 100%'},{tid:'platform',pct:100,lbl:'Platform 100%'},{tid:'mlops',pct:75,lbl:'MLOps 75%'}]},
+];
+
+const DOC_SECTIONS = [
+  {
+    id:"s0", label:"How to read", short:"Reading guide", icon:"📖", color:"#555b6e",
+    anchor:"0-how-to-read",
+    desc:"Two formations in sequence. Pre-TITAN develops the engineer; TITAN develops the platform.",
+    detail:"Pre-TITAN produces a standalone employable Platform Engineer. TITAN specialises into architectural capability. Two repos, two risks, one career strategy."
+  },
+  {
+    id:"s1", label:"Document registry", short:"Doc registry", icon:"📋", color:"#4f8ef7",
+    anchor:"1-document-registry",
+    desc:"Maps every source document to its structural role in the doctrine.",
+    detail:"CI/CD Roadmap: Track 1. GitOps Mini-Track: Track 2. Phases -2/-1: Gates 1 and 2. MLOps Primer: Gate 3. TITAN Formation: Core Build. Fire Drills: Standing Library."
+  },
+  {
+    id:"s2", label:"Artifacts & visibility", short:"Artifacts", icon:"🔭", color:"#34c78a",
+    anchor:"2-artifacts",
+    desc:"Two clusters: Training Cluster (disposable) and Platform Cluster (persistent). Two repos.",
+    detail:"platform-engineering-formation/ (Pre-TITAN, public, live). titan-ai-platform/ (TITAN, public, locked-node). Raw lab mechanics stay off both repos."
+  },
+  {
+    id:"s3", label:"Editorial calendar", short:"Publishing", icon:"📰", color:"#f472b6",
+    anchor:"3-editorial-calendar",
+    desc:"Pre-TITAN track starts at Phase -1 first incident report. TITAN track: 8 articles across journals + architecture papers.",
+    detail:"Journals published live (Weeks 1,3,5,8,10,11). Architecture papers held until after Week 20, published alongside interview loop."
+  },
+  {
+    id:"s4", label:"System specs & budget", short:"Budget", icon:"💰", color:"#f59e0b",
+    anchor:"4-system-specs",
+    desc:"$150/month soft cap. Spot instances only. Homelab deferred to TITAN Week 0.",
+    detail:"Cloud budget $400-$600 total. GPU only from Phase 2 (Weeks 5-7, under $30/wk). Permanent homelab: 64GB RAM, 3-node KVM/libvirt — purchased after first earning-capacity increase."
+  },
+  {
+    id:"s5", label:"CI/CD Roadmap", short:"Track 1", icon:"⚡", color:"#4f8ef7",
+    anchor:"5-pre-titan-track-1",
+    desc:"12 labs across 6 phases. First track — closed before GitOps and the gate sequence.",
+    detail:"Phases 1-6: CI Foundation, Language and Build, Infrastructure CI, Security and Quality, Real Pipeline Design, Capstone. Weakest current skillset, closed first."
+  },
+  {
+    id:"s55", label:"GitOps Mini-Track", short:"Track 2", icon:"🔄", color:"#34c78a",
+    anchor:"5-5-pre-titan-track-2",
+    desc:"Missing dependency, not optional. Declarative ops, ArgoCD, drift reconciliation, rollback.",
+    detail:"Runs after CI/CD Roadmap closes, before Phase -2 opens. TITAN assumes GitOps from Week 0 — this is the prerequisite that ensures that assumption holds."
+  },
+  {
+    id:"s6g1", label:"Gate 1 — Phase -2", short:"Gate 1", icon:"🏋️", color:"#f59e0b",
+    anchor:"6-gate-sequence",
+    desc:"Friction Elimination: 4 weeks. Cluster setup, CI/CD, and observability become mechanical.",
+    detail:"Week 1: kubeadm muscle memory. Week 2: CI/CD confidence. Week 3: Observability. Week 4: Failure thinking. Exit: kubeadm is boring, failures are diagnosed not discovered."
+  },
+  {
+    id:"s6g2", label:"Gate 2 — Phase -1", short:"Gate 2", icon:"🛠️", color:"#a78bfa",
+    anchor:"6-gate-sequence",
+    desc:"Platform Normalization: 6 compressed sessions. Incident reports are the actual deliverable.",
+    detail:"Exit: rebuild under 90min, API server RCA, worker continuity, rollback under 5min, all 4 chaos scenarios reported, 6 incident reports. Feeds platform-engineering-formation/ repo."
+  },
+  {
+    id:"s6g3", label:"Gate 3 — MLOps Primer", short:"Gate 3", icon:"🤖", color:"#f472b6",
+    anchor:"6-gate-sequence",
+    desc:"11 labs + glossary. Bridge layer between platform engineering and AI platform engineering.",
+    detail:"DVC, MLflow, K8s deployment, model registry, batch/online inference, drift, feature stores. Explicit non-scope: GPU/Ray/vLLM/KServe — those live in TITAN."
+  },
+  {
+    id:"s7", label:"TITAN Core Build", short:"Core build", icon:"👑", color:"#ef4444",
+    anchor:"7-core-build",
+    desc:"Phase 0 through Destabilizer, Orchestrator, Controller, TITAN+, TITAN++. Complete at Week 20.",
+    detail:"Core Formation Weeks 0-13. Architecture Formation Weeks 14-20. Job hunt starts after Week 20. Week 12 is the deepest technical week — agent platform layer."
+  },
+  {
+    id:"s8", label:"Fire Drills", short:"Fire Drills", icon:"🔥", color:"#f59e0b",
+    anchor:"8-fire-drills",
+    desc:"100-drill catalog, 3 volumes. A library, not a sequence — pulled from opportunistically.",
+    detail:"Vol 1 (001-032 available). Volumes 2-3 aspirational — fill from real TITAN incidents. Every real incident report is a natural Fire Drill entry candidate."
+  },
+  {
+    id:"s9", label:"Retired material", short:"Retired", icon:"🗑️", color:"#555b6e",
+    anchor:"9-retired-material",
+    desc:"Strategic Plan §7 (TITAN: 100 Days) retired. AI Platform Authority redefined as mission statement.",
+    detail:"AI Platform Authority is TITAN mission, not a personal title. Identity progression: Platform Engineer → AI Platform Engineer → AI Systems Architect → Principal."
+  },
+  {
+    id:"s10", label:"Market evidence", short:"Market", icon:"📊", color:"#34c78a",
+    anchor:"10-market-evidence",
+    desc:"5 findings from June 2026 research. Title mismatch, curriculum weighting, fragmented orgs.",
+    detail:"Key: AI Engineer dominates over AI Platform Engineer. Agent governance is under-weighted. 19% of orgs have a dedicated AI platform. Comp-band conflation tracked."
+  },
+  {
+    id:"s11", label:"Decision record", short:"Decisions", icon:"⚖️", color:"#4f8ef7",
+    anchor:"11-decision-record",
+    desc:"Second consultant review — ~75-80% agreement. Key adoptions, held items, one disagreement.",
+    detail:"Adopted: Week 20 completion gate, title diversification, AI Systems Architect identity. Disagreement on timeline framing — underlying fix agreed by both."
+  },
+];
+
+const DOCTRINE_TEXT = [
+  "# TITAN — Doctrine",
+  "",
+  "This document is the blueprint. It states what TITAN is, what governs it, and why.",
+  "",
+  "**Governing principle:** Pre-TITAN develops the engineer. TITAN develops the platform.",
+  "",
+  "**Durability clause:** TITAN teaches enduring infrastructure principles. Individual AI frameworks, vendors, and orchestration systems are implementation details layered on top of those principles.",
+  "",
+  "---",
+  "",
+  "## §0. How to read this document",
+  "",
+  "Two formations in sequence, wrapped in one career strategy:",
+  "",
+  "- **Pre-TITAN** — develops the engineer. Disposable infrastructure, repeated rebuilds, failure-first learning. Produces an exceptional Platform Engineer as a standalone, employable outcome.",
+  "- **TITAN** — develops the platform. Persistent, GitOps-managed, monitored, production-grade, public. Specializes the Platform Engineer into architectural capability.",
+  "",
+  "---",
+  "",
+  "## §1. Document registry",
+  "",
+  "| Source | Role |",
+  "|---|---|",
+  "| CI/CD Learning Roadmap | Pre-TITAN Track 1 |",
+  "| GitOps Mini-Track | Pre-TITAN Track 2 |",
+  "| Phase (-2): Friction Elimination | Gate 1 |",
+  "| Phase (-1): Platform Normalization | Gate 2 |",
+  "| MLOps Primer | Gate 3 |",
+  "| TITAN Complete AI Platform Engineer Formation | Core Build |",
+  "| Fire Drills (100-drill catalog) | Standing Library |",
+  "",
+  "---",
+  "",
+  "## §2. Artifacts & visibility path",
+  "",
+  "**Two clusters:** Training Cluster (disposable, Pre-TITAN) and Platform Cluster (persistent, TITAN Week 0+).",
+  "",
+  "**Two repos:**",
+  "- platform-engineering-formation/ — Pre-TITAN, public, live. Organized by competency demonstrated, not course.",
+  "- titan-ai-platform/ — TITAN, public, locked-node. Receives only Platform Cluster output.",
+  "",
+  "Raw lab mechanics stay off both repos. The lab produced the competency; the repos carry the evidence of it.",
+  "",
+  "---",
+  "",
+  "## §3. Editorial calendar",
+  "",
+  "**Pre-TITAN track:** starts at Phase -1's first passed incident report. Three pieces: rebuild drill post, chaos field report, closing bridge post.",
+  "",
+  "**TITAN track — 8 articles:**",
+  "- Journals (Weeks 1, 3, 5, 8, 10, 11) — published live",
+  "- Architecture papers (Weeks 12, 13/20) — held until after TITAN Complete",
+  "",
+  "Writing formula (journals): Hook → Context → Failure → Investigation → Fix + quantified outcome → Lesson generalised → GitHub link.",
+  "",
+  "---",
+  "",
+  "## §4. System specs & budget",
+  "",
+  "| Limit | Value |",
+  "|---|---|",
+  "| Monthly soft cap | $150/month |",
+  "| GPU alert / hard stop | $150 / $165 |",
+  "| Phase 1 GPU | $0 — CPU only |",
+  "| Phase 2 GPU | less than $30/week |",
+  "| Total estimate | $400–$600 |",
+  "",
+  "GPU strategy: spot instances only. g4dn.xlarge (T4) preferred. Phi-2/TinyLlama on CPU when GPU spend is high.",
+  "",
+  "**Homelab (TITAN Week 0):** 64GB RAM, 4GHz+, 1TB NVMe. 3-node KVM/libvirt. Deferred until first earning-capacity increase — Pre-TITAN runs on a laptop.",
+  "",
+  "---",
+  "",
+  "## §5. Pre-TITAN Track 1 — CI/CD Roadmap",
+  "",
+  "12 labs, 6 phases. Weakest current skillset, closed first — before GitOps and the gate sequence.",
+  "",
+  "| Phase | Focus |",
+  "|---|---|",
+  "| 1 | CI Foundation |",
+  "| 2 | Language & Build Systems |",
+  "| 3 | Infrastructure CI |",
+  "| 4 | Security + Quality |",
+  "| 5 | Real Pipeline Design |",
+  "| 6 | Capstone |",
+  "",
+  "---",
+  "",
+  "## §5.5. Pre-TITAN Track 2 — GitOps Mini-Track",
+  "",
+  "Missing dependency, not optional. TITAN assumes GitOps from Week 0. This track ensures that assumption holds.",
+  "",
+  "Covers: declarative operations, ArgoCD fundamentals, synchronization, self-healing, drift reconciliation, rollback, promotion strategies.",
+  "",
+  "Runs after CI/CD Roadmap closes, before Phase -2 opens.",
+  "",
+  "---",
+  "",
+  "## §6. Gate sequence — Pre-TITAN, Gates 1–3",
+  "",
+  "Pre-TITAN is a complete engineering formation, not merely a prerequisite. Completion positions the engineer for Platform Engineering, Senior DevOps, Kubernetes Platform Engineering, or Infrastructure SRE roles.",
+  "",
+  "**Gate 1 — Phase -2: Friction Elimination (4 weeks)**",
+  "",
+  "| Week | Focus | Pass criteria |",
+  "|---|---|---|",
+  "| 1 | Kubeadm muscle memory | No doc reference, no hesitation |",
+  "| 2 | CI/CD pipeline confidence | Failure cause diagnosed in minutes |",
+  "| 3 | Observability familiarity | Correlate metric to event instinctively |",
+  "| 4 | Failure thinking | Instant answers to what breaks first |",
+  "",
+  "**Gate 2 — Phase -1: Platform Normalization (6 sessions)**",
+  "",
+  "| Week | Focus | Artifact |",
+  "|---|---|---|",
+  "| 1 | Mechanical fluency | Environment Bootstrap Document |",
+  "| 2 | Control plane internals | Control Plane Internals Report |",
+  "| 3 | Worker node pressure | 3x Incident Reports |",
+  "| 4 | Observability mastery | Observability Setup Document |",
+  "| 5 | CI/CD failure | CI/CD Failure Report |",
+  "| 6 | Chaos Week | 4x Chaos Incident Reports |",
+  "",
+  "Exit gate (all must pass): rebuild less than 90min, API server RCA, rollback less than 5min, 6 incident reports.",
+  "",
+  "**Gate 3 — MLOps Primer (11 labs + glossary)**",
+  "",
+  "Bridge layer. Covers DVC, MLflow, model registry, batch/online inference, drift detection, feature stores.",
+  "",
+  "Non-scope (lives in TITAN): GPU scheduling, Ray/KubeRay, vLLM, KServe, large-scale LLM infra.",
+  "",
+  "---",
+  "",
+  "## §7. Core Build — TITAN (Canonical)",
+  "",
+  "TITAN is complete at **Week 20**, not Week 13.",
+  "",
+  "Core Formation: Weeks 0–13. Phase 0 → Destabilizer → Orchestrator → Controller.",
+  "Architecture Formation: Weeks 14–20. TITAN+ reinforcement → TITAN++ agent systems.",
+  "TITAN Complete → Public launch · Interview loop · Editorial campaign.",
+  "",
+  "| Phase | Weeks | Identity |",
+  "|---|---|---|",
+  "| 0 | Week 0 | Python & K8s security foundation |",
+  "| 1 — Destabilizer | 1–4 | AI workload stress, artifacts, image optimization |",
+  "| 2 — Orchestrator | 5–9 | KubeRay, GPU governance, vLLM/KServe, autoscaling |",
+  "| 3 — Controller | 10–13 | FinOps, multi-tenancy, agent platform layer, capstone |",
+  "| TITAN+ | 14–15 | ML stack instrumentation, reliability metrics |",
+  "| TITAN++ | 16–20 | Agent runtime, benchmarking, agent governance |",
+  "",
+  "Week 12 is the deepest technical week. Decision trigger: if no 50k-level interviews within 6 months of Week 20, the problem is in TITAN — do not add more curricula.",
+  "",
+  "---",
+  "",
+  "## §8. Fire Drills — standing library",
+  "",
+  "100-drill catalog, 3 volumes. Not a phase. Not a prerequisite. A reference library — pulled from opportunistically when a live failure matches a catalog entry.",
+  "",
+  "Volume 1 (001–032 available). Volumes 2–3 filled from real TITAN incidents as they happen — not pre-written speculatively.",
+  "",
+  "---",
+  "",
+  "## §9. Retired material",
+  "",
+  "Strategic Plan §7 (TITAN: 100 Days) — retired in favor of §7 above.",
+  "",
+  "AI Platform Authority as a personal title — redefined as TITAN's mission statement.",
+  "",
+  "Personal career identity: Platform Engineer → AI Platform Engineer → AI Systems Architect → Principal AI Systems Architect.",
+  "",
+  "---",
+  "",
+  "## §10. Market evidence base (June 2026)",
+  "",
+  "1. **Title mismatch.** AI Engineer is the dominant recruiter search term, not AI Platform Engineer.",
+  "2. **Curriculum weighting.** Content is current; agent orchestration and runtime governance are under-weighted. TITAN gives agent governance one week; market treats it as an architectural layer.",
+  "3. **Fragmented adoption.** Only 19% of organizations have a dedicated AI platform. Most DevOps teams are informally absorbing AI infra work.",
+  "4. **Editorial gap.** No original article directly addressed agent governance, evaluation harnesses, or runtime audit — now corrected in §3.",
+  "5. **Comp-band conflation (open).** $50K via remote arbitrage and $150K+ Staff-tier are different markets on different timelines. Tracked in TITAN_STATUS.md.",
+  "",
+  "---",
+  "",
+  "## §11. Decision record — second consultant review",
+  "",
+  "75–80% agreement. Key outcomes:",
+  "",
+  "**Adopted:** TITAN complete at Week 20, title diversification, AI Systems Architect as career identity.",
+  "",
+  "**Held (both reviews converged):** Week 12 structurally underweight; editorial calendar needs agent governance content.",
+  "",
+  "**Disagreement recorded:** 12-18 months behind vs weighting off only — underlying fix agreed by both; framing differs."
+].join('\n');
+
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let TRACKS=[], ROLES=[], prog={}, openPh={}, view='dash', _prevUnlocked=0;
+
+function load(){
+  try{
+    const raw=localStorage.getItem('pretitan_v5');
+    if(raw){const d=JSON.parse(raw);TRACKS=d.tracks||clone(DT);ROLES=d.roles||clone(DR);prog=d.prog||{};}
+    else{TRACKS=clone(DT);ROLES=clone(DR);prog={};}
+  }catch(e){TRACKS=clone(DT);ROLES=clone(DR);prog={};}
+}
+function persist(){try{localStorage.setItem('pretitan_v5',JSON.stringify({tracks:TRACKS,roles:ROLES,prog}));}catch(e){}}
+function clone(x){return JSON.parse(JSON.stringify(x));}
+
+// ── CALC ──────────────────────────────────────────────────────────────────────
+function pk(tid,pi,ii){return tid+':'+pi+':'+ii;}
+function trackStats(tid){
+  const t=TRACKS.find(x=>x.id===tid);
+  if(!t)return{total:0,done:0,pct:0};
+  let total=0,done=0;
+  t.phases.forEach((p,pi)=>p.items.forEach((_,ii)=>{total++;if(prog[pk(tid,pi,ii)])done++;}));
+  return{total,done,pct:total?Math.round(done/total*100):0};
+}
+function allStats(){
+  let total=0,done=0;const bt={};
+  TRACKS.forEach(t=>{const s=trackStats(t.id);bt[t.id]=s;total+=s.total;done+=s.done;});
+  return{total,done,pct:total?Math.round(done/total*100):0,bt};
+}
+function roleOk(role,bt){
+  const results=role.reqs.map(r=>{const d=bt[r.tid];const a=d?d.pct:0;return{met:a>=r.pct,a,r};});
+  return{unlocked:results.every(x=>x.met),partial:results.some(x=>x.met),results};
+}
+
+// ── SIDEBAR ───────────────────────────────────────────────────────────────────
+function buildSB(){
+  const {bt,pct}=allStats();
+  document.getElementById('mini-pct').textContent=pct+'%';
+  document.getElementById('mini-bar').style.width=pct+'%';
+  let h=`<div class="nsec">Overview</div>
+  <button class="ni${view==='dash'?' active':''}" data-v="dash" onclick="go('dash')">
+    <span class="ni-ico">#</span><span class="ni-lbl">Dashboard</span>
+  </button>
+  <div class="nsec">Tracks</div>`;
+  TRACKS.forEach(t=>{
+    const d=bt[t.id]||{done:0,total:0,pct:0};
+    const v='track:'+t.id;
+    const bc=d.pct===100?'done':d.done>0?'partial':'';
+    h+=`<button class="ni${view===v?' active':''}" data-v="${v}" onclick="go('${v}')">
+      <span class="ni-ico">${t.icon||'--'}</span>
+      <span class="ni-lbl">${t.title}</span>
+      <span class="nbadge ${bc}" id="nb_${t.id}">${d.done}/${d.total}</span>
+    </button>`;
+  });
+  h+=`<div class="nsec">System</div>
+  <button class="ni${view==='doctrine'?' active':''}" data-v="doctrine" onclick="go('doctrine')">
+    <span class="ni-ico">~</span><span class="ni-lbl">TITAN Doctrine</span>
+  </button>
+  <button class="ni${view==='admin'?' active':''}" data-v="admin" onclick="go('admin')">
+    <span class="ni-ico">*</span><span class="ni-lbl">Admin</span>
+  </button>`;
+  document.getElementById('sb-nav').innerHTML=h;
+}
+
+function refreshBadges(){
+  const {bt,pct}=allStats();
+  document.getElementById('mini-pct').textContent=pct+'%';
+  document.getElementById('mini-bar').style.width=pct+'%';
+  TRACKS.forEach(t=>{
+    const d=bt[t.id]||{done:0,total:0,pct:0};
+    const el=document.getElementById('nb_'+t.id);
+    if(el){el.textContent=d.done+'/'+d.total;el.className='nbadge '+(d.pct===100?'done':d.done>0?'partial':'');}
+  });
+}
+
+// ── NAVIGATE ──────────────────────────────────────────────────────────────────
+function go(v){
+  view=v;
+  document.querySelectorAll('.ni').forEach(el=>el.classList.toggle('active',el.dataset.v===v));
+  const c=document.getElementById('content');
+  c.innerHTML='';
+  document.getElementById('hdr-a').innerHTML='';
+  if(v==='dash'){set('Dashboard','PRE-TITAN training program');renderDash();}
+  else if(v.startsWith('track:')){
+    const t=TRACKS.find(x=>x.id===v.split(':')[1]);
+    set(t?t.title:'Track','Track progress');if(t)renderTrack(t.id);
+  }
+  else if(v==='doctrine'){set('TITAN Doctrine','Architecture map — click any node to navigate');renderDoctrine();}
+  else if(v==='admin'){set('Admin','Curriculum editor — import & export');renderAdmin();}
+}
+function set(t,s){document.getElementById('hdr-t').textContent=t;document.getElementById('hdr-s').textContent=s;}
+function pageWrap(inner){return`<div class="page-enter">${inner}</div>`;}
+
+// ── DASHBOARD ─────────────────────────────────────────────────────────────────
+function renderDash(){
+  const {total,done,pct,bt}=allStats();
+  const ur=ROLES.filter(r=>roleOk(r,bt).unlocked).length;
+  const next=ROLES.find(r=>!roleOk(r,bt).unlocked);
+
+  let h=`<div class="page-enter">
+  <div class="big-prog">
+    <div class="bp-top"><div class="bp-lbl">Overall completion</div><div class="bp-nums">${done} / ${total} &nbsp; ${pct}%</div></div>
+    <div class="bb"><div class="bbf" style="width:${pct}%"></div></div>
+    <div class="mss">`;
+  [0,10,25,50,75,95,100].forEach(m=>{h+=`<div class="ms${pct>=m?' hit':''}"><div class="ms-tick${pct>=m?' hit':''}"></div>${m}%</div>`;});
+  h+=`</div></div>
+  <div class="grid4">
+    <div class="stat ca"><div class="stat-lbl">Completed</div><div class="stat-val">${done}</div><div class="stat-sub">of ${total} items</div></div>
+    <div class="stat cg"><div class="stat-lbl">Active tracks</div><div class="stat-val">${TRACKS.filter(t=>bt[t.id]&&bt[t.id].done>0).length}</div><div class="stat-sub">of ${TRACKS.length}</div></div>
+    <div class="stat cp"><div class="stat-lbl">Roles unlocked</div><div class="stat-val">${ur}</div><div class="stat-sub">of ${ROLES.length}</div></div>
+    <div class="stat camb"><div class="stat-lbl">Remaining</div><div class="stat-val">${total-done}</div><div class="stat-sub">items left</div></div>
+  </div>
+
+  <div class="sec">Tracks</div>
+  <div class="tgrid">`;
+
+  TRACKS.forEach(t=>{
+    const d=bt[t.id]||{done:0,total:0,pct:0};
+    const barW=d.pct>0?d.pct:0;
+    h+=`<div class="tc" onclick="go('track:${t.id}')">
+      <div class="tc-accent" style="background:${t.color}"></div>
+      <div class="tc-top">
+        <span class="tc-badge" style="background:${t.color}18;color:${t.color}">${t.icon}</span>
+        <span class="tc-pct" style="color:${t.color}">${d.pct}%</span>
+      </div>
+      <div class="tc-name">${t.title}</div>
+      <div class="tc-meta">${d.done} / ${d.total} items &middot; ${t.phases.length} phases</div>
+      <div class="tc-bar"><div class="tc-bar-f" style="width:${barW}%;background:${t.color}"></div></div>
+    </div>`;
+  });
+  h+=`</div>`;
+
+  // Career path section on dashboard
+  h+=`<div class="sec">Career path</div>
+  <div class="roles-section">
+    <div class="rgrid">`;
+
+  let nextShown=false;
+  ROLES.forEach(r=>{
+    const s=roleOk(r,bt);
+    const isNext=!s.unlocked&&!nextShown;
+    if(isNext)nextShown=true;
+    const cls=s.unlocked?'unlocked':isNext?'next':'locked';
+    h+=`<div class="rc ${cls}">
+      <div class="rc-header">
+        <span class="rc-abbr">${r.abbr}</span>
+        <span class="rc-status" style="color:${s.unlocked?'var(--green)':isNext?'var(--accent)':'var(--text3)'}">${s.unlocked?'Unlocked':isNext?'Next':'Locked'}</span>
+      </div>
+      <div class="rc-name">${r.name}</div>
+      <div class="rc-desc">${r.desc}</div>
+      <div class="rc-reqs">`;
+    s.results.forEach(res=>{
+      const fill=res.r.pct?Math.round(Math.min(res.a,res.r.pct)/res.r.pct*100):0;
+      h+=`<div class="req-row">
+        <div class="req-meta${res.met?' met':isNext?' active':''}">
+          <span>${res.r.lbl}</span>
+          <span style="font-family:var(--mono)">${res.a}%</span>
+        </div>
+        <div class="req-bar"><div class="req-barf" style="width:${fill}%;background:${res.met?'var(--green)':isNext?'var(--accent)':'var(--text3)'}"></div></div>
+      </div>`;
     });
-    ticking = false;
+    h+=`</div></div>`;
+  });
+  h+=`</div></div>`;
+
+  // Next role callout
+  if(next){
+    const s=roleOk(next,bt);
+    h+=`<div class="sec">Next milestone</div>
+    <div class="card" style="border-color:var(--ab);background:var(--adim);margin-bottom:24px">
+      <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:14px">
+        <span class="rc-abbr" style="background:var(--adim);color:var(--accent);margin-top:2px">${next.abbr}</span>
+        <div>
+          <div style="font-size:14px;font-weight:500;color:var(--accent);margin-bottom:3px">${next.name}</div>
+          <div style="font-size:11px;color:var(--text3)">${next.desc}</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">`;
+    s.results.forEach(res=>{
+      const fill=res.r.pct?Math.round(Math.min(res.a,res.r.pct)/res.r.pct*100):0;
+      h+=`<div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:${res.met?'var(--green)':'var(--accent)'};margin-bottom:3px">
+          <span>${res.r.lbl}</span><span style="font-family:var(--mono)">${res.a}% / ${res.r.pct}%</span>
+        </div>
+        <div class="bw" style="height:3px"><div style="height:100%;border-radius:2px;width:${fill}%;background:${res.met?'var(--green)':'var(--accent)'};transition:width .5s var(--ease)"></div></div>
+      </div>`;
+    });
+    h+=`</div></div>`;
   }
+  h+=`</div>`;
+  document.getElementById('content').innerHTML=h;
+}
 
-  window.addEventListener('scroll', () => {
-    if (!ticking) {
-      requestAnimationFrame(updateParallax);
-      ticking = true;
-    }
-  }, { passive: true });
+// ── TRACK ─────────────────────────────────────────────────────────────────────
+function renderTrack(tid){
+  const t=TRACKS.find(x=>x.id===tid);if(!t)return;
+  const d=trackStats(tid);
+  let h=`<div class="page-enter">
+  <div class="big-prog" style="border-color:${t.color}22;background:${t.color}06">
+    <div class="bp-top">
+      <div class="bp-lbl" style="color:${t.color}">${t.title}</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="bp-nums">${d.done} / ${d.total} &nbsp; <span style="color:${t.color}">${d.pct}%</span></div>
+        ${d.done>0?`<button class="btn btn-sm btn-red" onclick="resetTrack('${tid}')">Reset track</button>`:''}
+      </div>
+    </div>
+    <div class="bb"><div class="bbf" style="width:${d.pct}%;background:linear-gradient(90deg,${t.color},${t.color}88)"></div></div>
+  </div>`;
+  t.phases.forEach((p,pi)=>{
+    let pD=0;p.items.forEach((_,ii)=>{if(prog[pk(tid,pi,ii)])pD++;});
+    const pid='ph_'+tid+'_'+pi,io=!!openPh[pid],pp=p.items.length?Math.round(pD/p.items.length*100):0;
+    h+=`<div class="pw">
+      <div class="ph" onclick="tph('${pid}')">
+        <div class="ph-dot${pD===p.items.length&&pD>0?' done':pD>0?' partial':''}" id="dot_${pid}"></div>
+        <div class="ph-name">${p.name}</div>
+        <div class="ph-cnt" id="cnt_${pid}">${pD}/${p.items.length}</div>
+        <div class="ph-chv${io?' open':''}" id="chv_${pid}">&#9658;</div>
+      </div>
+      <div class="ph-bar${pD>0?' vis':''}" id="pb_${pid}">
+        <div class="ph-barf${pD===p.items.length&&pD>0?' done':''}" id="pbf_${pid}" style="width:${pp}%"></div>
+      </div>
+      <div class="labs${io?' open':''}" id="labs_${pid}">`;
+    p.items.forEach((item,ii)=>{
+      const k=pk(tid,pi,ii),ks=k.replace(/:/g,'_'),on=!!prog[k];
+      h+=`<div class="lab" onclick="tog('${tid}',${pi},${ii})">
+        <div class="chk${on?' on':''}" id="chk_${ks}"></div>
+        <div class="ln${on?' done':''}" id="lbl_${ks}">${esc(item)}</div>
+      </div>`;
+    });
+    h+=`</div></div>`;
+  });
+  h+=`</div>`;
+  document.getElementById('content').innerHTML=h;
+}
 
-  updateParallax();
+function tph(pid){
+  openPh[pid]=!openPh[pid];
+  const l=document.getElementById('labs_'+pid),c=document.getElementById('chv_'+pid);
+  if(l)l.className='labs'+(openPh[pid]?' open':'');
+  if(c)c.className='ph-chv'+(openPh[pid]?' open':'');
+}
 
-  // Scroll-lock hero: pins in place and consumes scroll input to drive
-  // terminal typing + portrait brighten, then releases to normal scrolling.
-  const TERMINAL_TEXT = "DevOps and Platform Engineer with 4+ years designing and operating Kubernetes-native systems across AWS and on-prem environments. Strong focus on reliability engineering, failure handling, and infrastructure consistency. Known for diagnosing complex infra failures, minimizing blast radius, and maintaining control plane stability under stress.";
-
-  const termOutputEl = document.getElementById('termOutput');
-  const portraitWrap = document.getElementById('portraitWrap');
-  const heroPortrait = document.getElementById('heroPortrait');
-  const heroSection = document.getElementById('hero');
-  const heroSpacer = document.getElementById('heroSpacer');
-  const scrollDownArrow = document.getElementById('scrollDownArrow');
-
-  const TYPE_PHASE_FRACTION = 0.4;
-  const SCROLL_UNITS_TO_COMPLETE = 3200; // total "virtual" scroll px needed to finish the whole sequence
-  const HOLD_UNITS = 600; // extra scroll required after full brighten before the page actually releases
-
-  let seqProgress = 0;      // 0 to 1, drives typing + brighten
-  let holdProgress = 0;     // 0 to 1, the post-brighten hold before release (lets the arrow be seen)
-  let released = false;     // true while the page is unlocked and scrolling normally past the hero
-  let isLocked = false;
-  let lastCharCount = -1;
-  let lastLit = null;
-  let arrowShown = false;
-
-  function renderSequence() {
-    const typeProgress = Math.min(1, seqProgress / TYPE_PHASE_FRACTION);
-    const charCount = Math.floor(typeProgress * TERMINAL_TEXT.length);
-
-    if (charCount !== lastCharCount) {
-      const shown = TERMINAL_TEXT.slice(0, charCount);
-      termOutputEl.innerHTML = `<span class="tc">${shown}</span><span class="term-cursor"></span>`;
-      lastCharCount = charCount;
-    }
-
-    const typingDone = typeProgress >= 1;
-    const brightenProgress = typingDone
-      ? Math.min(1, (seqProgress - TYPE_PHASE_FRACTION) / (1 - TYPE_PHASE_FRACTION))
-      : 0;
-
-    // Continuous brightness dial — brightness goes from 0.15 to 1 as brightenProgress goes 0 to 1
-    const brightness = 0.15 + brightenProgress * 0.85;
-    const saturate = 0.6 + brightenProgress * 0.4;
-    heroPortrait.style.filter = `brightness(${brightness.toFixed(3)}) saturate(${saturate.toFixed(3)}) contrast(1.05)`;
-
-    const shouldBeLit = brightenProgress >= 1;
-    if (shouldBeLit !== lastLit) {
-      portraitWrap.classList.toggle('lit', shouldBeLit);
-      lastLit = shouldBeLit;
-    }
-
-    // Stop the attention blink the moment brightening begins
-    if (brightenProgress > 0 && portraitWrap.classList.contains('attention')) {
-      portraitWrap.classList.remove('attention');
-    }
-
-    // Show the down arrow once fully brightened — it now has a guaranteed
-    // hold window (HOLD_UNITS of extra scroll) before the page releases.
-    if (shouldBeLit && !arrowShown) {
-      scrollDownArrow.classList.add('show');
-      arrowShown = true;
-    }
-    if (!shouldBeLit && arrowShown) {
-      scrollDownArrow.classList.remove('show');
-      arrowShown = false;
-    }
+function tog(tid,pi,ii){
+  const k=pk(tid,pi,ii);prog[k]=!prog[k];persist();
+  const ks=k.replace(/:/g,'_');
+  const chk=document.getElementById('chk_'+ks),lbl=document.getElementById('lbl_'+ks);
+  if(chk)chk.className='chk'+(prog[k]?' on':'');
+  if(lbl)lbl.className='ln'+(prog[k]?' done':'');
+  const p=TRACKS.find(x=>x.id===tid)?.phases[pi];
+  if(p){
+    let pD=0;p.items.forEach((_,jj)=>{if(prog[pk(tid,pi,jj)])pD++;});
+    const pid='ph_'+tid+'_'+pi,pp=p.items.length?Math.round(pD/p.items.length*100):0;
+    const dot=document.getElementById('dot_'+pid),cnt=document.getElementById('cnt_'+pid);
+    const pb=document.getElementById('pb_'+pid),pbf=document.getElementById('pbf_'+pid);
+    if(dot)dot.className='ph-dot'+(pD===p.items.length&&pD>0?' done':pD>0?' partial':'');
+    if(cnt)cnt.textContent=pD+'/'+p.items.length;
+    if(pb)pb.className='ph-bar'+(pD>0?' vis':'');
+    if(pbf){pbf.style.width=pp+'%';pbf.className='ph-barf'+(pD===p.items.length&&pD>0?' done':'');}
   }
+  refreshBadges();checkUnlock();
+}
 
-  function lockHero() {
-    if (isLocked) return;
-    isLocked = true;
-    heroSection.classList.add('pinned');
-    heroSpacer.classList.add('active');
-    heroSpacer.style.height = window.innerHeight + 'px';
-    document.body.style.overflow = 'hidden';
-  }
+function checkUnlock(){
+  const {bt}=allStats();
+  const now=ROLES.filter(r=>roleOk(r,bt).unlocked).length;
+  if(now>_prevUnlocked){const r=ROLES.filter(x=>roleOk(x,bt).unlocked)[now-1];if(r)toast('Role unlocked: '+r.name);}
+  _prevUnlocked=now;
+}
 
-  function unlockHero() {
-    if (!isLocked) return;
-    isLocked = false;
-    heroSection.classList.remove('pinned');
-    heroSpacer.classList.remove('active');
-    document.body.style.overflow = '';
-  }
+function resetTrack(tid){
+  const t=TRACKS.find(x=>x.id===tid);if(!t)return;
+  const d=trackStats(tid);
+  modal(`<div class="modal-title" style="color:var(--red)">Reset track progress</div>
+    <div class="modal-sub">Clear all checkmarks for this track only.</div>
+    <div class="step-row"><div class="sdot active" id="rt-sd1">1</div><div class="sline"></div><div class="sdot" id="rt-sd2">2</div></div>
+    <div id="rt-step1">
+      <div class="danger-box"><p>Clear <strong style="color:var(--text)">${d.done} completed items</strong> from <strong style="color:var(--text)">${esc(t.title)}</strong>. Other tracks unaffected.</p>
+      <div class="danger-stats">Completed: <b>${d.done}</b> &nbsp; Total: <b>${d.total}</b></div></div>
+      <div class="modal-actions"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-red" onclick="rtStep2('${tid}')">Continue</button></div>
+    </div>
+    <div id="rt-step2" style="display:none">
+      <div class="danger-box"><p>Type <strong style="color:var(--red);font-family:var(--mono)">RESET</strong> to confirm.</p>
+      <input class="type-confirm" id="rt-word" placeholder="Type RESET" oninput="document.getElementById('rt-btn').disabled=this.value!=='RESET'"/></div>
+      <div class="modal-actions"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-red" id="rt-btn" disabled onclick="doResetTrack('${tid}')">Clear track</button></div>
+    </div>`);
+}
+function rtStep2(tid){
+  document.getElementById('rt-step1').style.display='none';
+  document.getElementById('rt-step2').style.display='block';
+  document.getElementById('rt-sd1').className='sdot done';
+  document.getElementById('rt-sd2').className='sdot active';
+  document.getElementById('rt-word').focus();
+}
+function doResetTrack(tid){
+  Object.keys(prog).forEach(k=>{if(k.startsWith(tid+':'))delete prog[k];});
+  persist();closeModal();toast('Track progress cleared');refreshBadges();renderTrack(tid);
+}
 
-  function handleSequenceWheel(e) {
-    if (released) return; // page has been handed back to native scroll
+// ── DOCTRINE ──────────────────────────────────────────────────────────────────
+function renderDoctrine(){
+  document.getElementById('content').innerHTML=`<div class="page-enter doc-layout">
+    <div class="doc-map" id="doc-map"></div>
+    <div class="doc-scroll"><div class="doc-body" id="doc-body"></div></div>
+  </div>`;
 
-    e.preventDefault();
-    if (!isLocked) lockHero();
-
-    const delta = e.deltaY;
-
-    if (seqProgress < 1) {
-      // Still typing / brightening
-      seqProgress = Math.max(0, Math.min(1, seqProgress + delta / SCROLL_UNITS_TO_COMPLETE));
-      renderSequence();
-      return;
-    }
-
-    // Fully brightened — now in the hold window. Extra forward scroll fills
-    // the hold meter; backward scroll during the hold rewinds seqProgress
-    // instead, so scrolling up always feels continuous and reversible.
-    if (delta > 0) {
-      holdProgress = Math.min(1, holdProgress + delta / HOLD_UNITS);
-      if (holdProgress >= 1) {
-        released = true;
-        scrollDownArrow.classList.remove('show');
-        unlockHero();
-        window.scrollTo(0, 2);
-      }
-    } else {
-      if (holdProgress > 0) {
-        holdProgress = Math.max(0, holdProgress + delta / HOLD_UNITS);
-      } else {
-        seqProgress = Math.max(0, seqProgress + delta / SCROLL_UNITS_TO_COMPLETE);
-        renderSequence();
-      }
-    }
-  }
-
-  let touchStartY = null;
-  function handleTouchStart(e) {
-    touchStartY = e.touches[0].clientY;
-  }
-  function handleTouchMove(e) {
-    if (touchStartY === null) return;
-    const currentY = e.touches[0].clientY;
-    const deltaY = touchStartY - currentY;
-    touchStartY = currentY;
-    handleSequenceWheel({ deltaY, preventDefault: () => e.preventDefault() });
-  }
-
-  window.addEventListener('wheel', handleSequenceWheel, { passive: false });
-  window.addEventListener('touchstart', handleTouchStart, { passive: true });
-  window.addEventListener('touchmove', handleTouchMove, { passive: false });
-
-  const SCROLL_KEYS = { ArrowDown: 80, ArrowUp: -80, PageDown: 400, PageUp: -400, ' ': 400 };
-  window.addEventListener('keydown', (e) => {
-    if (released) return;
-    if (SCROLL_KEYS[e.key] !== undefined) {
-      handleSequenceWheel({ deltaY: SCROLL_KEYS[e.key], preventDefault: () => e.preventDefault() });
-    }
+  const mapEl=document.getElementById('doc-map');
+  DOC_SECTIONS.forEach(s=>{
+    const btn=document.createElement('button');
+    btn.className='map-node';
+    btn.id='mn_'+s.id;
+    btn.style.color=s.color;
+    btn.innerHTML=`<div class="map-node-num" id="mnum_${s.id}">${s.id.replace('s','').replace('g','.')}</div>
+      <div class="map-node-text">
+        <div class="map-node-title">${s.short}</div>
+        <div class="map-node-desc">${s.desc.slice(0,55)}...</div>
+      </div>`;
+    btn.addEventListener('click',()=>activateSection(s.id));
+    mapEl.appendChild(btn);
   });
 
-  window.addEventListener('resize', () => {
-    if (isLocked) heroSpacer.style.height = window.innerHeight + 'px';
-  });
+  document.getElementById('doc-body').innerHTML=mdToHtml(DOCTRINE_TEXT);
 
-  // Re-lock and replay from scratch whenever the user scrolls all the way
-  // back up to the very top of the page.
-  window.addEventListener('scroll', () => {
-    if (released && window.scrollY <= 1) {
-      released = false;
-      seqProgress = 0;
-      holdProgress = 0;
-      lastCharCount = -1;
-      lastLit = null;
-      arrowShown = false;
-      portraitWrap.classList.add('attention');
-      portraitWrap.classList.remove('lit');
-      heroPortrait.style.filter = 'brightness(0.15) saturate(0.6) contrast(1.05)';
-      termOutputEl.innerHTML = '<span class="term-cursor"></span>';
-      renderSequence();
-      lockHero();
-    }
-  }, { passive: true });
-
-  // Initial state: locked at the top, sequence not started
-  lockHero();
-  renderSequence();
-
-  // Scroll reveal
-  const reveals = document.querySelectorAll('.reveal');
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry, i) => {
-      if (entry.isIntersecting) {
-        setTimeout(() => entry.target.classList.add('visible'), 80);
-        observer.unobserve(entry.target);
+  // Assign IDs to headings
+  const headings=document.getElementById('doc-body').querySelectorAll('h2');
+  headings.forEach(h=>{
+    DOC_SECTIONS.forEach(s=>{
+      const slug=s.anchor.split('-').slice(0,3).join('').toLowerCase();
+      const hslug=h.textContent.toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,12);
+      if(hslug.includes(slug.slice(0,8))||slug.slice(0,8).includes(hslug.slice(0,6))){
+        if(!h.id) h.id='sec_'+s.id;
       }
     });
-  }, { threshold: 0.1 });
-  reveals.forEach(el => observer.observe(el));
-
-  // Certifications fly in from random directions when scrolled into view
-  const certItems = document.querySelectorAll('.cert-fly');
-  certItems.forEach((el) => {
-    const angle = Math.random() * Math.PI * 2;
-    const distance = 140 + Math.random() * 100;
-    const x = Math.cos(angle) * distance;
-    const y = Math.sin(angle) * distance;
-    const rotate = (Math.random() * 24 - 12).toFixed(1);
-    el.style.transform = `translate(${x.toFixed(0)}px, ${y.toFixed(0)}px) rotate(${rotate}deg)`;
   });
-  const certObserver = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('fly-in');
-        certObserver.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.2 });
-  certItems.forEach(el => certObserver.observe(el));
+}
 
-  // "Experience" heading pulses slowly dark-to-bright while its section is in view
-  const experienceTitle = document.getElementById('experienceTitle');
-  if (experienceTitle) {
-    const experienceObserver = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        experienceTitle.classList.toggle('pulse-title', entry.isIntersecting);
-      });
-    }, { threshold: 0.15 });
-    experienceObserver.observe(experienceTitle);
+function activateSection(id){
+  DOC_SECTIONS.forEach(s=>{
+    const btn=document.getElementById('mn_'+s.id);
+    const num=document.getElementById('mnum_'+s.id);
+    if(btn){btn.classList.remove('active');btn.style.background='';}
+    if(num){num.style.background='var(--bg5)';num.style.color='var(--text3)';}
+  });
+  const sec=DOC_SECTIONS.find(x=>x.id===id);
+  const btn=document.getElementById('mn_'+id);
+  const num=document.getElementById('mnum_'+id);
+  if(btn&&sec){
+    btn.classList.add('active');
+    btn.style.background=sec.color+'11';
   }
-
-  // Stack item flicker — each tech chip independently flickers brightness forever,
-  // like unstable neon signs, once scrolled into view. Each gets randomized
-  // duration + a negative delay so they're never in sync with each other.
-  const stackGroups = document.querySelectorAll('.stack-group');
-  const stackObserver = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        const items = entry.target.querySelectorAll('.stack-item');
-        items.forEach((item) => {
-          const duration = 2.2 + Math.random() * 3.5; // 2.2s–5.7s per chip
-          const negDelay = -(Math.random() * duration); // start mid-cycle at a random point
-          item.style.animationDuration = `${duration.toFixed(2)}s`;
-          item.style.animationDelay = `${negDelay.toFixed(2)}s`;
-          item.classList.add('flicker');
-        });
-        stackObserver.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.25 });
-  stackGroups.forEach(group => stackObserver.observe(group));
-
-  // Project toggle
-  function toggleProject(card) {
-    const wasActive = card.classList.contains('active');
-    document.querySelectorAll('.project-card').forEach(c => c.classList.remove('active'));
-    if (!wasActive) card.classList.add('active');
+  if(num&&sec){
+    num.style.background=sec.color;
+    num.style.color='#fff';
   }
+  const target=document.getElementById('sec_'+id);
+  if(target){
+    target.scrollIntoView({behavior:'smooth',block:'start'});
+    const orig=target.style.background;
+    target.style.transition='background .3s';
+    target.style.background=(sec?sec.color:'#5b8dee')+'18';
+    setTimeout(()=>{target.style.background=orig;},1600);
+  }
+}
 
-  // Active nav on scroll
-  const sections = document.querySelectorAll('section[id]');
-  const navLinks = document.querySelectorAll('.nav-links a');
+function mdToHtml(md){
+  return md
+    .replace(/^# (.*)/gm,'<h1>$1</h1>')
+    .replace(/^## (§[\d\.\s]+.*)/gm,'<h2>$1</h2>')
+    .replace(/^## (.*)/gm,'<h2>$1</h2>')
+    .replace(/^### (.*)/gm,'<h3>$1</h3>')
+    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+    .replace(/`([^`\n]+)`/g,'<code>$1</code>')
+    .replace(/^---$/gm,'<hr/>')
+    .replace(/^- (.*)/gm,'<li>$1</li>')
+    .replace(/(<li>.*<\/li>\n?)+/g,m=>'<ul>'+m+'</ul>')
+    .replace(/(\|[^\n]+\|\n)((?:\|[-:| ]+\|\n))((?:\|[^\n]+\|\n?)*)/g,(_,hdr,_sep,body)=>{
+      const row=(r,tag)=>r.trim().split('|').filter((_,i,a)=>i>0&&i<a.length-1)
+        .map(c=>`<${tag}>${c.trim()}</${tag}>`).join('');
+      const rows=body.trim().split('\n').filter(Boolean).map(r=>`<tr>${row(r,'td')}</tr>`).join('');
+      return`<table><thead><tr>${row(hdr,'th')}</tr></thead><tbody>${rows}</tbody></table>`;
+    })
+    .replace(/\n\n([^<\n])/g,'\n<p>$1')
+    .replace(/([^>\n])\n\n/g,'$1</p>\n');
+}
 
-  window.addEventListener('scroll', () => {
-    let current = '';
-    sections.forEach(s => {
-      if (window.scrollY >= s.offsetTop - 80) current = s.id;
+// ── ADMIN ─────────────────────────────────────────────────────────────────────
+function renderAdmin(){
+  const {total,done,pct}=allStats();
+  const checks=Object.keys(prog).filter(k=>prog[k]).length;
+  let h=`<div class="page-enter">
+  <div class="sec">Data</div>
+  <div class="agrid">
+    <div class="ac">
+      <div class="ac-title">Export state</div>
+      <div class="ac-sub">Download progress and curriculum as JSON. Re-import on any device.</div>
+      <button class="btn btn-green" style="width:100%" onclick="doExport()">Download pretitan-state.json</button>
+      <div style="margin-top:10px;padding:9px 10px;background:var(--bg4);border-radius:var(--r);font-size:11px;color:var(--text3);font-family:var(--mono)">${done}/${total} (${pct}%) &nbsp; ${TRACKS.length} tracks &nbsp; ${checks} checks</div>
+    </div>
+    <div class="ac">
+      <div class="ac-title">Import state</div>
+      <div class="ac-sub">Load a previously exported JSON to restore progress and curriculum.</div>
+      <label class="btn" style="width:100%;justify-content:center;cursor:pointer">Choose file
+        <input type="file" accept=".json" style="display:none;width:auto" onchange="doImport(event)"/>
+      </label>
+      <div id="imp-status" style="margin-top:8px;font-size:11px;color:var(--text3)">No file chosen.</div>
+    </div>
+    <div class="ac">
+      <div class="ac-title">Reset progress</div>
+      <div class="ac-sub">Clear all checkmarks. Curriculum stays intact.</div>
+      <button class="btn btn-red" style="width:100%" onclick="resetProg()">Clear all checkmarks</button>
+    </div>
+    <div class="ac">
+      <div class="ac-title">Restore defaults</div>
+      <div class="ac-sub">Wipe custom tracks and restore the original curriculum. Also clears progress.</div>
+      <button class="btn btn-red" style="width:100%" onclick="resetAll()">Restore default curriculum</button>
+    </div>
+  </div>
+  <div class="sec">Add track</div>
+  <div class="ac" style="margin-bottom:16px">
+    <div style="display:grid;grid-template-columns:1fr 60px 52px;gap:8px;margin-bottom:10px;align-items:end">
+      <div class="fl" style="margin:0"><div class="fl-lbl">Track name <span>*</span></div><input id="nt-name" placeholder="e.g. Observability"/></div>
+      <div class="fl" style="margin:0"><div class="fl-lbl">Abbr</div><input id="nt-icon" placeholder="OB" maxlength="4"/></div>
+      <div class="fl" style="margin:0"><div class="fl-lbl">Color</div><input type="color" id="nt-color" value="#4f8ef7" style="height:36px;padding:3px 4px;cursor:pointer"/></div>
+    </div>
+    <button class="btn btn-accent" onclick="addTrack()">Add track</button>
+  </div>
+  <div class="sec">Tracks</div>
+  <div id="teditor"></div></div>`;
+  document.getElementById('content').innerHTML=h;
+  renderTE();
+}
+
+function renderTE(){
+  const c=document.getElementById('teditor');if(!c)return;
+  let h='';
+  TRACKS.forEach((t,ti)=>{
+    const total=t.phases.reduce((a,p)=>a+p.items.length,0);
+    h+=`<div class="ac" style="margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <span style="font-size:11px;font-weight:700;font-family:var(--mono);padding:2px 8px;border-radius:4px;background:${t.color}18;color:${t.color}">${t.icon}</span>
+        <div style="flex:1"><div style="font-size:13px;font-weight:500;color:var(--text)">${esc(t.title)}</div><div style="font-size:10px;color:var(--text3)">${t.phases.length} phases &middot; ${total} items</div></div>
+        <button class="btn btn-sm" onclick="openEditTrack(${ti})">Edit</button>
+        <button class="btn btn-sm btn-red" onclick="delTrack(${ti})">Delete</button>
+      </div>`;
+    t.phases.forEach((p,pi)=>{
+      const pd=p.items.filter((_,ii)=>prog[pk(t.id,pi,ii)]).length;
+      h+=`<div class="editor-item"><span class="name">${esc(p.name)}</span><span class="meta">${pd}/${p.items.length}</span>
+        <button class="btn btn-sm" style="padding:2px 7px;font-size:10px" onclick="openEditPhase(${ti},${pi})">Edit</button>
+        <button class="btn btn-sm btn-red" style="padding:2px 7px;font-size:10px" onclick="delPhase(${ti},${pi})">Remove</button>
+      </div>`;
     });
-    navLinks.forEach(link => {
-      link.style.color = link.getAttribute('href') === '#' + current
-        ? 'var(--accent)' : '';
-    });
+    h+=`<button class="btn btn-sm" onclick="openAddPhase(${ti})" style="margin-top:6px">+ Add phase</button></div>`;
   });
+  c.innerHTML=h||'<div style="color:var(--text3);font-size:12px;padding:8px 0">No tracks.</div>';
+}
+
+// ── MODALS ────────────────────────────────────────────────────────────────────
+function modal(html){
+  const bg=document.createElement('div');bg.className='modal-bg';bg.id='modal-bg';
+  bg.innerHTML='<div class="modal">'+html+'</div>';
+  bg.addEventListener('click',e=>{if(e.target===bg)closeModal();});
+  document.body.appendChild(bg);
+}
+function closeModal(){const m=document.getElementById('modal-bg');if(m)m.remove();}
+
+function openEditTrack(ti){
+  const t=TRACKS[ti];
+  modal(`<div class="modal-title">Edit track</div><div class="modal-sub">Update name, abbreviation or colour.</div>
+    <div class="fl"><div class="fl-lbl">Name</div><input id="m-n" value="${esc(t.title)}"/></div>
+    <div class="fl"><div class="fl-lbl">Abbreviation</div><input id="m-i" value="${esc(t.icon)}" maxlength="4" style="width:80px"/></div>
+    <div class="fl"><div class="fl-lbl">Color</div><input type="color" id="m-c" value="${t.color}" style="width:60px;height:32px;padding:2px 4px"/></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-accent" onclick="saveTrack(${ti})">Save</button></div>`);
+}
+function saveTrack(ti){
+  TRACKS[ti].title=document.getElementById('m-n').value.trim()||TRACKS[ti].title;
+  TRACKS[ti].icon=document.getElementById('m-i').value.trim()||TRACKS[ti].icon;
+  TRACKS[ti].color=document.getElementById('m-c').value;
+  persist();closeModal();toast('Track updated');renderAdmin();buildSB();
+}
+function delTrack(ti){
+  const t=TRACKS[ti];
+  const items=t.phases.reduce((a,p)=>a+p.items.length,0);
+  modal(`<div class="modal-title" style="color:var(--red)">Delete track</div>
+    <div class="modal-sub">Permanently removes the track and all its progress.</div>
+    <div class="step-row"><div class="sdot active" id="dt-sd1">1</div><div class="sline"></div><div class="sdot" id="dt-sd2">2</div></div>
+    <div id="dt-step1">
+      <div class="danger-box"><p>Delete <strong style="color:var(--text)">${esc(t.title)}</strong> &mdash; ${t.phases.length} phases, ${items} items.</p></div>
+      <div class="modal-actions"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-red" onclick="dtStep2(${ti})">Continue</button></div>
+    </div>
+    <div id="dt-step2" style="display:none">
+      <div class="danger-box"><p>Type <strong style="color:var(--red);font-family:var(--mono)">DELETE</strong> to confirm.</p>
+      <input class="type-confirm" id="dt-word" placeholder="Type DELETE" oninput="document.getElementById('dt-btn').disabled=this.value!=='DELETE'"/></div>
+      <div class="modal-actions"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-red" id="dt-btn" disabled onclick="doDelTrack(${ti})">Delete</button></div>
+    </div>`);
+}
+function dtStep2(ti){
+  document.getElementById('dt-step1').style.display='none';
+  document.getElementById('dt-step2').style.display='block';
+  document.getElementById('dt-sd1').className='sdot done';
+  document.getElementById('dt-sd2').className='sdot active';
+  document.getElementById('dt-word').focus();
+}
+function doDelTrack(ti){
+  const tid=TRACKS[ti].id;Object.keys(prog).forEach(k=>{if(k.startsWith(tid+':'))delete prog[k];});
+  TRACKS.splice(ti,1);persist();closeModal();toast('Track deleted');renderAdmin();buildSB();
+}
+function openAddPhase(ti){
+  modal(`<div class="modal-title">Add phase to "${esc(TRACKS[ti].title)}"</div>
+    <div class="modal-sub">Enter phase name then items, one per line.</div>
+    <div class="fl"><div class="fl-lbl">Phase name <span>*</span></div><input id="m-pn" placeholder="Phase 7 — Topic"/></div>
+    <div class="fl"><div class="fl-lbl">Items (one per line) <span>*</span></div><textarea id="m-pi" placeholder="Lab 1&#10;Lab 2"></textarea></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-accent" onclick="saveAddPhase(${ti})">Add</button></div>`);
+}
+function saveAddPhase(ti){
+  const n=document.getElementById('m-pn').value.trim();
+  const items=document.getElementById('m-pi').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  if(!n){toast('Phase name required');return;}if(!items.length){toast('Add at least one item');return;}
+  TRACKS[ti].phases.push({name:n,items});persist();closeModal();toast('Phase added');renderAdmin();
+}
+function openEditPhase(ti,pi){
+  const p=TRACKS[ti].phases[pi];
+  modal(`<div class="modal-title">Edit phase</div><div class="modal-sub">Update name and items.</div>
+    <div class="fl"><div class="fl-lbl">Phase name</div><input id="m-pn" value="${esc(p.name)}"/></div>
+    <div class="fl"><div class="fl-lbl">Items (one per line)</div><textarea id="m-pi" rows="8">${p.items.map(esc).join('\n')}</textarea></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-accent" onclick="saveEditPhase(${ti},${pi})">Save</button></div>`);
+}
+function saveEditPhase(ti,pi){
+  const n=document.getElementById('m-pn').value.trim();
+  const items=document.getElementById('m-pi').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  if(!n||!items.length){toast('Name and items required');return;}
+  TRACKS[ti].phases[pi]={name:n,items};persist();closeModal();toast('Phase updated');renderAdmin();
+}
+function delPhase(ti,pi){
+  const p=TRACKS[ti].phases[pi];
+  modal(`<div class="modal-title" style="color:var(--red)">Delete phase</div>
+    <div class="modal-sub">Removes ${p.items.length} items and their progress.</div>
+    <div class="danger-box"><p>Delete <strong style="color:var(--text)">${esc(p.name)}</strong>?</p></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-red" onclick="doDelPhase(${ti},${pi})">Delete phase</button></div>`);
+}
+function doDelPhase(ti,pi){
+  const tid=TRACKS[ti].id,np={};
+  Object.keys(prog).forEach(k=>{
+    if(!k.startsWith(tid+':')){np[k]=prog[k];return;}
+    const pts=k.split(':'),p2=parseInt(pts[1]),i2=parseInt(pts[2]);
+    if(p2<pi)np[k]=prog[k];
+    else if(p2>pi)np[tid+':'+(p2-1)+':'+i2]=prog[k];
+  });
+  Object.keys(prog).forEach(k=>delete prog[k]);Object.assign(prog,np);
+  TRACKS[ti].phases.splice(pi,1);persist();closeModal();toast('Phase deleted');renderAdmin();buildSB();
+}
+function addTrack(){
+  const n=document.getElementById('nt-name').value.trim();
+  if(!n){toast('Track name required');return;}
+  TRACKS.push({id:'t'+Date.now(),title:n,icon:document.getElementById('nt-icon').value.trim()||'--',color:document.getElementById('nt-color').value||'#5b8dee',phases:[]});
+  persist();toast('Track added');renderAdmin();buildSB();
+}
+
+// ── IMPORT / EXPORT ───────────────────────────────────────────────────────────
+function doExport(){
+  const {total,done,pct}=allStats();
+  const payload={_meta:{exportedAt:new Date().toISOString(),v:5,total,done,pct},tracks:TRACKS,roles:ROLES,prog};
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}));
+  a.download='pretitan-'+new Date().toISOString().slice(0,10)+'.json';a.click();
+  toast('Exported');
+}
+function doImport(evt){
+  const file=evt.target.files[0];if(!file)return;
+  const st=document.getElementById('imp-status');if(st)st.textContent='Reading...';
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const d=JSON.parse(e.target.result);
+      if(!d.tracks||!Array.isArray(d.tracks))throw new Error('Missing tracks array');
+      const checks=Object.keys(d.prog||{}).filter(k=>d.prog[k]).length;
+      if(!confirm('Import "'+file.name+'"?\n'+d.tracks.length+' tracks, '+checks+' checkmarks.\nThis replaces current data.'))
+        {if(st)st.textContent='Cancelled.';return;}
+      TRACKS=d.tracks;ROLES=d.roles||clone(DR);prog=d.prog||{};persist();
+      if(st)st.textContent='Imported: '+TRACKS.length+' tracks, '+checks+' checks.';
+      toast('Imported');buildSB();renderAdmin();
+    }catch(err){if(st)st.textContent='Error: '+err.message;toast('Import failed');}
+  };
+  reader.readAsText(file);
+}
+function resetProg(){
+  const {total,done}=allStats();
+  modal(`<div class="modal-title" style="color:var(--red)">Reset progress</div>
+    <div class="modal-sub">Clear all checkmarks. Curriculum stays intact.</div>
+    <div class="step-row"><div class="sdot active" id="sd1">1</div><div class="sline"></div><div class="sdot" id="sd2">2</div></div>
+    <div id="rp-step1">
+      <div class="danger-box"><p>Clear <strong style="color:var(--text)">${done} completed items</strong> across all tracks.</p>
+      <div class="danger-stats">Completed: <b>${done}</b> &nbsp; Total: <b>${total}</b></div></div>
+      <div class="modal-actions"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-red" onclick="rpStep2()">Continue</button></div>
+    </div>
+    <div id="rp-step2" style="display:none">
+      <div class="danger-box"><p>Type <strong style="color:var(--red);font-family:var(--mono)">RESET</strong> to confirm.</p>
+      <input class="type-confirm" id="rp-word" placeholder="Type RESET" oninput="document.getElementById('rp-btn').disabled=this.value!=='RESET'"/></div>
+      <div class="modal-actions"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-red" id="rp-btn" disabled onclick="doResetProg()">Clear all</button></div>
+    </div>`);
+}
+function rpStep2(){
+  document.getElementById('rp-step1').style.display='none';document.getElementById('rp-step2').style.display='block';
+  document.getElementById('sd1').className='sdot done';document.getElementById('sd2').className='sdot active';
+  document.getElementById('rp-word').focus();
+}
+function doResetProg(){Object.keys(prog).forEach(k=>delete prog[k]);persist();closeModal();toast('Progress cleared');buildSB();renderAdmin();}
+
+function resetAll(){
+  const checks=Object.keys(prog).filter(k=>prog[k]).length;
+  modal(`<div class="modal-title" style="color:var(--red)">Restore defaults</div>
+    <div class="modal-sub">Wipe all custom tracks and progress, restore original curriculum.</div>
+    <div class="step-row"><div class="sdot active" id="ra-sd1">1</div><div class="sline"></div><div class="sdot" id="ra-sd2">2</div></div>
+    <div id="ra-step1">
+      <div class="danger-box"><p>Remove all custom changes and restore the original PRE-TITAN curriculum.</p>
+      <div class="danger-stats">Tracks: <b>${TRACKS.length}</b> &nbsp; Checks: <b>${checks}</b></div></div>
+      <div class="modal-actions"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-red" onclick="raStep2()">Continue</button></div>
+    </div>
+    <div id="ra-step2" style="display:none">
+      <div class="danger-box"><p>Type <strong style="color:var(--red);font-family:var(--mono)">RESTORE</strong> to confirm.</p>
+      <input class="type-confirm" id="ra-word" placeholder="Type RESTORE" oninput="document.getElementById('ra-btn').disabled=this.value!=='RESTORE'"/></div>
+      <div class="modal-actions"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-red" id="ra-btn" disabled onclick="doResetAll()">Restore</button></div>
+    </div>`);
+}
+function raStep2(){
+  document.getElementById('ra-step1').style.display='none';document.getElementById('ra-step2').style.display='block';
+  document.getElementById('ra-sd1').className='sdot done';document.getElementById('ra-sd2').className='sdot active';
+  document.getElementById('ra-word').focus();
+}
+function doResetAll(){TRACKS=clone(DT);ROLES=clone(DR);Object.keys(prog).forEach(k=>delete prog[k]);persist();closeModal();toast('Restored to defaults');buildSB();go('dash');}
+
+// ── UTILS ─────────────────────────────────────────────────────────────────────
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function toast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ── BOOT ──────────────────────────────────────────────────────────────────────
+load();
+const {bt}=allStats();_prevUnlocked=ROLES.filter(r=>roleOk(r,bt).unlocked).length;
+buildSB();go('dash');
 </script>
 </body>
 </html>
