@@ -172,20 +172,6 @@
     overflow: hidden;
   }
 
-  #hero.pinned {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 50;
-  }
-
-  #heroSpacer {
-    display: none;
-  }
-
-  #heroSpacer.active {
-    display: block;
-  }
-
   .hero-glow {
     position: absolute;
     top: -200px; left: -200px;
@@ -193,7 +179,6 @@
     border-radius: 50%;
     background: radial-gradient(circle, rgba(0,212,255,0.06) 0%, transparent 70%);
     pointer-events: none;
-    will-change: transform;
   }
 
   .hero-glow-2 {
@@ -203,132 +188,9 @@
     border-radius: 50%;
     background: radial-gradient(circle, rgba(0,136,187,0.04) 0%, transparent 70%);
     pointer-events: none;
-    will-change: transform;
-  }
-
-  .hero-glow-3 {
-    position: absolute;
-    top: 40%; left: 60%;
-    width: 400px; height: 400px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(245,166,35,0.03) 0%, transparent 70%);
-    pointer-events: none;
-    will-change: transform;
-  }
-
-  .section-glow {
-    position: absolute;
-    width: 600px; height: 600px;
-    border-radius: 50%;
-    pointer-events: none;
-    will-change: transform;
-    z-index: 0;
   }
 
   .hero-content { padding: 80px 0; }
-
-  .hero-top {
-    display: grid;
-    grid-template-columns: 70% 30%;
-    gap: 40px;
-    align-items: center;
-    margin-bottom: 36px;
-  }
-
-  @media (max-width: 760px) {
-    .hero-top { grid-template-columns: 1fr; }
-    .hero-portrait-wrap { order: -1; max-width: 200px; margin: 0 auto 24px; }
-  }
-
-  .hero-portrait-wrap {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 1;
-    border: 1px solid var(--border2);
-    background: var(--bg2);
-    overflow: hidden;
-  }
-
-  .hero-portrait-wrap::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border: 1px solid var(--accent3);
-    z-index: 3;
-    pointer-events: none;
-  }
-
-  .frame-corner {
-    position: absolute;
-    width: 16px; height: 16px;
-    z-index: 4;
-    pointer-events: none;
-  }
-
-  .frame-corner.tl { top: 0; left: 0; border-top: 2px solid var(--accent); border-left: 2px solid var(--accent); }
-  .frame-corner.tr { top: 0; right: 0; border-top: 2px solid var(--accent); border-right: 2px solid var(--accent); }
-  .frame-corner.bl { bottom: 0; left: 0; border-bottom: 2px solid var(--accent); border-left: 2px solid var(--accent); }
-  .frame-corner.br { bottom: 0; right: 0; border-bottom: 2px solid var(--accent); border-right: 2px solid var(--accent); }
-
-  .hero-portrait-wrap.attention .frame-corner {
-    animation: corner-blink 0.9s ease-in-out infinite;
-  }
-
-  @keyframes corner-blink {
-    0%, 100% { opacity: 1; border-color: var(--accent); }
-    50% { opacity: 0.25; border-color: var(--accent); }
-  }
-
-  .hero-portrait-wrap.lit .frame-corner {
-    animation: none;
-    opacity: 1;
-    border-color: var(--accent);
-  }
-
-  .scroll-down-arrow {
-    position: fixed;
-    bottom: 28px;
-    left: 32px;
-    z-index: 60;
-    opacity: 0;
-    pointer-events: none;
-    color: var(--accent);
-  }
-
-  .scroll-down-arrow.show {
-    opacity: 1;
-    animation: arrow-blink 0.5s steps(1) infinite;
-  }
-
-  @keyframes arrow-blink {
-    0%, 49% { opacity: 1; }
-    50%, 100% { opacity: 0; }
-  }
-
-  .hero-portrait {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    filter: brightness(0.15) saturate(0.6) contrast(1.05);
-  }
-
-  .portrait-tag {
-    position: absolute;
-    bottom: 8px; left: 8px;
-    font-family: var(--code);
-    font-size: 9px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--accent);
-    background: rgba(8,11,16,0.8);
-    padding: 3px 7px;
-    z-index: 3;
-    opacity: 0;
-    transition: opacity 0.6s ease;
-  }
-
-  .hero-portrait-wrap.lit .portrait-tag { opacity: 1; }
 
   .hero-tag {
     display: inline-flex;
@@ -356,11 +218,11 @@
   h1.hero-name {
     font-family: var(--sans);
     font-weight: 800;
-    font-size: clamp(38px, 6vw, 68px);
+    font-size: clamp(42px, 7vw, 82px);
     line-height: 0.95;
     color: var(--text-bright);
     letter-spacing: -0.02em;
-    margin-bottom: 0;
+    margin-bottom: 8px;
   }
 
   h1.hero-name .line2 {
@@ -368,61 +230,24 @@
     -webkit-text-stroke: 1px rgba(0,212,255,0.4);
   }
 
-  /* TERMINAL */
-  .hero-terminal {
-    border: 1px solid var(--border2);
-    background: var(--bg2);
-    max-width: 640px;
-    margin-bottom: 40px;
-  }
-
-  .terminal-bar {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 12px;
-    border-bottom: 1px solid var(--border);
-    background: var(--bg3);
-  }
-
-  .terminal-dot {
-    width: 9px; height: 9px;
-    border-radius: 50%;
-    background: var(--border2);
-  }
-
-  .terminal-bar-label {
-    margin-left: 8px;
-    font-family: var(--code);
-    font-size: 10px;
-    color: var(--text-dim);
-    letter-spacing: 0.05em;
-  }
-
-  .terminal-body {
-    padding: 18px 20px;
+  .hero-role {
     font-family: var(--code);
     font-size: 13px;
-    line-height: 1.85;
-    min-height: 140px;
+    color: var(--accent);
+    margin-bottom: 28px;
+    letter-spacing: 0.04em;
   }
 
-  .term-prompt-line { color: var(--text-dim); margin-bottom: 6px; }
-  .term-prompt-line .term-accent { color: var(--accent); }
+  .hero-role .prompt { color: var(--text-dim); }
 
-  .term-output {
+  .hero-desc {
+    max-width: 560px;
+    font-size: 14px;
     color: var(--text);
-  }
-
-  .term-output .tc { color: var(--text); }
-
-  .term-cursor {
-    display: inline-block;
-    width: 7px; height: 13px;
-    background: var(--accent);
-    vertical-align: -2px;
-    margin-left: 1px;
-    animation: blink 1s infinite;
+    line-height: 1.8;
+    margin-bottom: 40px;
+    border-left: 2px solid var(--border2);
+    padding-left: 20px;
   }
 
   .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; }
@@ -488,7 +313,7 @@
   .stat-label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.1em; }
 
   /* SECTION COMMONS */
-  section { padding: 100px 0; position: relative; z-index: 2; overflow: hidden; }
+  section { padding: 100px 0; position: relative; z-index: 2; }
 
   .section-header { margin-bottom: 56px; }
 
@@ -513,15 +338,6 @@
     color: var(--text-bright);
     letter-spacing: -0.02em;
     line-height: 1.1;
-  }
-
-  h2.section-title.pulse-title {
-    animation: title-pulse 3.4s ease-in-out infinite;
-  }
-
-  @keyframes title-pulse {
-    0%, 100% { color: var(--text-dim); text-shadow: none; }
-    50% { color: var(--text-bright); text-shadow: 0 0 18px rgba(0,212,255,0.35); }
   }
 
   .section-sub {
@@ -804,32 +620,13 @@
     padding: 5px 10px;
     border: 1px solid var(--border2);
     background: var(--bg3);
-    transition: border-color 0.2s, color 0.2s, background 0.2s;
-    filter: brightness(0.25) saturate(0.4);
-  }
-
-  .stack-item.flicker {
-    animation-name: chip-flicker;
-    animation-timing-function: ease-in-out;
-    animation-iteration-count: infinite;
-    animation-direction: alternate;
-  }
-
-  @keyframes chip-flicker {
-    0% { filter: brightness(0.25) saturate(0.4); }
-    20% { filter: brightness(0.55) saturate(0.6); }
-    40% { filter: brightness(0.35) saturate(0.5); }
-    60% { filter: brightness(0.9) saturate(0.95); }
-    80% { filter: brightness(0.45) saturate(0.55); }
-    100% { filter: brightness(1) saturate(1); }
+    transition: all 0.2s;
   }
 
   .stack-item:hover {
     border-color: var(--accent);
     color: var(--accent);
     background: rgba(0,212,255,0.04);
-    filter: brightness(1) saturate(1) !important;
-    animation-play-state: paused;
   }
 
   .stack-item.core {
@@ -854,13 +651,7 @@
     display: flex;
     align-items: center;
     gap: 16px;
-    transition: border-color 0.2s, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.7s ease;
-    opacity: 0;
-  }
-
-  .cert-item.fly-in {
-    opacity: 1;
-    transform: translate(0, 0) rotate(0deg) !important;
+    transition: border-color 0.2s;
   }
 
   .cert-item:hover { border-color: var(--border2); }
@@ -1023,24 +814,7 @@
     background: var(--bg2);
     text-decoration: none;
     color: var(--text);
-    transition: background 0.2s, color 0.2s;
-    box-shadow: 0 0 0 0 transparent;
-  }
-
-  .contact-link.police {
-    animation: police-flash 1.2s steps(1) infinite;
-  }
-
-  .contact-link.police:nth-of-type(1) { animation-delay: 0s; }
-  .contact-link.police:nth-of-type(2) { animation-delay: 0.3s; }
-  .contact-link.police:nth-of-type(3) { animation-delay: 0.6s; }
-  .contact-link.police:nth-of-type(4) { animation-delay: 0.9s; }
-
-  @keyframes police-flash {
-    0%, 24% { border-color: var(--red); box-shadow: 0 0 12px -2px rgba(255,68,68,0.5); }
-    25%, 49% { border-color: var(--border); box-shadow: 0 0 0 0 transparent; }
-    50%, 74% { border-color: var(--accent); box-shadow: 0 0 12px -2px rgba(0,212,255,0.5); }
-    75%, 100% { border-color: var(--border); box-shadow: 0 0 0 0 transparent; }
+    transition: all 0.2s;
   }
 
   .contact-link:hover {
@@ -1143,9 +917,34 @@
 <div class="noise"></div>
 
 <!-- NAV -->
+<style>
+.nav-logo {
+  display: inline-block;
+  animation: pulse 3s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+}
+</style>
+
 <nav>
   <div class="nav-inner">
-    <a href="#hero" class="nav-logo">AD<span>.engineer</span></a>
+    <a href="#hero" class="nav-logo blink-logo">AD<span>.io</span></a>
+
     <ul class="nav-links">
       <li><a href="#projects">Projects</a></li>
       <li><a href="#thinking">Thinking</a></li>
@@ -1156,6 +955,22 @@
     </ul>
   </div>
 </nav>
+
+<style>
+.blink-logo {
+  animation: blink 2.5s infinite;
+}
+
+@keyframes blink {
+  0%, 96%, 100% {
+    opacity: 1;
+  }
+
+  98% {
+    opacity: 0;
+  }
+}
+</style>
 
 <!-- STATUS BAR -->
 <div class="status-bar">
@@ -1169,52 +984,86 @@
 
 <!-- HERO -->
 <section id="hero">
-  <div class="hero-glow" data-parallax="0.15"></div>
-  <div class="hero-glow-2" data-parallax="0.3"></div>
-  <div class="hero-glow-3" data-parallax="0.45"></div>
-  <div class="scroll-down-arrow" id="scrollDownArrow">
-    <svg width="22" height="34" viewBox="0 0 22 34" fill="none">
-      <path d="M11 2 V28 M11 28 L3 20 M11 28 L19 20" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-  </div>
+  <div class="hero-glow"></div>
+  <div class="hero-glow-2"></div>
   <div class="container">
-    <div class="hero-content">
+    <div class="hero-content reveal">
+      <div class="hero-tag">DevOps · MLOps · Platform Engineering</div>
+      <h1 class="hero-name">
+        Amanyi<br>
+        <span class="line2">Daniel</span>
+      </h1>
 
-      <div class="hero-top">
-        <div>
-          <div class="hero-tag">DevOps · MLOps · Platform Engineering</div>
-          <h1 class="hero-name">
-            Amanyi<br>
-            <span class="line2">Daniel</span>
-          </h1>
-        </div>
-        <div class="hero-portrait-wrap attention" id="portraitWrap">
-          <img class="hero-portrait" id="heroPortrait" src="https://placehold.co/480x480/0c1118/5a7080?text=AD" alt="Amanyi Daniel">
-          <span class="frame-corner tl"></span>
-          <span class="frame-corner tr"></span>
-          <span class="frame-corner bl"></span>
-          <span class="frame-corner br"></span>
-          <div class="portrait-tag">ID: AD-001 · VERIFIED</div>
-        </div>
+      <div class="hero-role">
+        <span class="prompt">$ </span>
+        <span id="typewriter"></span>
+        <span class="cursor"></span>
       </div>
 
-      <div class="hero-terminal" id="heroTerminal">
-        <div class="terminal-bar">
-          <div class="terminal-dot"></div>
-          <div class="terminal-dot"></div>
-          <div class="terminal-dot"></div>
-          <span class="terminal-bar-label">session — whoami</span>
-        </div>
-        <div class="terminal-body">
-          <div class="term-prompt-line"><span class="term-accent">$</span> whoami — Senior Platform Engineer</div>
-          <div class="term-output" id="termOutput"><span class="term-cursor"></span></div>
-        </div>
-      </div>
+      <p class="hero-desc">
+        DevOps and Platform Engineer with 4+ years designing and operating Kubernetes-native systems across AWS and on-prem environments. Strong focus on reliability engineering, failure handling, and infrastructure consistency. Known for diagnosing complex infra failures, minimizing blast radius, and maintaining control plane stability under stress.
+      </p>
+
+      <style>
+      .btn-primary {
+        animation: blink 0.6s infinite;
+      }
+
+      @keyframes blink {
+        0%, 100% {
+          opacity: 1;
+        }
+
+        50% {
+          opacity: 0.2;
+        }
+      }
+      </style>
 
       <div class="hero-actions">
-        <a href="#projects" class="btn btn-primary">View Projects</a>
+        <a href="#projects" class="btn btn-primary blink-btn">View Projects</a>
         <a href="#contact" class="btn btn-ghost">Get in Touch</a>
       </div>
+
+      <script>
+      const words = [
+        "whoami - Infrastructure Engineer / Platform Engineer"
+        
+      ];
+
+      let wordIndex = 0;
+      let charIndex = 0;
+      let currentText = "";
+      let isDeleting = false;
+
+      function typeEffect() {
+        const currentWord = words[wordIndex];
+
+        if (isDeleting) {
+          currentText = currentWord.substring(0, charIndex--);
+        } else {
+          currentText = currentWord.substring(0, charIndex++);
+        }
+
+        document.getElementById("typewriter").textContent = currentText;
+
+        let speed = isDeleting ? 50 : 100;
+
+        if (!isDeleting && charIndex === currentWord.length + 1) {
+          speed = 1500;
+          isDeleting = true;
+        }
+
+        if (isDeleting && charIndex === 0) {
+          isDeleting = false;
+          wordIndex = (wordIndex + 1) % words.length;
+        }
+
+        setTimeout(typeEffect, speed);
+      }
+
+      typeEffect();
+      </script>
       <div class="hero-stats">
         <div>
           <div class="stat-num">4+</div>
@@ -1236,13 +1085,11 @@
     </div>
   </div>
 </section>
-<div id="heroSpacer"></div>
 
 <hr class="divider">
 
 <!-- PROJECTS -->
 <section id="projects">
-  <div class="section-glow" data-parallax="0.2" style="top:-100px; left:-150px; background:radial-gradient(circle, rgba(0,212,255,0.04) 0%, transparent 70%);"></div>
   <div class="container">
     <div class="section-header reveal">
       <div class="section-tag">Engineering Work</div>
@@ -1505,7 +1352,6 @@
   </div>
 </section>
 <section id="thinking">
-  <div class="section-glow" data-parallax="0.25" style="top:20%; right:-200px; background:radial-gradient(circle, rgba(245,166,35,0.035) 0%, transparent 70%);"></div>
   <div class="container">
     <div class="section-header reveal">
       <div class="section-tag">Engineering Philosophy</div>
@@ -1563,7 +1409,6 @@
 
 <!-- STACK -->
 <section id="stack">
-  <div class="section-glow" data-parallax="0.2" style="bottom:-150px; left:30%; background:radial-gradient(circle, rgba(0,212,255,0.035) 0%, transparent 70%);"></div>
   <div class="container">
     <div class="section-header reveal">
       <div class="section-tag">Technology</div>
@@ -1673,49 +1518,49 @@
       <h2 class="section-title">Certifications</h2>
     </div>
     <div class="certs-list">
-      <div class="cert-item cert-fly">
+      <div class="cert-item reveal">
         <div class="cert-icon">CKA</div>
         <div>
           <div class="cert-name">Certified Kubernetes Administrator</div>
           <div class="cert-issuer">CNCF / Linux Foundation</div>
         </div>
       </div>
-      <div class="cert-item cert-fly">
+      <div class="cert-item reveal">
         <div class="cert-icon">CKAD</div>
         <div>
           <div class="cert-name">Certified Kubernetes App Developer</div>
           <div class="cert-issuer">CNCF / Linux Foundation</div>
         </div>
       </div>
-      <div class="cert-item cert-fly">
+      <div class="cert-item reveal">
         <div class="cert-icon">SAA</div>
         <div>
           <div class="cert-name">AWS Solutions Architect Associate</div>
           <div class="cert-issuer">Amazon Web Services</div>
         </div>
       </div>
-      <div class="cert-item cert-fly">
+      <div class="cert-item reveal">
         <div class="cert-icon">DVA</div>
         <div>
           <div class="cert-name">AWS Developer Associate</div>
           <div class="cert-issuer">Amazon Web Services</div>
         </div>
       </div>
-      <div class="cert-item cert-fly">
+      <div class="cert-item reveal">
         <div class="cert-icon">SOA</div>
         <div>
           <div class="cert-name">AWS SysOps Administrator Associate</div>
           <div class="cert-issuer">Amazon Web Services</div>
         </div>
       </div>
-      <div class="cert-item cert-fly">
+      <div class="cert-item reveal">
         <div class="cert-icon">TF</div>
         <div>
           <div class="cert-name">HashiCorp Terraform Associate</div>
           <div class="cert-issuer">HashiCorp</div>
         </div>
       </div>
-      <div class="cert-item cert-fly">
+      <div class="cert-item reveal">
         <div class="cert-icon">N+</div>
         <div>
           <div class="cert-name">CompTIA Network+</div>
@@ -1733,7 +1578,7 @@
   <div class="container">
     <div class="section-header reveal">
       <div class="section-tag">Work History</div>
-      <h2 class="section-title" id="experienceTitle">Experience</h2>
+      <h2 class="section-title">Experience</h2>
     </div>
 
     <div class="timeline">
@@ -1751,7 +1596,7 @@
       <div class="timeline-item reveal">
         <div class="timeline-period">May 2024 – May 2025</div>
         <div class="timeline-role">DevOps Engineer</div>
-        <div class="timeline-company">Capshall</div>
+        <div class="timeline-company">Capshall  (UK)</div>
         <ul class="timeline-points">
           <li>Designed and operated AWS infrastructure with Terraform across multiple environments — resolved state drift, enforced IaC consistency</li>
           <li>Built CI/CD pipelines (Jenkins, CodePipeline) improving deployment reliability and eliminating manual intervention</li>
@@ -1764,7 +1609,7 @@
       <div class="timeline-item reveal">
         <div class="timeline-period">Oct 2022 – Apr 2024</div>
         <div class="timeline-role">Cloud Engineer</div>
-        <div class="timeline-company">Cloudboosta</div>
+        <div class="timeline-company">Cloudboosta (UK)</div>
         <ul class="timeline-points">
           <li>Provisioned multi-AZ AWS infrastructure with Terraform and CloudFormation, reducing manual provisioning overhead</li>
           <li>Supported serverless and microservices systems across Lambda, API Gateway, and ECS</li>
@@ -1853,28 +1698,29 @@
       </div>
 
       <div class="contact-links reveal">
-        <a href="mailto:amanyidaniel.io@gmail.com" class="contact-link police">
+        <a href="mailto:amanyidaniel.io@gmail.com" class="contact-link">
+          <img src="images/profile.jpg" alt="Amanyi Daniel Sunday">
           <div class="contact-link-icon">✉</div>
           <div>
             <div class="contact-link-label">Email</div>
             <div class="contact-link-value">amanyidaniel.io@gmail.com</div>
           </div>
         </a>
-        <a href="https://github.com/DanielAmanyi" target="_blank" class="contact-link police">
+        <a href="https://github.com/DanielAmanyi" target="_blank" class="contact-link">
           <div class="contact-link-icon">⌥</div>
           <div>
             <div class="contact-link-label">GitHub</div>
             <div class="contact-link-value">github.com/DanielAmanyi</div>
           </div>
         </a>
-        <a href="https://www.linkedin.com/in/daniel-amanyi-87169472/" target="_blank" class="contact-link police">
+        <a href="https://www.linkedin.com/in/daniel-amanyi-87169472/" target="_blank" class="contact-link">
           <div class="contact-link-icon">in</div>
           <div>
             <div class="contact-link-label">LinkedIn</div>
             <div class="contact-link-value">linkedin.com/in/daniel-amanyi-87169472</div>
           </div>
         </a>
-        <a href="https://drive.google.com/file/d/117H8aZBLxY6oqdsjl64aFsa2QfM53GJi/view?usp=sharing" target="_blank" class="contact-link police">
+        <a href="https://drive.google.com/file/d/117H8aZBLxY6oqdsjl64aFsa2QfM53GJi/view?usp=sharing" target="_blank" class="contact-link">
           <div class="contact-link-icon">↓</div>
           <div>
             <div class="contact-link-label">Resume</div>
@@ -1887,209 +1733,39 @@
 </section>
 
 <!-- FOOTER -->
+<style>
+.relocation-blink {
+  animation: relocationBlink 1.8s infinite;
+}
+
+@keyframes relocationBlink {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.35;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+</style>
+
 <footer>
   <div class="footer-inner">
-    <span>Amanyi Daniel — Platform Engineer · amanyidaniel.io@gmail.com</span>
-    <span>Lagos, Nigeria · <span style="color:var(--accent)">Open to Relocation</span></span>
+    <span>Amanyi Daniel · Platform Engineer · amanyidaniel.io@gmail.com</span>
+    <span>
+      Lagos, Nigeria ·
+      <span class="relocation-blink" style="color:var(--accent)">
+        Open to Relocation
+      </span>
+    </span>
   </div>
 </footer>
 
 <script>
-  // Parallax engine — elements drift at a fraction of scroll speed via data-parallax
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const parallaxEls = prefersReducedMotion ? [] : Array.from(document.querySelectorAll('[data-parallax]')).map(el => ({
-    el,
-    speed: parseFloat(el.getAttribute('data-parallax'))
-  }));
-
-  let ticking = false;
-  function updateParallax() {
-    const scrollY = window.scrollY;
-    parallaxEls.forEach(({ el, speed }) => {
-      el.style.transform = `translateY(${scrollY * speed * -1}px)`;
-    });
-    ticking = false;
-  }
-
-  window.addEventListener('scroll', () => {
-    if (!ticking) {
-      requestAnimationFrame(updateParallax);
-      ticking = true;
-    }
-  }, { passive: true });
-
-  updateParallax();
-
-  // Scroll-lock hero: pins in place and consumes scroll input to drive
-  // terminal typing + portrait brighten, then releases to normal scrolling.
-  const TERMINAL_TEXT = "DevOps and Platform Engineer with 4+ years designing and operating Kubernetes-native systems across AWS and on-prem environments. Strong focus on reliability engineering, failure handling, and infrastructure consistency. Known for diagnosing complex infra failures, minimizing blast radius, and maintaining control plane stability under stress.";
-
-  const termOutputEl = document.getElementById('termOutput');
-  const portraitWrap = document.getElementById('portraitWrap');
-  const heroPortrait = document.getElementById('heroPortrait');
-  const heroSection = document.getElementById('hero');
-  const heroSpacer = document.getElementById('heroSpacer');
-  const scrollDownArrow = document.getElementById('scrollDownArrow');
-
-  const TYPE_PHASE_FRACTION = 0.4;
-  const SCROLL_UNITS_TO_COMPLETE = 3200; // total "virtual" scroll px needed to finish the whole sequence
-  const HOLD_UNITS = 600; // extra scroll required after full brighten before the page actually releases
-
-  let seqProgress = 0;      // 0 to 1, drives typing + brighten
-  let holdProgress = 0;     // 0 to 1, the post-brighten hold before release (lets the arrow be seen)
-  let released = false;     // true while the page is unlocked and scrolling normally past the hero
-  let isLocked = false;
-  let lastCharCount = -1;
-  let lastLit = null;
-  let arrowShown = false;
-
-  function renderSequence() {
-    const typeProgress = Math.min(1, seqProgress / TYPE_PHASE_FRACTION);
-    const charCount = Math.floor(typeProgress * TERMINAL_TEXT.length);
-
-    if (charCount !== lastCharCount) {
-      const shown = TERMINAL_TEXT.slice(0, charCount);
-      termOutputEl.innerHTML = `<span class="tc">${shown}</span><span class="term-cursor"></span>`;
-      lastCharCount = charCount;
-    }
-
-    const typingDone = typeProgress >= 1;
-    const brightenProgress = typingDone
-      ? Math.min(1, (seqProgress - TYPE_PHASE_FRACTION) / (1 - TYPE_PHASE_FRACTION))
-      : 0;
-
-    // Continuous brightness dial — brightness goes from 0.15 to 1 as brightenProgress goes 0 to 1
-    const brightness = 0.15 + brightenProgress * 0.85;
-    const saturate = 0.6 + brightenProgress * 0.4;
-    heroPortrait.style.filter = `brightness(${brightness.toFixed(3)}) saturate(${saturate.toFixed(3)}) contrast(1.05)`;
-
-    const shouldBeLit = brightenProgress >= 1;
-    if (shouldBeLit !== lastLit) {
-      portraitWrap.classList.toggle('lit', shouldBeLit);
-      lastLit = shouldBeLit;
-    }
-
-    // Stop the attention blink the moment brightening begins
-    if (brightenProgress > 0 && portraitWrap.classList.contains('attention')) {
-      portraitWrap.classList.remove('attention');
-    }
-
-    // Show the down arrow once fully brightened — it now has a guaranteed
-    // hold window (HOLD_UNITS of extra scroll) before the page releases.
-    if (shouldBeLit && !arrowShown) {
-      scrollDownArrow.classList.add('show');
-      arrowShown = true;
-    }
-    if (!shouldBeLit && arrowShown) {
-      scrollDownArrow.classList.remove('show');
-      arrowShown = false;
-    }
-  }
-
-  function lockHero() {
-    if (isLocked) return;
-    isLocked = true;
-    heroSection.classList.add('pinned');
-    heroSpacer.classList.add('active');
-    heroSpacer.style.height = window.innerHeight + 'px';
-    document.body.style.overflow = 'hidden';
-  }
-
-  function unlockHero() {
-    if (!isLocked) return;
-    isLocked = false;
-    heroSection.classList.remove('pinned');
-    heroSpacer.classList.remove('active');
-    document.body.style.overflow = '';
-  }
-
-  function handleSequenceWheel(e) {
-    if (released) return; // page has been handed back to native scroll
-
-    e.preventDefault();
-    if (!isLocked) lockHero();
-
-    const delta = e.deltaY;
-
-    if (seqProgress < 1) {
-      // Still typing / brightening
-      seqProgress = Math.max(0, Math.min(1, seqProgress + delta / SCROLL_UNITS_TO_COMPLETE));
-      renderSequence();
-      return;
-    }
-
-    // Fully brightened — now in the hold window. Extra forward scroll fills
-    // the hold meter; backward scroll during the hold rewinds seqProgress
-    // instead, so scrolling up always feels continuous and reversible.
-    if (delta > 0) {
-      holdProgress = Math.min(1, holdProgress + delta / HOLD_UNITS);
-      if (holdProgress >= 1) {
-        released = true;
-        scrollDownArrow.classList.remove('show');
-        unlockHero();
-        window.scrollTo(0, 2);
-      }
-    } else {
-      if (holdProgress > 0) {
-        holdProgress = Math.max(0, holdProgress + delta / HOLD_UNITS);
-      } else {
-        seqProgress = Math.max(0, seqProgress + delta / SCROLL_UNITS_TO_COMPLETE);
-        renderSequence();
-      }
-    }
-  }
-
-  let touchStartY = null;
-  function handleTouchStart(e) {
-    touchStartY = e.touches[0].clientY;
-  }
-  function handleTouchMove(e) {
-    if (touchStartY === null) return;
-    const currentY = e.touches[0].clientY;
-    const deltaY = touchStartY - currentY;
-    touchStartY = currentY;
-    handleSequenceWheel({ deltaY, preventDefault: () => e.preventDefault() });
-  }
-
-  window.addEventListener('wheel', handleSequenceWheel, { passive: false });
-  window.addEventListener('touchstart', handleTouchStart, { passive: true });
-  window.addEventListener('touchmove', handleTouchMove, { passive: false });
-
-  const SCROLL_KEYS = { ArrowDown: 80, ArrowUp: -80, PageDown: 400, PageUp: -400, ' ': 400 };
-  window.addEventListener('keydown', (e) => {
-    if (released) return;
-    if (SCROLL_KEYS[e.key] !== undefined) {
-      handleSequenceWheel({ deltaY: SCROLL_KEYS[e.key], preventDefault: () => e.preventDefault() });
-    }
-  });
-
-  window.addEventListener('resize', () => {
-    if (isLocked) heroSpacer.style.height = window.innerHeight + 'px';
-  });
-
-  // Re-lock and replay from scratch whenever the user scrolls all the way
-  // back up to the very top of the page.
-  window.addEventListener('scroll', () => {
-    if (released && window.scrollY <= 1) {
-      released = false;
-      seqProgress = 0;
-      holdProgress = 0;
-      lastCharCount = -1;
-      lastLit = null;
-      arrowShown = false;
-      portraitWrap.classList.add('attention');
-      portraitWrap.classList.remove('lit');
-      heroPortrait.style.filter = 'brightness(0.15) saturate(0.6) contrast(1.05)';
-      termOutputEl.innerHTML = '<span class="term-cursor"></span>';
-      renderSequence();
-      lockHero();
-    }
-  }, { passive: true });
-
-  // Initial state: locked at the top, sequence not started
-  lockHero();
-  renderSequence();
-
   // Scroll reveal
   const reveals = document.querySelectorAll('.reveal');
   const observer = new IntersectionObserver((entries) => {
@@ -2101,58 +1777,6 @@
     });
   }, { threshold: 0.1 });
   reveals.forEach(el => observer.observe(el));
-
-  // Certifications fly in from random directions when scrolled into view
-  const certItems = document.querySelectorAll('.cert-fly');
-  certItems.forEach((el) => {
-    const angle = Math.random() * Math.PI * 2;
-    const distance = 140 + Math.random() * 100;
-    const x = Math.cos(angle) * distance;
-    const y = Math.sin(angle) * distance;
-    const rotate = (Math.random() * 24 - 12).toFixed(1);
-    el.style.transform = `translate(${x.toFixed(0)}px, ${y.toFixed(0)}px) rotate(${rotate}deg)`;
-  });
-  const certObserver = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('fly-in');
-        certObserver.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.2 });
-  certItems.forEach(el => certObserver.observe(el));
-
-  // "Experience" heading pulses slowly dark-to-bright while its section is in view
-  const experienceTitle = document.getElementById('experienceTitle');
-  if (experienceTitle) {
-    const experienceObserver = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        experienceTitle.classList.toggle('pulse-title', entry.isIntersecting);
-      });
-    }, { threshold: 0.15 });
-    experienceObserver.observe(experienceTitle);
-  }
-
-  // Stack item flicker — each tech chip independently flickers brightness forever,
-  // like unstable neon signs, once scrolled into view. Each gets randomized
-  // duration + a negative delay so they're never in sync with each other.
-  const stackGroups = document.querySelectorAll('.stack-group');
-  const stackObserver = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        const items = entry.target.querySelectorAll('.stack-item');
-        items.forEach((item) => {
-          const duration = 2.2 + Math.random() * 3.5; // 2.2s–5.7s per chip
-          const negDelay = -(Math.random() * duration); // start mid-cycle at a random point
-          item.style.animationDuration = `${duration.toFixed(2)}s`;
-          item.style.animationDelay = `${negDelay.toFixed(2)}s`;
-          item.classList.add('flicker');
-        });
-        stackObserver.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.25 });
-  stackGroups.forEach(group => stackObserver.observe(group));
 
   // Project toggle
   function toggleProject(card) {
