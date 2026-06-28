@@ -172,6 +172,20 @@
     overflow: hidden;
   }
 
+  #hero.pinned {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 50;
+  }
+
+  #heroSpacer {
+    display: none;
+  }
+
+  #heroSpacer.active {
+    display: block;
+  }
+
   .hero-glow {
     position: absolute;
     top: -200px; left: -200px;
@@ -226,21 +240,16 @@
     .hero-portrait-wrap { order: -1; max-width: 200px; margin: 0 auto 24px; }
   }
 
-  .hero-portrait-wrap,
-  .bracket-frame {
-    position: relative;
-    overflow: hidden;
-  }
-
   .hero-portrait-wrap {
+    position: relative;
     width: 100%;
     aspect-ratio: 1;
     border: 1px solid var(--border2);
     background: var(--bg2);
+    overflow: hidden;
   }
 
-  .hero-portrait-wrap::before,
-  .bracket-frame::before {
+  .hero-portrait-wrap::before {
     content: '';
     position: absolute;
     inset: 0;
@@ -261,11 +270,7 @@
   .frame-corner.bl { bottom: 0; left: 0; border-bottom: 2px solid var(--accent); border-left: 2px solid var(--accent); }
   .frame-corner.br { bottom: 0; right: 0; border-bottom: 2px solid var(--accent); border-right: 2px solid var(--accent); }
 
-  /* Reusable attention-blink trigger: add .attention to any .bracket-frame
-     (or .hero-portrait-wrap) to make its corner brackets blink. Add .lit
-     (or .calm) to settle them into a steady glow instead. */
-  .hero-portrait-wrap.attention .frame-corner,
-  .bracket-frame.attention .frame-corner {
+  .hero-portrait-wrap.attention .frame-corner {
     animation: corner-blink 0.4s ease-in-out infinite;
   }
 
@@ -274,11 +279,30 @@
     50% { opacity: 0.25; border-color: var(--accent); }
   }
 
-  .hero-portrait-wrap.lit .frame-corner,
-  .bracket-frame.calm .frame-corner {
+  .hero-portrait-wrap.lit .frame-corner {
     animation: none;
     opacity: 1;
     border-color: var(--accent);
+  }
+
+  .scroll-down-arrow {
+    position: fixed;
+    bottom: 28px;
+    left: 32px;
+    z-index: 60;
+    opacity: 0;
+    pointer-events: none;
+    color: var(--accent);
+  }
+
+  .scroll-down-arrow.show {
+    opacity: 1;
+    animation: arrow-blink 0.5s steps(1) infinite;
+  }
+
+  @keyframes arrow-blink {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0; }
   }
 
   .hero-portrait {
@@ -729,42 +753,6 @@
 
   .insight-body { font-size: 13px; color: var(--text); line-height: 1.8; }
 
-  .insight-terminal {
-    border: 1px solid var(--border2);
-    background: var(--bg2);
-    margin-bottom: 4px;
-  }
-
-  .insight-terminal .insight-terminal-bar {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 10px;
-    border-bottom: 1px solid var(--border);
-    background: var(--bg3);
-  }
-
-  .insight-terminal .insight-terminal-bar .terminal-bar-label {
-    margin-left: 6px;
-    font-size: 9px;
-  }
-
-  .insight-terminal .insight-body {
-    padding: 14px 16px;
-    font-family: var(--code);
-    font-size: 12px;
-    min-height: 100px;
-  }
-
-  .insight-terminal .insight-body .term-cursor {
-    display: inline-block;
-    width: 6px; height: 11px;
-    background: var(--accent);
-    vertical-align: -1px;
-    margin-left: 1px;
-    animation: blink 1s infinite;
-  }
-
   .insight-tag {
     display: inline-block;
     margin-top: 16px;
@@ -1177,6 +1165,11 @@
   <div class="hero-glow" data-parallax="0.15"></div>
   <div class="hero-glow-2" data-parallax="0.3"></div>
   <div class="hero-glow-3" data-parallax="0.45"></div>
+  <div class="scroll-down-arrow" id="scrollDownArrow">
+    <svg width="22" height="34" viewBox="0 0 22 34" fill="none">
+      <path d="M11 2 V28 M11 28 L3 20 M11 28 L19 20" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
   <div class="container">
     <div class="hero-content">
 
@@ -1188,7 +1181,7 @@
             <span class="line2">Daniel</span>
           </h1>
         </div>
-        <div class="hero-portrait-wrap lit" id="portraitWrap">
+        <div class="hero-portrait-wrap attention" id="portraitWrap">
           <img class="hero-portrait" id="heroPortrait" src="https://placehold.co/480x480/0c1118/5a7080?text=AD" alt="Amanyi Daniel">
           <span class="frame-corner tl"></span>
           <span class="frame-corner tr"></span>
@@ -1236,6 +1229,7 @@
     </div>
   </div>
 </section>
+<div id="heroSpacer"></div>
 
 <hr class="divider">
 
@@ -1512,82 +1506,46 @@
       <p class="section-sub">Opinionated takes from real operational experience. Not definitions — how I actually approach problems.</p>
     </div>
 
-    <div class="insights-grid" id="insightsGrid">
+    <div class="insights-grid">
       <div class="insight-card reveal">
         <div class="insight-num">01</div>
         <div class="insight-topic">Observability is a design decision, not a retrofit</div>
-        <div class="insight-terminal">
-          <div class="insight-terminal-bar">
-            <span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-dot"></span>
-            <span class="terminal-bar-label">note — observability</span>
-          </div>
-          <div class="insight-body" data-text="If you're adding metrics after an incident, you've already lost. Observability needs to be specified at design time — what questions will operators ask at 3am? Those questions determine your instrumentation. Logs that don't answer operational questions are just storage costs."></div>
-        </div>
+        <div class="insight-body">If you're adding metrics after an incident, you've already lost. Observability needs to be specified at design time — what questions will operators ask at 3am? Those questions determine your instrumentation. Logs that don't answer operational questions are just storage costs.</div>
         <div class="insight-tag">Observability</div>
       </div>
 
       <div class="insight-card reveal">
         <div class="insight-num">02</div>
         <div class="insight-topic">Runbooks that aren't tested aren't runbooks</div>
-        <div class="insight-terminal">
-          <div class="insight-terminal-bar">
-            <span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-dot"></span>
-            <span class="terminal-bar-label">note — operations</span>
-          </div>
-          <div class="insight-body" data-text="A runbook written during a postmortem and never executed again is documentation theater. Every runbook in my environments has an associated drill schedule. If the steps are wrong when it's calm, they're catastrophically wrong when it's not. This is the TITAN doctrine applied operationally."></div>
-        </div>
+        <div class="insight-body">A runbook written during a postmortem and never executed again is documentation theater. Every runbook in my environments has an associated drill schedule. If the steps are wrong when it's calm, they're catastrophically wrong when it's not. This is the TITAN doctrine applied operationally.</div>
         <div class="insight-tag">Operations</div>
       </div>
 
       <div class="insight-card reveal">
         <div class="insight-num">03</div>
         <div class="insight-topic">Toil is a capacity problem disguised as a process problem</div>
-        <div class="insight-terminal">
-          <div class="insight-terminal-bar">
-            <span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-dot"></span>
-            <span class="terminal-bar-label">note — platform-eng</span>
-          </div>
-          <div class="insight-body" data-text="Teams that do a lot of manual operational work usually frame it as &quot;we just need better runbooks.&quot; The real problem is that every hour spent on toil is an hour not spent on reliability improvements. Automation isn't about laziness — it's about preserving engineering capacity for work that actually requires thinking."></div>
-        </div>
+        <div class="insight-body">Teams that do a lot of manual operational work usually frame it as "we just need better runbooks." The real problem is that every hour spent on toil is an hour not spent on reliability improvements. Automation isn't about laziness — it's about preserving engineering capacity for work that actually requires thinking.</div>
         <div class="insight-tag">Platform Engineering</div>
       </div>
 
       <div class="insight-card reveal">
         <div class="insight-num">04</div>
         <div class="insight-topic">Blast radius matters more than failure probability</div>
-        <div class="insight-terminal">
-          <div class="insight-terminal-bar">
-            <span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-dot"></span>
-            <span class="terminal-bar-label">note — reliability</span>
-          </div>
-          <div class="insight-body" data-text="I care less about how likely a failure is than about how much damage it causes. A 0.01% probability event that takes down your entire data plane is more dangerous than a 10% probability event affecting one service. Architecture decisions should be driven by consequence, not likelihood."></div>
-        </div>
+        <div class="insight-body">I care less about how likely a failure is than about how much damage it causes. A 0.01% probability event that takes down your entire data plane is more dangerous than a 10% probability event affecting one service. Architecture decisions should be driven by consequence, not likelihood.</div>
         <div class="insight-tag">Reliability</div>
       </div>
 
       <div class="insight-card reveal">
         <div class="insight-num">05</div>
         <div class="insight-topic">CI/CD pipelines are the first indicator of team health</div>
-        <div class="insight-terminal">
-          <div class="insight-terminal-bar">
-            <span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-dot"></span>
-            <span class="terminal-bar-label">note — ci-cd</span>
-          </div>
-          <div class="insight-body" data-text="Show me a team's deployment pipeline and I can tell you how they work. Flaky tests that &quot;everyone knows to ignore,&quot; multi-hour build times, no staging parity — these aren't CI/CD problems. They're signals about code ownership, test discipline, and whether engineering leadership is measuring the right things."></div>
-        </div>
+        <div class="insight-body">Show me a team's deployment pipeline and I can tell you how they work. Flaky tests that "everyone knows to ignore," multi-hour build times, no staging parity — these aren't CI/CD problems. They're signals about code ownership, test discipline, and whether engineering leadership is measuring the right things.</div>
         <div class="insight-tag">CI/CD</div>
       </div>
 
       <div class="insight-card reveal">
         <div class="insight-num">06</div>
         <div class="insight-topic">Kubernetes is not a deployment target — it's an operating model</div>
-        <div class="insight-terminal">
-          <div class="insight-terminal-bar">
-            <span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-dot"></span>
-            <span class="terminal-bar-label">note — infrastructure</span>
-          </div>
-          <div class="insight-body" data-text="Organizations that treat Kubernetes as &quot;just a better way to deploy containers&quot; consistently struggle with it. The operational model — declarative state, controller reconciliation, pod lifecycle — requires a different mental model than traditional server-based thinking. You're not managing machines anymore; you're managing desired state."></div>
-        </div>
+        <div class="insight-body">Organizations that treat Kubernetes as "just a better way to deploy containers" consistently struggle with it. The operational model — declarative state, controller reconciliation, pod lifecycle — requires a different mental model than traditional server-based thinking. You're not managing machines anymore; you're managing desired state.</div>
         <div class="insight-tag">Infrastructure</div>
       </div>
     </div>
@@ -1955,74 +1913,177 @@
 
   updateParallax();
 
-  // Hero terminal: typing is linked directly to scroll position (scrub
-  // forward to type, scrub back to untype) — independent of the portrait,
-  // which stays static at full brightness with no automation at all.
-  const termOutputEl = document.getElementById('termOutput');
-  const heroPortrait = document.getElementById('heroPortrait');
-  const heroSectionEl = document.getElementById('hero');
-
+  // Scroll-lock hero: pins in place and consumes scroll input to drive
+  // terminal typing + portrait brighten, then releases to normal scrolling.
   const TERMINAL_TEXT = "DevOps and Platform Engineer with 4+ years designing and operating Kubernetes-native systems across AWS and on-prem environments. Strong focus on reliability engineering, failure handling, and infrastructure consistency. Known for diagnosing complex infra failures, minimizing blast radius, and maintaining control plane stability under stress.";
 
-  if (heroPortrait) {
-    heroPortrait.style.filter = 'brightness(1) saturate(1) contrast(1.05)';
+  const termOutputEl = document.getElementById('termOutput');
+  const portraitWrap = document.getElementById('portraitWrap');
+  const heroPortrait = document.getElementById('heroPortrait');
+  const heroSection = document.getElementById('hero');
+  const heroSpacer = document.getElementById('heroSpacer');
+  const scrollDownArrow = document.getElementById('scrollDownArrow');
+
+  const TYPE_PHASE_FRACTION = 0.4;
+  const SCROLL_UNITS_TO_COMPLETE = 3200; // total "virtual" scroll px needed to finish the whole sequence
+  const HOLD_UNITS = 600; // extra scroll required after full brighten before the page actually releases
+
+  let seqProgress = 0;      // 0 to 1, drives typing + brighten
+  let holdProgress = 0;     // 0 to 1, the post-brighten hold before release (lets the arrow be seen)
+  let released = false;     // true while the page is unlocked and scrolling normally past the hero
+  let isLocked = false;
+  let lastCharCount = -1;
+  let lastLit = null;
+  let arrowShown = false;
+
+  function renderSequence() {
+    const typeProgress = Math.min(1, seqProgress / TYPE_PHASE_FRACTION);
+    const charCount = Math.floor(typeProgress * TERMINAL_TEXT.length);
+
+    if (charCount !== lastCharCount) {
+      const shown = TERMINAL_TEXT.slice(0, charCount);
+      termOutputEl.innerHTML = `<span class="tc">${shown}</span><span class="term-cursor"></span>`;
+      lastCharCount = charCount;
+    }
+
+    const typingDone = typeProgress >= 1;
+    const brightenProgress = typingDone
+      ? Math.min(1, (seqProgress - TYPE_PHASE_FRACTION) / (1 - TYPE_PHASE_FRACTION))
+      : 0;
+
+    // Continuous brightness dial — brightness goes from 0.15 to 1 as brightenProgress goes 0 to 1
+    const brightness = 0.15 + brightenProgress * 0.85;
+    const saturate = 0.6 + brightenProgress * 0.4;
+    heroPortrait.style.filter = `brightness(${brightness.toFixed(3)}) saturate(${saturate.toFixed(3)}) contrast(1.05)`;
+
+    const shouldBeLit = brightenProgress >= 1;
+    if (shouldBeLit !== lastLit) {
+      portraitWrap.classList.toggle('lit', shouldBeLit);
+      lastLit = shouldBeLit;
+    }
+
+    // Stop the attention blink the moment brightening begins
+    if (brightenProgress > 0 && portraitWrap.classList.contains('attention')) {
+      portraitWrap.classList.remove('attention');
+    }
+
+    // Show the down arrow 40% into the brighten phase — well before full
+    // brightness, so it has a long visible window rather than appearing
+    // right at the same moment the hold/release phase kicks in.
+    const ARROW_TRIGGER = 0.4;
+    if (brightenProgress >= ARROW_TRIGGER && !arrowShown) {
+      scrollDownArrow.classList.add('show');
+      arrowShown = true;
+    }
+    if (brightenProgress < ARROW_TRIGGER && arrowShown) {
+      scrollDownArrow.classList.remove('show');
+      arrowShown = false;
+    }
   }
 
-  function typeText(el, text, baseSpeed) {
-    let i = 0;
-    el.innerHTML = '<span class="tc"></span><span class="term-cursor"></span>';
-    const tcSpan = el.querySelector('.tc');
-    function step() {
-      i++;
-      tcSpan.textContent = text.slice(0, i);
-      if (i < text.length) {
-        // Natural human typing rhythm: base speed with randomized jitter,
-        // plus a slightly longer pause after punctuation/spaces.
-        const ch = text[i - 1];
-        let delay = baseSpeed + (Math.random() * baseSpeed * 0.6 - baseSpeed * 0.3);
-        if (ch === ' ') delay += 30;
-        if (ch === ',' || ch === '—' || ch === '.') delay += 120;
-        setTimeout(step, delay);
+  function lockHero() {
+    if (isLocked) return;
+    isLocked = true;
+    heroSection.classList.add('pinned');
+    heroSpacer.classList.add('active');
+    heroSpacer.style.height = window.innerHeight + 'px';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function unlockHero() {
+    if (!isLocked) return;
+    isLocked = false;
+    heroSection.classList.remove('pinned');
+    heroSpacer.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  function handleSequenceWheel(e) {
+    if (released) return; // page has been handed back to native scroll
+
+    e.preventDefault();
+    if (!isLocked) lockHero();
+
+    const delta = e.deltaY;
+
+    if (seqProgress < 1) {
+      // Still typing / brightening
+      seqProgress = Math.max(0, Math.min(1, seqProgress + delta / SCROLL_UNITS_TO_COMPLETE));
+      renderSequence();
+      return;
+    }
+
+    // Fully brightened — now in the hold window. Extra forward scroll fills
+    // the hold meter; backward scroll during the hold rewinds seqProgress
+    // instead, so scrolling up always feels continuous and reversible.
+    if (delta > 0) {
+      holdProgress = Math.min(1, holdProgress + delta / HOLD_UNITS);
+      if (holdProgress >= 1) {
+        released = true;
+        scrollDownArrow.classList.remove('show');
+        unlockHero();
+        window.scrollTo(0, 2);
+      }
+    } else {
+      if (holdProgress > 0) {
+        holdProgress = Math.max(0, holdProgress + delta / HOLD_UNITS);
       } else {
-        const cursor = el.querySelector('.term-cursor');
-        if (cursor) cursor.remove();
+        seqProgress = Math.max(0, seqProgress + delta / SCROLL_UNITS_TO_COMPLETE);
+        renderSequence();
       }
     }
-    step();
   }
 
-  // Scroll-scrubbed typing for the hero terminal specifically: character
-  // count is derived directly from how far the user has scrolled through
-  // the hero's own height, so it types forward and untypes backward in
-  // lockstep with scroll position. No locking, no scroll interception —
-  // the page scrolls completely normally underneath this.
-  if (termOutputEl && heroSectionEl) {
-    let lastHeroCharCount = -1;
-    const HERO_TYPE_SCROLL_DISTANCE = 600; // px of scroll over which typing completes
+  let touchStartY = null;
+  function handleTouchStart(e) {
+    touchStartY = e.touches[0].clientY;
+  }
+  function handleTouchMove(e) {
+    if (touchStartY === null) return;
+    const currentY = e.touches[0].clientY;
+    const deltaY = touchStartY - currentY;
+    touchStartY = currentY;
+    handleSequenceWheel({ deltaY, preventDefault: () => e.preventDefault() });
+  }
 
-    function updateHeroTyping() {
-      const heroTop = heroSectionEl.offsetTop;
-      const scrollY = window.scrollY;
-      let progress = (scrollY - heroTop) / HERO_TYPE_SCROLL_DISTANCE;
-      progress = Math.max(0, Math.min(1, progress));
+  window.addEventListener('wheel', handleSequenceWheel, { passive: false });
+  window.addEventListener('touchstart', handleTouchStart, { passive: true });
+  window.addEventListener('touchmove', handleTouchMove, { passive: false });
 
-      const charCount = Math.floor(progress * TERMINAL_TEXT.length);
-      if (charCount !== lastHeroCharCount) {
-        const shown = TERMINAL_TEXT.slice(0, charCount);
-        const cursor = progress < 1 ? '<span class="term-cursor"></span>' : '';
-        termOutputEl.innerHTML = `<span class="tc">${shown}</span>${cursor}`;
-        lastHeroCharCount = charCount;
-      }
+  const SCROLL_KEYS = { ArrowDown: 80, ArrowUp: -80, PageDown: 400, PageUp: -400, ' ': 400 };
+  window.addEventListener('keydown', (e) => {
+    if (released) return;
+    if (SCROLL_KEYS[e.key] !== undefined) {
+      handleSequenceWheel({ deltaY: SCROLL_KEYS[e.key], preventDefault: () => e.preventDefault() });
     }
+  });
 
-    window.addEventListener('scroll', () => {
-      requestAnimationFrame(updateHeroTyping);
-    }, { passive: true });
+  window.addEventListener('resize', () => {
+    if (isLocked) heroSpacer.style.height = window.innerHeight + 'px';
+  });
 
-    window.addEventListener('resize', updateHeroTyping);
-    updateHeroTyping();
-  }
+  // Re-lock and replay from scratch whenever the user scrolls all the way
+  // back up to the very top of the page.
+  window.addEventListener('scroll', () => {
+    if (released && window.scrollY <= 1) {
+      released = false;
+      seqProgress = 0;
+      holdProgress = 0;
+      lastCharCount = -1;
+      lastLit = null;
+      arrowShown = false;
+      portraitWrap.classList.add('attention');
+      portraitWrap.classList.remove('lit');
+      heroPortrait.style.filter = 'brightness(0.15) saturate(0.6) contrast(1.05)';
+      termOutputEl.innerHTML = '<span class="term-cursor"></span>';
+      renderSequence();
+      lockHero();
+    }
+  }, { passive: true });
 
+  // Initial state: locked at the top, sequence not started
+  lockHero();
+  renderSequence();
 
   // Scroll reveal
   const reveals = document.querySelectorAll('.reveal');
@@ -2168,79 +2229,6 @@
     document.querySelectorAll('.project-card').forEach(c => c.classList.remove('active'));
     if (!wasActive) card.classList.add('active');
   }
-
-  // Engineering Philosophy insight cards: each body types out character by
-  // character inside its terminal box, once scrolled into view, at the
-  // same human-paced typing speed as the hero terminal. Each card's start
-  // is randomly delayed so they don't all begin typing in lockstep.
-  const insightBodies = document.querySelectorAll('.insight-terminal .insight-body');
-  function typeInsightBody(el) {
-    const text = el.getAttribute('data-text') || '';
-    typeText(el, text, 45);
-  }
-
-  const insightObserver = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        const randomStartDelay = Math.random() * 900; // 0–900ms randomized stagger
-        setTimeout(() => typeInsightBody(entry.target), randomStartDelay);
-        insightObserver.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.4 });
-  insightBodies.forEach(el => insightObserver.observe(el));
-
-  // Slowed scrolling through "Engineering Philosophy" only. Activates only
-  // once the section's own top edge has scrolled into the viewport (not
-  // merely "any pixel of it is touching the bottom edge of the screen",
-  // which was previously causing it to trigger too early — while still
-  // inside the tail end of the Projects section above it).
-  //
-  // The damped zone starts at the section's top edge (the "Engineering
-  // Philosophy" heading) and ends precisely at the bottom of the insight
-  // cards grid (the "Kubernetes is not a deployment target..." card) —
-  // not the section's outer padding, so it doesn't drift past that card.
-  const dampedSectionStart = document.getElementById('thinking');
-  const dampedZoneEnd = document.getElementById('insightsGrid');
-
-  const DAMPING_FACTOR = 0.385; // 35% base, +10% speed = 0.385
-
-  function isWithinDampedZone(scrollY) {
-    if (!dampedSectionStart || !dampedZoneEnd) return false;
-    const top = dampedSectionStart.offsetTop;
-    const bottom = dampedZoneEnd.offsetTop + dampedZoneEnd.offsetHeight;
-    return scrollY >= top && scrollY < bottom;
-  }
-
-  function handleDampedWheel(e) {
-    const scrollY = window.scrollY;
-    if (!isWithinDampedZone(scrollY)) return; // let native scroll happen
-
-    e.preventDefault();
-    window.scrollBy(0, e.deltaY * DAMPING_FACTOR);
-  }
-
-  window.addEventListener('wheel', handleDampedWheel, { passive: false });
-
-  let dampedTouchStartY = null;
-  function handleDampedTouchStart(e) {
-    dampedTouchStartY = e.touches[0].clientY;
-  }
-  function handleDampedTouchMove(e) {
-    if (dampedTouchStartY === null) return;
-    const currentY = e.touches[0].clientY;
-    const deltaY = dampedTouchStartY - currentY;
-    const scrollY = window.scrollY;
-    if (isWithinDampedZone(scrollY)) {
-      e.preventDefault();
-      window.scrollBy(0, deltaY * DAMPING_FACTOR);
-      dampedTouchStartY = currentY;
-    } else {
-      dampedTouchStartY = currentY;
-    }
-  }
-  window.addEventListener('touchstart', handleDampedTouchStart, { passive: true });
-  window.addEventListener('touchmove', handleDampedTouchMove, { passive: false });
 
   // Active nav on scroll
   const sections = document.querySelectorAll('section[id]');

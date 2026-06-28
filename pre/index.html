@@ -205,8 +205,8 @@ textarea{resize:vertical;min-height:80px}
 .bp-nums{font-size:11px;color:var(--text3);font-family:var(--mono)}
 .bb{height:6px;background:var(--bg6);border-radius:3px;overflow:hidden;margin-bottom:8px}
 .bbf{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent),var(--purple),var(--pink));transition:width .5s var(--ease)}
-.mss{display:flex}
-.ms{flex:1;text-align:center;font-size:9px;color:var(--text3);font-family:var(--mono)}
+.mss{position:relative;height:14px;margin-top:4px}
+.ms{position:absolute;transform:translateX(-50%);text-align:center;font-size:9px;color:var(--text3);font-family:var(--mono);white-space:nowrap}
 .ms.hit{color:var(--green)}
 .ms-tick{width:1px;height:3px;background:var(--border2);margin:0 auto 2px}
 .ms-tick.hit{background:var(--green)}
@@ -1033,7 +1033,7 @@ function renderDash(){
     <div class="bp-top"><div class="bp-lbl">Overall completion</div><div class="bp-nums">${done} / ${total} &nbsp; ${pct}%</div></div>
     <div class="bb"><div class="bbf" style="width:${pct}%"></div></div>
     <div class="mss">`;
-  [0,10,25,50,75,95,100].forEach(m=>{h+=`<div class="ms${pct>=m?' hit':''}"><div class="ms-tick${pct>=m?' hit':''}"></div>${m}%</div>`;});
+  [0,10,25,50,75,95,100].forEach(m=>{h+=`<div class="ms${pct>=m?' hit':''}" style="left:${m}%"><div class="ms-tick${pct>=m?' hit':''}"></div>${m===0?'0':m}%</div>`;});
   h+=`</div></div>
 
   <!-- Row 2: stat cards -->
