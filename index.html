@@ -77,7 +77,7 @@
     position: fixed;
     inset: 0;
     opacity: 0.025;
-    background-image: url("<script src="https://platform.linkedin.com/badges/js/profile.js" async defer type="text/javascript"></script>");
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
     pointer-events: none;
     z-index: 999;
   }
@@ -1189,7 +1189,9 @@
           </h1>
         </div>
         <div class="hero-portrait-wrap lit" id="portraitWrap">
-          <img class="hero-portrait" id="heroPortrait" src="https://placehold.co/480x480/0c1118/5a7080?text=AD" alt="Amanyi Daniel">
+          <img class="hero-portrait" id="heroPortrait" src="<div class="badge-base LI-profile-badge" data-locale="en_US" data-size="medium" data-theme="dark" data-type="VERTICAL" data-vanity="danielamanyi" data-version="v1"><a class="badge-base__link LI-simple-link" href="https://ng.linkedin.com/in/danielamanyi?trk=profile-badge">Daniel Amanyi</a></div>
+              :wq!
+              " alt="Amanyi Daniel">
           <span class="frame-corner tl"></span>
           <span class="frame-corner tr"></span>
           <span class="frame-corner bl"></span>
