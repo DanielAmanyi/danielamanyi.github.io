@@ -1995,15 +1995,21 @@
   // count is derived directly from how far the user has scrolled through
   // the hero's own height, so it types forward and untypes backward in
   // lockstep with scroll position. No locking, no scroll interception —
-  // the page scrolls completely normally underneath this.
+  // the page scrolls completely normally underneath this. The completion
+  // distance is a fraction of the viewport height (not a fixed px value)
+  // so it reliably finishes while the hero is still mostly in view,
+  // regardless of screen size.
   if (termOutputEl && heroSectionEl) {
     let lastHeroCharCount = -1;
-    const HERO_TYPE_SCROLL_DISTANCE = 600; // px of scroll over which typing completes
+
+    function getHeroTypeScrollDistance() {
+      return window.innerHeight * 0.28;
+    }
 
     function updateHeroTyping() {
       const heroTop = heroSectionEl.offsetTop;
       const scrollY = window.scrollY;
-      let progress = (scrollY - heroTop) / HERO_TYPE_SCROLL_DISTANCE;
+      let progress = (scrollY - heroTop) / getHeroTypeScrollDistance();
       progress = Math.max(0, Math.min(1, progress));
 
       const charCount = Math.floor(progress * TERMINAL_TEXT.length);
