@@ -351,12 +351,12 @@ const SUPABASE_URL = 'YOUR_SUPABASE_PROJECT_URL';   // e.g. https://xxxxx.supaba
 const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_PUBLIC_KEY';
 /* -------------------------------------------------------------------- */
 
-let supabase = null;
+let sb = null;
 let syncUser = null;
 const SYNC_CONFIGURED = SUPABASE_URL.startsWith('http') && SUPABASE_KEY.length > 20;
 
 if (SYNC_CONFIGURED && window.supabase) {
-  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 }
 
 function setAuthStatus(msg, kind){
@@ -373,15 +373,15 @@ function setSyncResult(msg, kind){
 }
 
 async function initAuth(){
-  if (!supabase) {
+  if (!sb) {
     setAuthStatus('Cloud sync is not configured yet. See setup notes below.', 'err');
     document.getElementById('btn-send-magic-link').disabled = true;
     return;
   }
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { session } } = await sb.auth.getSession();
   if (session) { syncUser = session.user; showSignedIn(); }
 
-  supabase.auth.onAuthStateChange((event, session) => {
+  sb.auth.onAuthStateChange((event, session) => {
     if (session) { syncUser = session.user; showSignedIn(); }
     else { syncUser = null; showSignedOut(); }
   });
@@ -400,11 +400,11 @@ function showSignedOut(){
 }
 
 document.getElementById('btn-send-magic-link').onclick = async () => {
-  if (!supabase) return;
+  if (!sb) return;
   const email = document.getElementById('auth-email').value.trim();
   if (!email) { setAuthStatus('Enter an email address first.', 'err'); return; }
   setAuthStatus('Sending magic link…');
-  const { error } = await supabase.auth.signInWithOtp({
+  const { error } = await sb.auth.signInWithOtp({
     email,
     options: { emailRedirectTo: window.location.href }
   });
@@ -413,21 +413,21 @@ document.getElementById('btn-send-magic-link').onclick = async () => {
 };
 
 document.getElementById('btn-sign-out').onclick = async () => {
-  if (!supabase) return;
-  await supabase.auth.signOut();
+  if (!sb) return;
+  await sb.auth.signOut();
   showSignedOut();
 };
 
 /* ---------- Push: local IndexedDB/localStorage -> Supabase ---------- */
 document.getElementById('btn-push').onclick = async () => {
-  if (!supabase || !syncUser) return;
+  if (!sb || !syncUser) return;
   setSyncResult('Pushing…');
   try {
     const uid = syncUser.id;
 
     // Books — upsert each, keyed by (user_id, local_id)
     for (const book of library) {
-      const { error } = await supabase.from('books').upsert({
+      const { error } = await sb.from('books').upsert({
         user_id: uid,
         local_id: book.id,
         name: book.name,
@@ -439,15 +439,15 @@ document.getElementById('btn-push').onclick = async () => {
     }
 
     // Highlights — replace wholesale for simplicity
-    await supabase.from('highlights').delete().eq('user_id', uid);
+    await sb.from('highlights').delete().eq('user_id', uid);
     if (highlights.length) {
       const rows = highlights.map(h => ({ user_id: uid, hl_id: h.id, book_local_id: h.bookId, chapter: h.chapter, text: h.text, color: h.color, note: h.note || '', ts: h.ts }));
-      const { error } = await supabase.from('highlights').insert(rows);
+      const { error } = await sb.from('highlights').insert(rows);
       if (error) throw error;
     }
 
     // Stats — single row per user
-    const { error: statsErr } = await supabase.from('reading_stats').upsert({
+    const { error: statsErr } = await sb.from('reading_stats').upsert({
       user_id: uid,
       words_read: stats.wordsRead,
       streak: stats.streak || 1,
@@ -464,12 +464,12 @@ document.getElementById('btn-push').onclick = async () => {
 
 /* ---------- Pull: Supabase -> local IndexedDB/localStorage ---------- */
 document.getElementById('btn-pull').onclick = async () => {
-  if (!supabase || !syncUser) return;
+  if (!sb || !syncUser) return;
   setSyncResult('Pulling…');
   try {
     const uid = syncUser.id;
 
-    const { data: cloudBooks, error: bErr } = await supabase.from('books').select('*').eq('user_id', uid);
+    const { data: cloudBooks, error: bErr } = await sb.from('books').select('*').eq('user_id', uid);
     if (bErr) throw bErr;
     for (const cb of (cloudBooks || [])) {
       const book = { id: cb.local_id, name: cb.name, author: cb.author, chapters: cb.chapters };
@@ -478,12 +478,12 @@ document.getElementById('btn-pull').onclick = async () => {
       try { await dbPutBook(book); } catch(e){}
     }
 
-    const { data: cloudHL, error: hErr } = await supabase.from('highlights').select('*').eq('user_id', uid);
+    const { data: cloudHL, error: hErr } = await sb.from('highlights').select('*').eq('user_id', uid);
     if (hErr) throw hErr;
     highlights = (cloudHL || []).map(h => ({ id: h.hl_id, bookId: h.book_local_id, chapter: h.chapter, text: h.text, color: h.color, note: h.note, ts: h.ts }));
     lsSet('highlights', highlights);
 
-    const { data: cloudStats, error: sErr } = await supabase.from('reading_stats').select('*').eq('user_id', uid).maybeSingle();
+    const { data: cloudStats, error: sErr } = await sb.from('reading_stats').select('*').eq('user_id', uid).maybeSingle();
     if (sErr) throw sErr;
     if (cloudStats) {
       stats.wordsRead = Math.max(stats.wordsRead, cloudStats.words_read || 0);
