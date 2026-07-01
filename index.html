@@ -125,9 +125,23 @@
     letter-spacing: 0.08em;
     text-transform: uppercase;
     transition: color 0.2s;
+    opacity: 0; /* start hidden, JS reveals one by one */
   }
 
   .nav-links a:hover { color: var(--accent); }
+
+  .nav-links a.nav-revealed {
+    animation: nav-flash-in 0.9s ease forwards;
+  }
+
+  @keyframes nav-flash-in {
+    0%   { opacity: 0; color: var(--bg); }
+    20%  { opacity: 1; color: var(--accent); }
+    45%  { opacity: 1; color: var(--accent); }
+    60%  { opacity: 1; color: var(--text-bright); }
+    80%  { opacity: 1; color: var(--text-dim); }
+    100% { opacity: 1; color: var(--text-dim); }
+  }
 
   /* STATUS BAR */
   .status-bar {
@@ -218,21 +232,26 @@
     grid-template-columns: 70% 30%;
     gap: 40px;
     align-items: start;
-    margin-bottom: 36px;
+    margin-bottom: 0;
   }
 
-  /* Terminal sits below the full-width hero-top row, aligned to the 70% text
-     column width so it matches the name/tag block above it visually. */
+  /* Terminal: sibling below hero-top row. Negative margin pulls it up
+     ~48px from where it previously sat, snapping it near the red guide.
+     Width extends to near the portrait left edge (calc includes the gap). */
   .hero-terminal {
-    max-width: 70%;
-    margin-bottom: 40px;
+    width: calc(70% + 12px);
+    margin-top: -48px;
+    margin-bottom: 32px;
   }
 
   @media (max-width: 760px) {
     .hero-top { grid-template-columns: 1fr; }
     .hero-portrait-wrap { order: -1; width: min(240px, 70vw); margin: 0 auto 24px; }
-    .hero-terminal { max-width: 100%; }
+    .hero-terminal { width: 100%; margin-top: 24px; }
   }
+
+  /* hero-left is no longer used — kept for safety but has no effect */
+  .hero-left { display: contents; }
 
   .hero-portrait-wrap,
   .bracket-frame {
@@ -245,7 +264,7 @@
     aspect-ratio: 1123 / 1400;
     max-width: 380px;
     justify-self: end;
-    align-self: end;
+    align-self: start;
     border: 1px solid var(--border2);
     background: var(--bg2);
   }
@@ -957,7 +976,7 @@
     display: flex;
     align-items: center;
     gap: 16px;
-    transition: border-color 0.2s, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.7s ease;
+    transition: border-color 0.2s, transform 1.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.2s ease;
     opacity: 0;
   }
 
@@ -2066,6 +2085,16 @@
       heroPortrait.classList.remove('glitching');
       heroPortrait.classList.add('revealed');
       if (portraitWrap) portraitWrap.classList.add('lit');
+
+      // After portrait reveals, nav links load one by one: each flashes in
+      // bright, settles to dim normal state — right to left order reversed
+      // so they appear left to right on screen (item 5).
+      const navLinkEls = document.querySelectorAll('.nav-links a');
+      navLinkEls.forEach((link, i) => {
+        setTimeout(() => {
+          link.classList.add('nav-revealed');
+        }, i * 260); // 260ms between each link
+      });
     }, { once: true });
   }
   const portraitWrap = document.getElementById('portraitWrap');
@@ -2104,32 +2133,42 @@
   // regardless of screen size.
   if (termOutputEl && heroSectionEl) {
     let lastHeroCharCount = -1;
+    // Characters typed automatically before scroll takes over
+    const AUTO_TYPE_CHARS = 103; // types up to "...on-prem environments..."
+    let autoTypeDone = false;
 
     function getHeroTypeScrollDistance() {
       return window.innerHeight * 0.28;
     }
 
     function updateHeroTyping() {
+      if (!autoTypeDone) return; // wait until auto-type portion finishes
       const heroTop = heroSectionEl.offsetTop;
       const scrollY = window.scrollY;
       let progress = (scrollY - heroTop) / getHeroTypeScrollDistance();
       progress = Math.max(0, Math.min(1, progress));
 
-      const charCount = Math.floor(progress * TERMINAL_TEXT.length);
+      // Map scroll progress to the remaining chars after the auto-typed portion
+      const scrolledChars = Math.floor(progress * (TERMINAL_TEXT.length - AUTO_TYPE_CHARS));
+      const charCount = AUTO_TYPE_CHARS + scrolledChars;
       if (charCount !== lastHeroCharCount) {
         const shown = TERMINAL_TEXT.slice(0, charCount);
-        // Cursor always present — blinking while typing, blinking after done too (item 3)
         termOutputEl.innerHTML = `<span class="tc">${shown}</span><span class="term-cursor"></span>`;
         lastHeroCharCount = charCount;
       }
     }
+
+    // On load: auto-type the opening text, then hand off to scroll
+    typeText(termOutputEl, TERMINAL_TEXT.slice(0, AUTO_TYPE_CHARS), 38, () => {
+      autoTypeDone = true;
+      lastHeroCharCount = AUTO_TYPE_CHARS;
+    });
 
     window.addEventListener('scroll', () => {
       requestAnimationFrame(updateHeroTyping);
     }, { passive: true });
 
     window.addEventListener('resize', updateHeroTyping);
-    updateHeroTyping();
   }
 
   // Stats count up from 0 to target, one after another (item 4)
@@ -2153,12 +2192,12 @@
           el.textContent = '∞';
           if (onDone) onDone();
         }
-      }, 80);
+      }, 320);
       return;
     }
     const end = parseInt(target, 10);
     let current = 0;
-    const duration = 600;
+    const duration = 3000; // slow, deliberate count-up
     const steps = Math.max(end, 12);
     const stepTime = duration / steps;
     const interval = setInterval(() => {
@@ -2385,14 +2424,33 @@
   // Damping activates from the section top, exits slightly early (80% through)
   // to avoid dragging through the blank gap at the bottom.
   const experienceSection = document.getElementById('experience');
+  const certsSection = document.getElementById('certs');
   const guideArrowDown = document.getElementById('guideArrowDown');
   const guideArrowUp   = document.getElementById('guideArrowUp');
-  const EXP_EARLY_EXIT = 0.80; // normal scroll resumes at 80% through the section
+  // No hard cutoff — damping eases smoothly toward normal speed
+  // over the last 25% of the section, eliminating the two-speed feel.
+
+  function getExpDampingFactor(scrollY) {
+    if (!experienceSection) return 1;
+    const top = experienceSection.offsetTop;
+    const height = experienceSection.offsetHeight;
+    const progress = (scrollY - top) / height; // 0 at top, 1 at bottom
+    if (progress < 0) return 1; // outside section
+    if (progress >= 1) return 1; // below section
+
+    // Ease: full damping (0.75) for first 70%, then smooth linear
+    // interpolation from 0.75 → 1.0 over the last 30%.
+    const EASE_START = 0.70;
+    const BASE = 0.75;
+    if (progress <= EASE_START) return BASE;
+    const t = (progress - EASE_START) / (1 - EASE_START); // 0→1 over last 30%
+    return BASE + (1 - BASE) * t; // 0.75 → 1.0
+  }
 
   function isWithinExpZone(scrollY) {
     if (!experienceSection) return false;
     const top = experienceSection.offsetTop;
-    const bottom = top + experienceSection.offsetHeight * EXP_EARLY_EXIT;
+    const bottom = top + experienceSection.offsetHeight;
     return scrollY >= top && scrollY < bottom;
   }
 
@@ -2431,12 +2489,24 @@
     const scrollY = window.scrollY;
     const delta = e.deltaY;
 
-    // Experience section: damped scroll + arrows
+    // Experience section: smoothly damped scroll + arrows
     if (isWithinExpZone(scrollY)) {
       e.preventDefault();
-      window.scrollBy(0, delta * 0.75); // 75% of normal speed — feels natural, not trapped
+      const factor = getExpDampingFactor(scrollY);
+      window.scrollBy(0, delta * factor);
       updateGuideArrows(scrollY, delta);
       return;
+    }
+
+    // Credentials section: slower damped scroll (no arrows, just deliberate pace)
+    if (certsSection) {
+      const ct = certsSection.offsetTop;
+      const cb = ct + certsSection.offsetHeight;
+      if (scrollY >= ct && scrollY < cb) {
+        e.preventDefault();
+        window.scrollBy(0, delta * 0.5);
+        return;
+      }
     }
 
     // Engineering Philosophy: damped scroll only
@@ -2463,8 +2533,13 @@
     const scrollY = window.scrollY;
     if (isWithinExpZone(scrollY)) {
       e.preventDefault();
-      window.scrollBy(0, deltaY * 0.75);
+      const factor = getExpDampingFactor(scrollY);
+      window.scrollBy(0, deltaY * factor);
       updateGuideArrows(scrollY, deltaY);
+      dampedTouchStartY = currentY;
+    } else if (certsSection && scrollY >= certsSection.offsetTop && scrollY < certsSection.offsetTop + certsSection.offsetHeight) {
+      e.preventDefault();
+      window.scrollBy(0, deltaY * 0.5);
       dampedTouchStartY = currentY;
     } else if (isWithinDampedZone(scrollY)) {
       e.preventDefault();
