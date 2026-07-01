@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Daniel Enterprise Architecture — Volume I</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,ital@9..144,300..900,0..1&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink-navy:   #10192B;
+    --ink-navy-2: #16233A;
+    --parchment:  #EFE7D4;
+    --parchment-2:#E4D9BF;
+    --brass:      #C79A46;
+    --brass-dim:  #8E7135;
+    --blueprint:  #1C3A5E;
+    --blueprint-line: rgba(199,154,70,0.18);
+    --rule: rgba(239,231,212,0.22);
+  }
+
+  *{ box-sizing:border-box; }
+
+  html,body{
+    margin:0; padding:0;
+    background:var(--ink-navy);
+    color:var(--parchment);
+    font-family:'Source Serif 4', serif;
+  }
+
+  .book{
+    max-width:760px;
+    margin:0 auto;
+    padding:0 32px;
+  }
+
+  /* ---------- TITLE PAGE ---------- */
+  .titlepage{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:80px 32px;
+    position:relative;
+  }
+  .seal{
+    width:92px; height:92px;
+    border:1.5px solid var(--brass);
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    margin-bottom:36px;
+    position:relative;
+  }
+  .seal::before{
+    content:"";
+    position:absolute; inset:8px;
+    border:1px solid var(--brass-dim);
+    border-radius:50%;
+  }
+  .seal svg{ width:38px; height:38px; }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    letter-spacing:0.32em;
+    text-transform:uppercase;
+    font-size:11px;
+    color:var(--brass);
+    margin-bottom:22px;
+  }
+  .title h1{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-style:normal;
+    font-size:clamp(40px,7vw,64px);
+    line-height:1.05;
+    letter-spacing:-0.01em;
+    margin:0 0 18px;
+  }
+  .title .rule-flourish{
+    width:120px; height:1px;
+    background:linear-gradient(90deg, transparent, var(--brass), transparent);
+    margin:24px auto;
+  }
+  .subtitle{
+    font-family:'Fraunces', serif;
+    font-style:italic;
+    font-weight:400;
+    font-size:19px;
+    color:var(--parchment-2);
+    max-width:440px;
+  }
+  .volume-tag{
+    margin-top:60px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.2em;
+    color:var(--brass-dim);
+    text-transform:uppercase;
+  }
+
+  /* ---------- TOC ---------- */
+  .toc{
+    padding:100px 0 90px;
+    border-top:1px solid var(--rule);
+  }
+  .toc h2{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    letter-spacing:0.3em;
+    text-transform:uppercase;
+    color:var(--brass);
+    margin-bottom:40px;
+    font-weight:500;
+  }
+  .toc ol{
+    list-style:none;
+    margin:0; padding:0;
+    counter-reset:toc;
+  }
+  .toc li{
+    display:flex;
+    align-items:baseline;
+    gap:14px;
+    padding:13px 0;
+    border-bottom:1px solid var(--rule);
+    font-size:17px;
+  }
+  .toc .num{
+    font-family:'Fraunces', serif;
+    font-style:italic;
+    color:var(--brass);
+    width:34px;
+    flex-shrink:0;
+    font-size:16px;
+  }
+  .toc .leader{
+    flex:1;
+    border-bottom:1px dotted var(--rule);
+    transform:translateY(-4px);
+    opacity:0.5;
+  }
+  .toc .pg{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--parchment-2);
+  }
+
+  /* ---------- CHAPTERS ---------- */
+  .chapter{
+    position:relative;
+    padding:100px 0 60px;
+    border-top:1px solid var(--rule);
+  }
+  .chapter-num{
+    font-family:'Fraunces', serif;
+    font-weight:300;
+    font-style:italic;
+    font-size:15vw;
+    line-height:1;
+    position:absolute;
+    top:20px;
+    right:-10px;
+    color:transparent;
+    -webkit-text-stroke:1px rgba(199,154,70,0.14);
+    z-index:0;
+    pointer-events:none;
+    user-select:none;
+  }
+  .chapter-head{
+    position:relative;
+    z-index:1;
+    margin-bottom:36px;
+  }
+  .chapter-eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.28em;
+    text-transform:uppercase;
+    color:var(--brass);
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:14px;
+  }
+  .chapter-eyebrow .line{
+    width:28px; height:1px;
+    background:var(--brass-dim);
+  }
+  .chapter h2{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:clamp(28px,4vw,38px);
+    margin:0;
+    line-height:1.15;
+  }
+  .purpose{
+    font-family:'Fraunces', serif;
+    font-style:italic;
+    color:var(--parchment-2);
+    font-size:18px;
+    margin:18px 0 30px;
+    padding-left:18px;
+    border-left:2px solid var(--brass-dim);
+  }
+  .chapter p{
+    font-size:17px;
+    line-height:1.75;
+    color:var(--parchment);
+    margin:0 0 20px;
+    position:relative; z-index:1;
+  }
+  .chapter p.lede{
+    font-size:18px;
+  }
+  .chapter p.lede::first-letter{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:3.4em;
+    float:left;
+    line-height:0.8;
+    padding:6px 8px 0 0;
+    color:var(--brass);
+  }
+
+  /* ---------- SCHEMATIC / DIAGRAM PANELS ---------- */
+  .schematic{
+    position:relative; z-index:1;
+    margin:12px 0 34px;
+    border:1px solid var(--blueprint-line);
+    background:
+      linear-gradient(var(--blueprint-line) 1px, transparent 1px) 0 0/100% 22px,
+      linear-gradient(90deg, var(--blueprint-line) 1px, transparent 1px) 0 0/22px 100%,
+      var(--blueprint);
+    border-radius:2px;
+    overflow-x:auto;
+    padding:26px 24px;
+  }
+  .schematic::before{
+    content:attr(data-label);
+    display:block;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10px;
+    letter-spacing:0.2em;
+    text-transform:uppercase;
+    color:var(--brass);
+    margin-bottom:14px;
+    opacity:0.85;
+  }
+  .schematic pre{
+    margin:0;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    line-height:1.55;
+    color:#DCE7F2;
+    white-space:pre;
+  }
+
+  /* ---------- ASSET LEDGER (Layer classification) ---------- */
+  .ledger{
+    position:relative; z-index:1;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:1px;
+    background:var(--rule);
+    border:1px solid var(--rule);
+    margin:30px 0;
+  }
+  .ledger-cell{
+    background:var(--ink-navy);
+    padding:26px 24px;
+  }
+  .ledger-cell h4{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.16em;
+    text-transform:uppercase;
+    color:var(--brass);
+    margin:0 0 6px;
+  }
+  .ledger-cell .tag{
+    font-family:'Fraunces', serif;
+    font-style:italic;
+    color:var(--parchment-2);
+    font-size:14px;
+    display:block;
+    margin-bottom:16px;
+  }
+  .ledger-cell ul{
+    margin:0; padding:0;
+    list-style:none;
+  }
+  .ledger-cell li{
+    font-size:15px;
+    padding:7px 0;
+    border-top:1px solid var(--rule);
+  }
+  .ledger-cell li:first-child{ border-top:none; }
+
+  @media (max-width:600px){
+    .ledger{ grid-template-columns:1fr; }
+  }
+
+  /* ---------- CLOSING PAGE ---------- */
+  .colophon{
+    padding:90px 0 120px;
+    border-top:1px solid var(--rule);
+    text-align:center;
+  }
+  .colophon .seal{
+    margin:0 auto 30px;
+    width:70px; height:70px;
+  }
+  .colophon .seal svg{ width:28px; height:28px; }
+  .colophon p{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.15em;
+    text-transform:uppercase;
+    color:var(--brass-dim);
+  }
+</style>
+</head>
+<body>
+
+<div class="book">
+
+  <!-- TITLE PAGE -->
+  <section class="titlepage">
+    <div class="seal">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#C79A46" stroke-width="1.2">
+        <path d="M12 3 L21 8 L21 16 L12 21 L3 16 L3 8 Z"/>
+        <path d="M12 3 V21 M3 8 L21 16 M21 8 L3 16"/>
+      </svg>
+    </div>
+    <div class="eyebrow">A Career Operating System, Formalized</div>
+    <div class="title">
+      <h1>Daniel<br>Enterprise<br>Architecture</h1>
+      <div class="rule-flourish"></div>
+    </div>
+    <p class="subtitle">Being a complete account of the systems, layers, and asset classes by which one career is engineered.</p>
+    <div class="volume-tag">Volume I · Edition 1.0</div>
+  </section>
+
+  <!-- TABLE OF CONTENTS -->
+  <section class="toc">
+    <h2>Contents</h2>
+    <ol>
+      <li><span class="num">I</span><span>The Three Systems</span><span class="leader"></span><span class="pg">01</span></li>
+      <li><span class="num">II</span><span>Layer One — Professional Identity OS</span><span class="leader"></span><span class="pg">03</span></li>
+      <li><span class="num">III</span><span>Layer Two — TITAN Engineering OS</span><span class="leader"></span><span class="pg">05</span></li>
+      <li><span class="num">IV</span><span>Layer Three — Execution OS</span><span class="leader"></span><span class="pg">07</span></li>
+      <li><span class="num">V</span><span>Layer Four — Public Platform</span><span class="leader"></span><span class="pg">08</span></li>
+      <li><span class="num">VI</span><span>Layer Five — Distribution</span><span class="leader"></span><span class="pg">09</span></li>
+      <li><span class="num">VII</span><span>Layer Six — Opportunity</span><span class="leader"></span><span class="pg">10</span></li>
+      <li><span class="num">VIII</span><span>The Data Flow</span><span class="leader"></span><span class="pg">11</span></li>
+      <li><span class="num">IX</span><span>The Most Important Relationship</span><span class="leader"></span><span class="pg">13</span></li>
+      <li><span class="num">X</span><span>Asset Classification</span><span class="leader"></span><span class="pg">15</span></li>
+      <li><span class="num">XI</span><span>The Final Insight</span><span class="leader"></span><span class="pg">17</span></li>
+      <li><span class="num">XII</span><span>Recommendation — The Root Repository</span><span class="leader"></span><span class="pg">18</span></li>
+    </ol>
+  </section>
+
+  <!-- I. THE THREE SYSTEMS -->
+  <section class="chapter">
+    <div class="chapter-num">I</div>
+    <div class="chapter-head">
+      <div class="chapter-eyebrow"><span class="line"></span>Chapter I</div>
+      <h2>The Three Systems</h2>
+    </div>
+    <p class="lede">Daniel resolves into three governing systems: Professional Identity, the career operating system; TITAN Research, the engineering operating system; and Personal Systems, the execution layer beneath both.</p>
+    <div class="schematic" data-label="Fig. 1 — Top-Level Decomposition">
+<pre>                                       DANIEL
+                                          │
+        ┌─────────────────────────────────┼─────────────────────────────────┐
+        │                                 │                                 │
+        ▼                                 ▼                                 ▼
+ Professional Identity            TITAN Research                 Personal Systems
+(Career Operating System)      (Engineering Operating System)   (Execution OS)</pre>
+    </div>
+  </section>
+
+  <!-- II. LAYER ONE -->
+  <section class="chapter">
+    <div class="chapter-num">II</div>
+    <div class="chapter-head">
+      <div class="chapter-eyebrow"><span class="line"></span>Chapter II</div>
+      <h2>Layer One<br>Professional Identity OS</h2>
+    </div>
+    <p class="purpose">Purpose: maintain one deterministic professional identity everywhere.</p>
+    <div class="schematic" data-label="Fig. 2 — Professional Identity Tree">
+<pre>Professional Identity
+│
+├── Knowledge Base
+│      ├── Biography
+│      ├── Skills
+│      ├── Positioning
+│      └── Career Narrative
+│
+├── Master Resume
+├── LinkedIn Source
+├── Interview Doctrine
+├── Delivery Rubric
+├── Case Studies
+├── Interview Stories
+├── Projects
+├── Featured
+├── Certifications
+├── Evidence Registry
+├── Metrics
+└── Conflict Resolution Log</pre>
+    </div>
+    <p>Single source of truth for the professional identity. Everything public derives from here.</p>
+  </section>
+
+  <!-- III. LAYER TWO -->
+  <section class="chapter">
+    <div class="chapter-num">III</div>
+    <div class="chapter-head">
+      <div class="chapter-eyebrow"><span class="line"></span>Chapter III</div>
+      <h2>Layer Two<br>TITAN Engineering OS</h2>
+    </div>
+    <p class="purpose">Purpose: generate engineering knowledge.</p>
+    <div class="schematic" data-label="Fig. 3 — TITAN Tree">
+<pre>TITAN
+│
+├── Mission
+├── Roadmap
+├── Research Agenda
+├── Lab System
+├── Publishing Strategy
+├── Research Archive
+├── Blueprints
+├── Cases
+├── Engineering Reports
+├── Technical Notes
+├── Infrastructure
+├── Homelab
+├── AI Platform
+├── Kubernetes
+├── Security
+├── Observability
+└── MLOps</pre>
+    </div>
+    <p>Exists to create engineering evidence, not to get a job.</p>
+  </section>
+
+  <!-- IV. LAYER THREE -->
+  <section class="chapter">
+    <div class="chapter-num">IV</div>
+    <div class="chapter-head">
+      <div class="chapter-eyebrow"><span class="line"></span>Chapter IV</div>
+      <h2>Layer Three<br>Execution OS</h2>
+    </div>
+    <p class="purpose">Purpose: run Daniel.</p>
+    <div class="schematic" data-label="Fig. 4 — Execution Tree">
+<pre>Execution
+│
+├── Boss
+├── Evaluator
+├── Meridian
+├── Reader
+├── Interview
+├── Pre-TITAN
+├── Calendar
+├── Objectives
+└── Knowledge Capture</pre>
+    </div>
+  </section>
+
+  <!-- V. LAYER FOUR -->
+  <section class="chapter">
+    <div class="chapter-num">V</div>
+    <div class="chapter-head">
+      <div class="chapter-eyebrow"><span class="line"></span>Chapter V</div>
+      <h2>Layer Four<br>Public Platform</h2>
+    </div>
+    <div class="schematic" data-label="Fig. 5 — Website Tree">
+<pre>Website
+│
+├── Home
+├── About
+├── Resume
+├── Research
+├── Archive
+├── Cases
+├── Blueprints
+├── Articles
+├── Projects
+├── Music
+└── Contact</pre>
+    </div>
+    <p>The website is an interface: it owns no knowledge, only exposes it.</p>
+  </section>
+
+  <!-- VI. LAYER FIVE -->
+  <section class="chapter">
+    <div class="chapter-num">VI</div>
+    <div class="chapter-head">
+      <div class="chapter-eyebrow"><span class="line"></span>Chapter VI</div>
+      <h2>Layer Five<br>Distribution</h2>
+    </div>
+    <div class="schematic" data-label="Fig. 6 — Distribution Chain">
+<pre>LinkedIn
+   ↓
+GitHub
+   ↓
+CNCF
+   ↓
+Conference Talks
+   ↓
+Blog
+   ↓
+Research Citations
+   ↓
+Community</pre>
+    </div>
+  </section>
+
+  <!-- VII. LAYER SIX -->
+  <section class="chapter">
+    <div class="chapter-num">VII</div>
+    <div class="chapter-head">
+      <div class="chapter-eyebrow"><span class="line"></span>Chapter VII</div>
+      <h2>Layer Six<br>Opportunity</h2>
+    </div>
+    <div class="schematic" data-label="Fig. 7 — Opportunity Chain">
+<pre>Recruiters
+   ↓
+Hiring Managers
+   ↓
+Startups
+   ↓
+Enterprise
+   ↓
+Research Labs
+   ↓
+Universities
+   ↓
+Conference Organizers
+   ↓
+Consulting
+   ↓
+Investors</pre>
+    </div>
+    <p>No document is written specifically for one audience — the same evidence serves all.</p>
+  </section>
+
+  <!-- VIII. DATA FLOW -->
+  <section class="chapter">
+    <div class="chapter-num">VIII</div>
+    <div class="chapter-head">
+      <div class="chapter-eyebrow"><span class="line"></span>Chapter VIII</div>
+      <h2>The Data Flow</h2>
+    </div>
+    <div class="schematic" data-label="Fig. 8 — End-to-End Flow">
+<pre>Homelab
+   ↓
+Experiment
+   ↓
+Investigation
+   ↓
+Evidence
+   ↓
+TITAN Case
+   ↓
+Archive
+   ↓
+Professional Identity
+   ↓
+Website
+   ↓
+LinkedIn
+   ↓
+Discovery
+   ↓
+Opportunity</pre>
+    </div>
+    <p>One experiment, many downstream consumers.</p>
+  </section>
+
+  <!-- IX. MOST IMPORTANT RELATIONSHIP -->
+  <section class="chapter">
+    <div class="chapter-num">IX</div>
+    <div class="chapter-head">
+      <div class="chapter-eyebrow"><span class="line"></span>Chapter IX</div>
+      <h2>The Most Important<br>Relationship</h2>
+    </div>
+    <div class="schematic" data-label="Fig. 9 — Causal Chain">
+<pre>                  TITAN
+                     │
+                     │ produces
+                     ▼
+          Engineering Evidence
+                     │
+                     │ feeds
+                     ▼
+      Professional Identity Doctrine
+                     │
+                     │ publishes
+                     ▼
+              Public Website
+                     │
+                     │ distributes
+                     ▼
+             LinkedIn / GitHub
+                     │
+                     │ attracts
+                     ▼
+               Opportunities</pre>
+    </div>
+    <p><strong>Earlier this year</strong>, the hierarchy was:</p>
+    <div class="schematic" data-label="Fig. 10 — Former Hierarchy">
+<pre>Resume
+  ↓
+Projects
+  ↓
+Job</pre>
+    </div>
+    <p><strong>Today</strong>, the hierarchy is:</p>
+    <div class="schematic" data-label="Fig. 11 — Present Hierarchy">
+<pre>Research
+  ↓
+Evidence
+  ↓
+Identity
+  ↓
+Career</pre>
+    </div>
+    <p>Career becomes an output.</p>
+  </section>
+
+  <!-- X. ASSET CLASSIFICATION -->
+  <section class="chapter">
+    <div class="chapter-num">X</div>
+    <div class="chapter-head">
+      <div class="chapter-eyebrow"><span class="line"></span>Chapter X</div>
+      <h2>Asset Classification</h2>
+    </div>
+    <div class="ledger">
+      <div class="ledger-cell">
+        <h4>Immutable Assets</h4>
+        <span class="tag">These rarely change</span>
+        <ul>
+          <li>TITAN Manifesto</li>
+          <li>Publishing Strategy</li>
+          <li>Brand Doctrine</li>
+          <li>Mission</li>
+          <li>Principles</li>
+        </ul>
+      </div>
+      <div class="ledger-cell">
+        <h4>Living Assets</h4>
+        <span class="tag">Continuously growing</span>
+        <ul>
+          <li>Research Archive</li>
+          <li>Cases</li>
+          <li>Blueprints</li>
+          <li>Interview Stories</li>
+          <li>Knowledge Base</li>
+        </ul>
+      </div>
+      <div class="ledger-cell">
+        <h4>Dynamic Assets</h4>
+        <span class="tag">Frequently updated</span>
+        <ul>
+          <li>Resume</li>
+          <li>LinkedIn</li>
+          <li>Certifications</li>
+          <li>Website</li>
+        </ul>
+      </div>
+      <div class="ledger-cell">
+        <h4>Ephemeral Assets</h4>
+        <span class="tag">Temporary</span>
+        <ul>
+          <li>Posts</li>
+          <li>Announcements</li>
+          <li>Certification celebrations</li>
+          <li>Status updates</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- XI. FINAL INSIGHT -->
+  <section class="chapter">
+    <div class="chapter-num">XI</div>
+    <div class="chapter-head">
+      <div class="chapter-eyebrow"><span class="line"></span>Chapter XI</div>
+      <h2>The Final Insight</h2>
+    </div>
+    <p class="lede">The Professional Identity Doctrine is no longer the center of the professional world — it is one subsystem within the larger Enterprise Architecture.</p>
+    <div class="schematic" data-label="Fig. 12 — The Full Hierarchy">
+<pre>                    DANIEL ENTERPRISE
+                           │
+        ┌──────────────────┼──────────────────┐
+        │                  │                  │
+ Professional OS      TITAN OS        Execution OS
+        │                  │                  │
+        └──────────────────┼──────────────────┘
+                           │
+                     Public Platform
+                           │
+                    Professional Opportunities</pre>
+    </div>
+  </section>
+
+  <!-- XII. RECOMMENDATION -->
+  <section class="chapter">
+    <div class="chapter-num">XII</div>
+    <div class="chapter-head">
+      <div class="chapter-eyebrow"><span class="line"></span>Chapter XII</div>
+      <h2>Recommendation<br>The Root Repository</h2>
+    </div>
+    <div class="schematic" data-label="Fig. 13 — Root Governance Repository">
+<pre>ENTERPRISE/
+    README.md
+    ARCHITECTURE.md
+    MANIFESTO.md
+    PROFESSIONAL-IDENTITY/
+    TITAN/
+    APPS/
+    WEBSITE/
+    BRAND/
+    KNOWLEDGE/</pre>
+    </div>
+    <p>The root governance repository for the entire ecosystem. Every major component — the Professional Identity Doctrine, the TITAN publishing strategy, apps, and website — organized beneath it: a single architectural map of the digital enterprise instead of a collection of isolated systems.</p>
+  </section>
+
+  <!-- COLOPHON -->
+  <section class="colophon">
+    <div class="seal">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#C79A46" stroke-width="1.2">
+        <path d="M12 3 L21 8 L21 16 L12 21 L3 16 L3 8 Z"/>
+        <path d="M12 3 V21 M3 8 L21 16 M21 8 L3 16"/>
+      </svg>
+    </div>
+    <p>End of Volume I</p>
+  </section>
+
+</div>
+
+</body>
+</html>

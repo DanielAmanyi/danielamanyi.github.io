@@ -129,6 +129,7 @@
   }
 
   .nav-links a:hover { color: var(--accent); }
+  .nav-links a.nav-active { color: var(--accent) !important; opacity: 1 !important; }
 
   .nav-links a.nav-revealed {
     animation: nav-flash-in 0.9s ease forwards;
@@ -183,7 +184,7 @@
     align-items: center;
     padding-top: 56px;
     position: relative;
-    overflow: hidden;
+    overflow: visible; /* must be visible for portrait sticky to work */
   }
 
   .hero-glow {
@@ -265,6 +266,8 @@
     max-width: 380px;
     justify-self: end;
     align-self: start;
+    position: sticky;
+    top: 72px; /* nav height (56px) + small breathing room */
     border: 1px solid var(--border2);
     background: var(--bg2);
   }
@@ -1325,7 +1328,7 @@
         <a href="#projects" class="btn btn-primary">View Projects</a>
         <a href="#contact" class="btn btn-ghost">Get in Touch</a>
       </div>
-      <div class="hero-stats">
+      <div class="hero-stats" id="heroStats">
         <div>
           <div class="stat-num" id="stat0" data-target="4" data-suffix="+">0</div>
           <div class="stat-label">Years Production</div>
@@ -1877,7 +1880,7 @@
 <section id="experience">
   <div class="container">
     <div class="section-header reveal">
-      <div class="section-tag">Work History</div>
+      <div class="section-tag" id="experienceEyebrow">Work History</div>
       <h2 class="section-title" id="experienceTitle">Experience</h2>
     </div>
 
@@ -2075,30 +2078,70 @@
   const termOutputEl = document.getElementById('termOutput');
   const heroPortrait = document.getElementById('heroPortrait');
   const heroSectionEl = document.getElementById('hero');
-
-  const TERMINAL_TEXT = "DevOps and Platform Engineer with 4+ years designing and operating Kubernetes-native systems across AWS and on-prem environments. Strong focus on reliability engineering, failure handling, and infrastructure consistency. Known for diagnosing complex infra failures, minimizing blast radius, and maintaining control plane stability under stress.";
-
-  if (heroPortrait) {
-    // Glitch effect plays once on load, then portrait settles to full brightness
-    heroPortrait.classList.add('glitching');
-    heroPortrait.addEventListener('animationend', () => {
-      heroPortrait.classList.remove('glitching');
-      heroPortrait.classList.add('revealed');
-      if (portraitWrap) portraitWrap.classList.add('lit');
-
-      // After portrait reveals, nav links load one by one: each flashes in
-      // bright, settles to dim normal state — right to left order reversed
-      // so they appear left to right on screen (item 5).
-      const navLinkEls = document.querySelectorAll('.nav-links a');
-      navLinkEls.forEach((link, i) => {
-        setTimeout(() => {
-          link.classList.add('nav-revealed');
-        }, i * 260); // 260ms between each link
-      });
-    }, { once: true });
-  }
   const portraitWrap = document.getElementById('portraitWrap');
 
+  const TERMINAL_TEXT = "DevOps and Platform Engineer with 4+ years designing and operating Kubernetes-native systems across AWS and on-prem environments. Strong focus on reliability engineering, failure handling, and infrastructure consistency. Known for diagnosing complex infra failures, minimizing blast radius, and maintaining control plane stability under stress.";
+  const AUTO_TYPE_CHARS = 129; // stops cleanly after "...on-prem environments."
+
+  // ─────────────────────────────────────────────────────────────────
+  // SEQUENCED HERO WATERFALL
+  //
+  //  Stage 1 → Portrait glitch plays   (~1.8s)
+  //  2s gap
+  //  Stage 2 → Terminal auto-types     (~8s at 38ms/char avg)
+  //  2s gap
+  //  Stage 3 → Nav menu reveals        (~1.6s, 6 links × 260ms)
+  //  2s gap
+  //  Stage 4 → Stats scroll listener armed (user scroll rolls numbers up)
+  //            Terminal scroll listener armed (scroll continues text)
+  //
+  // Nothing in stages 2–4 starts until the previous stage fully finishes.
+  // ─────────────────────────────────────────────────────────────────
+
+  let terminalScrollEnabled = false; // stage 4: terminal scroll hand-off
+
+  // ── STAGE 4 helpers (defined early, armed late) ──────────────────
+
+  let lastHeroCharCount = AUTO_TYPE_CHARS;
+
+  function getHeroTypeScrollDistance() {
+    return window.innerHeight * 0.28;
+  }
+
+  function updateHeroTyping() {
+    if (!terminalScrollEnabled) return;
+    const heroTop = heroSectionEl ? heroSectionEl.offsetTop : 0;
+    const scrollY = window.scrollY;
+    let progress = (scrollY - heroTop) / getHeroTypeScrollDistance();
+    progress = Math.max(0, Math.min(1, progress));
+    const scrolledChars = Math.floor(progress * (TERMINAL_TEXT.length - AUTO_TYPE_CHARS));
+    const charCount = AUTO_TYPE_CHARS + scrolledChars;
+    if (charCount !== lastHeroCharCount) {
+      const shown = TERMINAL_TEXT.slice(0, charCount);
+      if (termOutputEl) {
+        termOutputEl.innerHTML = `<span class="tc">${shown}</span><span class="term-cursor"></span>`;
+      }
+      lastHeroCharCount = charCount;
+    }
+  }
+
+  window.addEventListener('scroll', () => {
+    requestAnimationFrame(updateHeroTyping);
+  }, { passive: true });
+  window.addEventListener('resize', updateHeroTyping);
+
+  // ── STAGE 3: Nav reveal ──────────────────────────────────────────
+  function stageNavReveal(onDone) {
+    const navLinkEls = document.querySelectorAll('.nav-links a');
+    navLinkEls.forEach((link, i) => {
+      setTimeout(() => link.classList.add('nav-revealed'), i * 260);
+    });
+    // done after last link fires + its animation (0.9s)
+    const totalNavTime = (navLinkEls.length - 1) * 260 + 900;
+    setTimeout(onDone, totalNavTime);
+  }
+
+  // ── STAGE 2: Terminal auto-type ──────────────────────────────────
   function typeText(el, text, baseSpeed, onDone) {
     let i = 0;
     el.innerHTML = '<span class="tc"></span><span class="term-cursor"></span>';
@@ -2107,69 +2150,63 @@
       i++;
       tcSpan.textContent = text.slice(0, i);
       if (i < text.length) {
-        // Natural human typing rhythm: base speed with randomized jitter,
-        // plus a slightly longer pause after punctuation/spaces.
         const ch = text[i - 1];
         let delay = baseSpeed + (Math.random() * baseSpeed * 0.6 - baseSpeed * 0.3);
         if (ch === ' ') delay += 30;
         if (ch === ',' || ch === '—' || ch === '.') delay += 120;
         setTimeout(step, delay);
       } else {
-        const cursor = el.querySelector('.term-cursor');
-        if (cursor) cursor.remove();
         if (onDone) onDone();
       }
     }
     step();
   }
 
-  // Scroll-scrubbed typing for the hero terminal specifically: character
-  // count is derived directly from how far the user has scrolled through
-  // the hero's own height, so it types forward and untypes backward in
-  // lockstep with scroll position. No locking, no scroll interception —
-  // the page scrolls completely normally underneath this. The completion
-  // distance is a fraction of the viewport height (not a fixed px value)
-  // so it reliably finishes while the hero is still mostly in view,
-  // regardless of screen size.
-  if (termOutputEl && heroSectionEl) {
-    let lastHeroCharCount = -1;
-    // Characters typed automatically before scroll takes over
-    const AUTO_TYPE_CHARS = 103; // types up to "...on-prem environments..."
-    let autoTypeDone = false;
-
-    function getHeroTypeScrollDistance() {
-      return window.innerHeight * 0.28;
-    }
-
-    function updateHeroTyping() {
-      if (!autoTypeDone) return; // wait until auto-type portion finishes
-      const heroTop = heroSectionEl.offsetTop;
-      const scrollY = window.scrollY;
-      let progress = (scrollY - heroTop) / getHeroTypeScrollDistance();
-      progress = Math.max(0, Math.min(1, progress));
-
-      // Map scroll progress to the remaining chars after the auto-typed portion
-      const scrolledChars = Math.floor(progress * (TERMINAL_TEXT.length - AUTO_TYPE_CHARS));
-      const charCount = AUTO_TYPE_CHARS + scrolledChars;
-      if (charCount !== lastHeroCharCount) {
-        const shown = TERMINAL_TEXT.slice(0, charCount);
-        termOutputEl.innerHTML = `<span class="tc">${shown}</span><span class="term-cursor"></span>`;
-        lastHeroCharCount = charCount;
-      }
-    }
-
-    // On load: auto-type the opening text, then hand off to scroll
+  function stageTerminalType(onDone) {
+    if (!termOutputEl) { onDone(); return; }
     typeText(termOutputEl, TERMINAL_TEXT.slice(0, AUTO_TYPE_CHARS), 38, () => {
-      autoTypeDone = true;
+      // Keep cursor blinking after typing stops
+      termOutputEl.innerHTML =
+        `<span class="tc">${TERMINAL_TEXT.slice(0, AUTO_TYPE_CHARS)}</span><span class="term-cursor"></span>`;
       lastHeroCharCount = AUTO_TYPE_CHARS;
+      onDone();
     });
-
-    window.addEventListener('scroll', () => {
-      requestAnimationFrame(updateHeroTyping);
-    }, { passive: true });
-
-    window.addEventListener('resize', updateHeroTyping);
   }
+
+  // ── STAGE 1: Portrait glitch ─────────────────────────────────────
+  function stagePortraitGlitch(onDone) {
+    if (!heroPortrait) { onDone(); return; }
+    heroPortrait.classList.add('glitching');
+    heroPortrait.addEventListener('animationend', () => {
+      heroPortrait.classList.remove('glitching');
+      heroPortrait.classList.add('revealed');
+      if (portraitWrap) portraitWrap.classList.add('lit');
+      onDone();
+    }, { once: true });
+  }
+
+  // ── KICK OFF THE WATERFALL ───────────────────────────────────────
+  const GAP = 2000; // 2 second pause between stages (except portrait→terminal which is immediate)
+
+  stagePortraitGlitch(() => {
+    // Portrait done → terminal starts immediately (0s gap)
+    stageTerminalType(() => {
+      setTimeout(() => {
+
+        stageNavReveal(() => {
+          setTimeout(() => {
+
+            // Stage 4: arm terminal scroll controller only
+            // (stats respond to scroll immediately from load)
+            terminalScrollEnabled = true;
+            updateHeroTyping(); // sync terminal with current scroll position
+
+          }, GAP);
+        });
+
+      }, GAP);
+    });
+  });
 
   // Stats count up from 0 to target, one after another (item 4)
   const statEls = [
@@ -2210,16 +2247,53 @@
     }, stepTime);
   }
 
-  // Chain stats one by one with a small gap between each
-  function runStatsSequence(index) {
-    if (index >= statEls.length) return;
-    countUpStat(statEls[index], () => {
-      setTimeout(() => runStatsSequence(index + 1), 200);
+  // Stats count up as the user scrolls — each stat fills proportionally
+  // to how far past the hero-stats row the visitor has scrolled (item 5).
+  const heroStatsEl = document.getElementById('heroStats');
+  const STATS_SCROLL_RANGE = 400; // px of scroll over which all stats fill
+  let statsPrevProgress = 0;
+  let statsStarted = [false, false, false, false];
+
+  const STAT_TARGETS = [4, 7, 5, null]; // null = infinity
+  const STAT_SUFFIXES = ['+', '', '', ''];
+  // Each stat starts counting at a staggered progress threshold (0→1 range)
+  const STAT_STARTS = [0, 0.25, 0.5, 0.75];
+
+  function renderStatAtProgress(el, target, suffix, localProgress) {
+    const p = Math.max(0, Math.min(1, localProgress));
+    if (target === null) {
+      el.textContent = p >= 1 ? '∞' : Math.random() > 0.5 ? '∞' : '0';
+      if (p >= 1) el.textContent = '∞';
+    } else {
+      const val = Math.floor(p * target);
+      el.textContent = val + (p >= 1 ? suffix : '');
+    }
+  }
+
+  function updateStatsOnScroll() {
+    if (!heroStatsEl || statEls.length === 0) return;
+    const statsTop = heroStatsEl.offsetTop;
+    const scrollY = window.scrollY;
+    const overallProgress = Math.max(0, Math.min(1,
+      (scrollY - statsTop) / STATS_SCROLL_RANGE
+    ));
+    if (overallProgress === statsPrevProgress) return;
+    statsPrevProgress = overallProgress;
+
+    statEls.forEach((el, i) => {
+      const start = STAT_STARTS[i];
+      const localRange = 1 - start;
+      const localProgress = Math.max(0, Math.min(1,
+        (overallProgress - start) / localRange
+      ));
+      renderStatAtProgress(el, STAT_TARGETS[i], STAT_SUFFIXES[i], localProgress);
     });
   }
 
-  // Start stats after a short initial delay (let glitch play first)
-  setTimeout(() => runStatsSequence(0), 1400);
+  window.addEventListener('scroll', updateStatsOnScroll, { passive: true });
+  // Stats initialise at 0 and only start rolling once stage 4 arms them
+
+
   const reveals = document.querySelectorAll('.reveal');
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry, i) => {
@@ -2427,6 +2501,21 @@
   const certsSection = document.getElementById('certs');
   const guideArrowDown = document.getElementById('guideArrowDown');
   const guideArrowUp   = document.getElementById('guideArrowUp');
+
+  // Damping only activates after the Work History eyebrow blinks (item 1)
+  let expDampingEnabled = false;
+  const experienceEyebrow = document.getElementById('experienceEyebrow');
+  if (experienceEyebrow) {
+    const expEyebrowWatcher = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          expDampingEnabled = true;
+          expEyebrowWatcher.disconnect();
+        }
+      });
+    }, { threshold: 1.0, rootMargin: '-8% 0px -72% 0px' });
+    expEyebrowWatcher.observe(experienceEyebrow);
+  }
   // No hard cutoff — damping eases smoothly toward normal speed
   // over the last 25% of the section, eliminating the two-speed feel.
 
@@ -2448,7 +2537,7 @@
   }
 
   function isWithinExpZone(scrollY) {
-    if (!experienceSection) return false;
+    if (!experienceSection || !expDampingEnabled) return false;
     const top = experienceSection.offsetTop;
     const bottom = top + experienceSection.offsetHeight;
     return scrollY >= top && scrollY < bottom;
@@ -2563,8 +2652,8 @@
       if (window.scrollY >= s.offsetTop - 80) current = s.id;
     });
     navLinks.forEach(link => {
-      link.style.color = link.getAttribute('href') === '#' + current
-        ? 'var(--accent)' : '';
+      const isActive = link.getAttribute('href') === '#' + current;
+      link.classList.toggle('nav-active', isActive);
     });
   });
 </script>
