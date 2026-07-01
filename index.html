@@ -232,16 +232,14 @@
     overflow: hidden;
   }
 
-  
-.hero-portrait-wrap {
+  .hero-portrait-wrap {
     width: 100%;
     aspect-ratio: 1123 / 1400;
-    border: 1px solid var(--border2);
-    background: var(--bg2);
     max-width: 380px;
     justify-self: end;
-}
-
+    border: 1px solid var(--border2);
+    background: var(--bg2);
+  }
 
   .hero-portrait-wrap::before,
   .bracket-frame::before {
@@ -285,16 +283,38 @@
     border-color: var(--accent);
   }
 
-  
-.hero-portrait {
+  .hero-portrait {
     width: 100%;
     height: 100%;
     object-fit: cover;
     object-position: center 15%;
     display: block;
-    filter: brightness(0.9) contrast(1.05);
-}
+    filter: brightness(0.15) saturate(0.6) contrast(1.05);
+  }
 
+  .hero-portrait.portrait-glitch {
+    animation: portrait-glitch 0.85s steps(1) 1;
+  }
+
+  .hero-portrait.portrait-revealed {
+    filter: brightness(1) saturate(1) contrast(1.05);
+  }
+
+  @keyframes portrait-glitch {
+    0%   { filter: brightness(0.12) saturate(0.5) contrast(1.05); transform: translate(0,0); clip-path: inset(0 0 0 0); }
+    6%   { filter: brightness(1.5) saturate(2.2) contrast(1.4) hue-rotate(8deg); transform: translate(-4px,0); clip-path: inset(10% 0 60% 0); }
+    12%  { filter: brightness(0.08) saturate(0.3) contrast(1.6); transform: translate(3px,1px); clip-path: inset(40% 0 20% 0); }
+    18%  { filter: brightness(1.2) saturate(1.8) contrast(1.2) hue-rotate(-6deg); transform: translate(-2px,-2px); clip-path: inset(0 0 0 0); }
+    25%  { filter: brightness(0.15) saturate(0.4); transform: translate(4px,0); clip-path: inset(70% 0 5% 0); }
+    33%  { filter: brightness(1.6) contrast(1.5); transform: translate(-3px,1px); clip-path: inset(0 0 0 0); }
+    40%  { filter: brightness(0.1); transform: translate(2px,0); clip-path: inset(20% 0 50% 0); }
+    50%  { filter: brightness(1.3) saturate(1.4); transform: translate(-2px,0); clip-path: inset(0 0 0 0); }
+    58%  { filter: brightness(0.3); transform: translate(1px,2px); clip-path: inset(55% 0 15% 0); }
+    68%  { filter: brightness(1.1) saturate(1.2); transform: translate(-1px,-1px); clip-path: inset(0 0 0 0); }
+    78%  { filter: brightness(0.4) saturate(0.7); transform: translate(2px,0); }
+    88%  { filter: brightness(0.9) saturate(0.9); transform: translate(0,0); }
+    100% { filter: brightness(1) saturate(1) contrast(1.05); transform: translate(0,0); clip-path: inset(0 0 0 0); }
+  }
 
   .portrait-tag {
     position: absolute;
@@ -355,7 +375,7 @@
   .hero-terminal {
     border: 1px solid var(--border2);
     background: var(--bg2);
-    max-width: 640px;
+    max-width: 100%;
     margin-bottom: 40px;
   }
 
@@ -505,6 +525,17 @@
   @keyframes title-pulse {
     0%, 100% { color: var(--text-dim); text-shadow: none; }
     50% { color: var(--text-bright); text-shadow: 0 0 18px rgba(0,212,255,0.35); }
+  }
+
+  /* Fires a handful of times once a section title scrolls toward the top
+     of the viewport — a "pause here" cue — then settles back to normal. */
+  h2.section-title.title-blink-active {
+    animation: title-blink 0.42s steps(1) 5;
+  }
+
+  @keyframes title-blink {
+    0%, 100% { color: var(--text-bright); text-shadow: none; opacity: 1; }
+    50% { color: var(--accent); text-shadow: 0 0 18px rgba(0,212,255,0.5); opacity: 0.25; }
   }
 
   .section-sub {
@@ -770,6 +801,17 @@
     vertical-align: -1px;
     margin-left: 1px;
     animation: blink 1s infinite;
+  }
+
+  .insight-cursor {
+    color: var(--accent);
+    font-family: var(--code);
+    font-size: 12px;
+    margin-left: 1px;
+    animation-name: blink;
+    animation-timing-function: steps(1);
+    animation-iteration-count: infinite;
+    /* animation-duration is set per-element via inline style for unique timing */
   }
 
   .insight-tag {
@@ -1224,19 +1266,19 @@
       </div>
       <div class="hero-stats">
         <div>
-          <div class="stat-num">4+</div>
+          <div class="stat-num" data-target="4" data-suffix="+">0</div>
           <div class="stat-label">Years Production</div>
         </div>
         <div>
-          <div class="stat-num">7</div>
+          <div class="stat-num" data-target="7" data-suffix="">0</div>
           <div class="stat-label">Certifications</div>
         </div>
         <div>
-          <div class="stat-num">5</div>
+          <div class="stat-num" data-target="5" data-suffix="">0</div>
           <div class="stat-label">Projects Shipped</div>
         </div>
         <div>
-          <div class="stat-num">∞</div>
+          <div class="stat-num" data-infinity="true">0</div>
           <div class="stat-label">Incidents Survived</div>
         </div>
       </div>
@@ -1962,6 +2004,61 @@
 
   updateParallax();
 
+  // Hero stats: count up from zero, one stat at a time (not simultaneously).
+  // The "Incidents Survived" stat can't literally count to infinity, so it
+  // rapidly cycles through large random numbers before settling on the ∞
+  // symbol — reads as the counter "overflowing."
+  function animateStat(el, duration) {
+    return new Promise((resolve) => {
+      const start = performance.now();
+      if (el.hasAttribute('data-infinity')) {
+        function tickInf(now) {
+          const t = (now - start) / duration;
+          if (t < 1) {
+            el.textContent = Math.floor(100 + Math.random() * 9899);
+            requestAnimationFrame(tickInf);
+          } else {
+            el.textContent = '∞';
+            resolve();
+          }
+        }
+        requestAnimationFrame(tickInf);
+        return;
+      }
+      const target = parseInt(el.getAttribute('data-target'), 10) || 0;
+      const suffix = el.getAttribute('data-suffix') || '';
+      function tick(now) {
+        const t = Math.min(1, (now - start) / duration);
+        const eased = 1 - Math.pow(1 - t, 3);
+        el.textContent = Math.round(eased * target) + suffix;
+        if (t < 1) {
+          requestAnimationFrame(tick);
+        } else {
+          el.textContent = target + suffix;
+          resolve();
+        }
+      }
+      requestAnimationFrame(tick);
+    });
+  }
+
+  const heroStatsEl = document.querySelector('.hero-stats');
+  if (heroStatsEl) {
+    const statEls = Array.from(heroStatsEl.querySelectorAll('.stat-num'));
+    const statsObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          let chain = Promise.resolve();
+          statEls.forEach((el) => {
+            chain = chain.then(() => animateStat(el, 600));
+          });
+          statsObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.3 });
+    statsObserver.observe(heroStatsEl);
+  }
+
   // Hero terminal: typing is linked directly to scroll position (scrub
   // forward to type, scrub back to untype) — independent of the portrait,
   // which stays static at full brightness with no automation at all.
@@ -1972,10 +2069,19 @@
   const TERMINAL_TEXT = "DevOps and Platform Engineer with 4+ years designing and operating Kubernetes-native systems across AWS and on-prem environments. Strong focus on reliability engineering, failure handling, and infrastructure consistency. Known for diagnosing complex infra failures, minimizing blast radius, and maintaining control plane stability under stress.";
 
   if (heroPortrait) {
-    heroPortrait.style.filter = 'brightness(1) saturate(1) contrast(1.05)';
+    // Portrait starts dark; after a brief beat it glitches through a few
+    // rapid brightness/contrast/slice jumps before settling into its lit,
+    // fully revealed state.
+    setTimeout(() => {
+      heroPortrait.classList.add('portrait-glitch');
+      heroPortrait.addEventListener('animationend', () => {
+        heroPortrait.classList.remove('portrait-glitch');
+        heroPortrait.classList.add('portrait-revealed');
+      }, { once: true });
+    }, 450);
   }
 
-  function typeText(el, text, baseSpeed) {
+  function typeText(el, text, baseSpeed, onDone) {
     let i = 0;
     el.innerHTML = '<span class="tc"></span><span class="term-cursor"></span>';
     const tcSpan = el.querySelector('.tc');
@@ -1993,6 +2099,7 @@
       } else {
         const cursor = el.querySelector('.term-cursor');
         if (cursor) cursor.remove();
+        if (onDone) onDone();
       }
     }
     step();
@@ -2022,7 +2129,7 @@
       const charCount = Math.floor(progress * TERMINAL_TEXT.length);
       if (charCount !== lastHeroCharCount) {
         const shown = TERMINAL_TEXT.slice(0, charCount);
-        const cursor = progress < 1 ? '<span class="term-cursor"></span>' : '';
+        const cursor = '<span class="term-cursor"></span>';
         termOutputEl.innerHTML = `<span class="tc">${shown}</span>${cursor}`;
         lastHeroCharCount = charCount;
       }
@@ -2049,7 +2156,11 @@
   }, { threshold: 0.1 });
   reveals.forEach(el => observer.observe(el));
 
-  // Certifications fly in from random directions when scrolled into view
+  // Certifications fly in from random directions when scrolled into view.
+  // The double requestAnimationFrame guarantees the browser has painted the
+  // initial offset transform before the fly-in transition fires — without it,
+  // if the element is already in view at registration time, the browser
+  // collapses both states into one and the transition never plays.
   const certItems = document.querySelectorAll('.cert-fly');
   certItems.forEach((el) => {
     const angle = Math.random() * Math.PI * 2;
@@ -2062,23 +2173,36 @@
   const certObserver = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
       if (entry.isIntersecting) {
-        entry.target.classList.add('fly-in');
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            entry.target.classList.add('fly-in');
+          });
+        });
         certObserver.unobserve(entry.target);
       }
     });
-  }, { threshold: 0.2 });
+  }, { threshold: 0.15 });
   certItems.forEach(el => certObserver.observe(el));
 
-  // "Experience" heading pulses slowly dark-to-bright while its section is in view
-  const experienceTitle = document.getElementById('experienceTitle');
-  if (experienceTitle) {
-    const experienceObserver = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        experienceTitle.classList.toggle('pulse-title', entry.isIntersecting);
-      });
-    }, { threshold: 0.15 });
-    experienceObserver.observe(experienceTitle);
-  }
+  // Every section title blinks a few times (then settles) once it scrolls
+  // up toward the top of the viewport — a "pause here, read this" cue —
+  // across Engineering work, Engineering Philosophy, Technology,
+  // Credentials, Work History, and Identity.
+  const blinkTitles = document.querySelectorAll('h2.section-title');
+  const titleBlinkObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        const el = entry.target;
+        el.classList.add('title-blink-active');
+        el.addEventListener('animationend', function handler() {
+          el.classList.remove('title-blink-active');
+          el.removeEventListener('animationend', handler);
+        }, { once: true });
+        titleBlinkObserver.unobserve(el);
+      }
+    });
+  }, { threshold: 0, rootMargin: '0px 0px -70% 0px' });
+  blinkTitles.forEach((el) => titleBlinkObserver.observe(el));
 
   // Contact card "beacon" chase — one card at a time, in random order,
   // each pulsing low-to-bright (theme cyan only) 4-5 times before handing
@@ -2107,7 +2231,7 @@
     let completedPulses = 0;
 
     card.style.animationName = 'beacon-pulse';
-    card.style.animationDuration = '0.55s';
+    card.style.animationDuration = '0.3s';
     card.style.animationTimingFunction = 'ease-in-out';
     card.style.animationIterationCount = String(pulseCount);
     card.classList.add('beacon');
@@ -2122,7 +2246,7 @@
       card.removeEventListener('animationiteration', onIteration);
       card.removeEventListener('animationend', onEnd);
       if (beaconActive) {
-        beaconTimeoutId = setTimeout(runBeaconOnce, 300 + Math.random() * 500);
+        beaconTimeoutId = setTimeout(runBeaconOnce, 120 + Math.random() * 220);
       }
     }
 
@@ -2183,25 +2307,64 @@
   }
 
   // Engineering Philosophy insight cards: each body types out character by
-  // character inside its terminal box, once scrolled into view, at the
-  // same human-paced typing speed as the hero terminal. Each card's start
-  // is randomly delayed so they don't all begin typing in lockstep.
-  const insightBodies = document.querySelectorAll('.insight-terminal .insight-body');
+  // character inside its terminal box, at the same human-paced typing speed
+  // as the hero terminal. Cards run serially — one terminal finishes typing
+  // before the next begins — in a shuffled (non-uniform) order each time
+  // the section is scrolled into view, so it never reads as a synchronized,
+  // simultaneous reveal.
+  const insightBodies = Array.from(document.querySelectorAll('.insight-terminal .insight-body'));
   function typeInsightBody(el) {
-    const text = el.getAttribute('data-text') || '';
-    typeText(el, text, 45);
+    return new Promise((resolve) => {
+      const text = el.getAttribute('data-text') || '';
+      typeText(el, text, 45, () => {
+        // Typing complete — inject a persistent underscore cursor that blinks
+        // at a unique interval per card (between 0.5s and 1.8s), so each
+        // note's cursor blinks independently and out of sync with the others.
+        const blinkInterval = (0.5 + Math.random() * 1.3).toFixed(2);
+        const underscoreCursor = document.createElement('span');
+        underscoreCursor.className = 'insight-cursor';
+        underscoreCursor.textContent = '_';
+        underscoreCursor.style.animationDuration = `${blinkInterval}s`;
+        el.appendChild(underscoreCursor);
+        resolve();
+      });
+    });
   }
 
-  const insightObserver = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        const randomStartDelay = Math.random() * 900; // 0–900ms randomized stagger
-        setTimeout(() => typeInsightBody(entry.target), randomStartDelay);
-        insightObserver.unobserve(entry.target);
-      }
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function runInsightSequence(els) {
+    const order = shuffle(els);
+    let chain = Promise.resolve();
+    order.forEach((el) => {
+      chain = chain.then(() => {
+        // Randomized gap between cards so the cadence is irregular rather
+        // than a fixed, uniform beat.
+        const gap = 150 + Math.random() * 650;
+        return new Promise((res) => setTimeout(res, gap)).then(() => typeInsightBody(el));
+      });
     });
-  }, { threshold: 0.4 });
-  insightBodies.forEach(el => insightObserver.observe(el));
+  }
+
+  if (insightBodies.length) {
+    const insightsContainer = document.getElementById('insightsGrid') || insightBodies[0].closest('section');
+    const insightSequenceObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          runInsightSequence(insightBodies);
+          insightSequenceObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.2 });
+    insightSequenceObserver.observe(insightsContainer);
+  }
 
   // Slowed scrolling through "Engineering Philosophy" only. Activates only
   // once the section's own top edge has scrolled into the viewport (not
@@ -2213,24 +2376,46 @@
   // Philosophy" heading) and ends precisely at the bottom of the insight
   // cards grid (the "Kubernetes is not a deployment target..." card) —
   // not the section's outer padding, so it doesn't drift past that card.
-  const dampedSectionStart = document.getElementById('thinking');
-  const dampedZoneEnd = document.getElementById('insightsGrid');
+  // Slowed scrolling through specific sections. Each zone activates only
+  // once its own top edge has scrolled into the viewport, and ends at a
+  // defined bottom boundary — not a section's outer padding.
+  const dampedZones = [
+    {
+      // Engineering Philosophy: damped zone runs from the section heading
+      // down to the bottom of the insight cards grid.
+      startEl: document.getElementById('thinking'),
+      endEl: document.getElementById('insightsGrid'),
+      factor: 0.385, // 35% base, +10% speed = 0.385
+    },
+    {
+      // Work History: scrolling is slowed by 30% across the whole section.
+      startEl: document.getElementById('experience'),
+      endEl: document.getElementById('experience'),
+      factor: 0.7,
+    },
+  ];
 
-  const DAMPING_FACTOR = 0.385; // 35% base, +10% speed = 0.385
+  function getZoneBounds(zone) {
+    const top = zone.startEl.offsetTop;
+    const bottom = zone.endEl.offsetTop + zone.endEl.offsetHeight;
+    return { top, bottom };
+  }
 
-  function isWithinDampedZone(scrollY) {
-    if (!dampedSectionStart || !dampedZoneEnd) return false;
-    const top = dampedSectionStart.offsetTop;
-    const bottom = dampedZoneEnd.offsetTop + dampedZoneEnd.offsetHeight;
-    return scrollY >= top && scrollY < bottom;
+  function findActiveZone(scrollY) {
+    for (const zone of dampedZones) {
+      if (!zone.startEl || !zone.endEl) continue;
+      const { top, bottom } = getZoneBounds(zone);
+      if (scrollY >= top && scrollY < bottom) return zone;
+    }
+    return null;
   }
 
   function handleDampedWheel(e) {
-    const scrollY = window.scrollY;
-    if (!isWithinDampedZone(scrollY)) return; // let native scroll happen
+    const zone = findActiveZone(window.scrollY);
+    if (!zone) return; // let native scroll happen
 
     e.preventDefault();
-    window.scrollBy(0, e.deltaY * DAMPING_FACTOR);
+    window.scrollBy(0, e.deltaY * zone.factor);
   }
 
   window.addEventListener('wheel', handleDampedWheel, { passive: false });
@@ -2243,10 +2428,10 @@
     if (dampedTouchStartY === null) return;
     const currentY = e.touches[0].clientY;
     const deltaY = dampedTouchStartY - currentY;
-    const scrollY = window.scrollY;
-    if (isWithinDampedZone(scrollY)) {
+    const zone = findActiveZone(window.scrollY);
+    if (zone) {
       e.preventDefault();
-      window.scrollBy(0, deltaY * DAMPING_FACTOR);
+      window.scrollBy(0, deltaY * zone.factor);
       dampedTouchStartY = currentY;
     } else {
       dampedTouchStartY = currentY;
