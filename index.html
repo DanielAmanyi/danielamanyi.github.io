@@ -1281,8 +1281,8 @@
     <div class="status-dot"></div>
     <span class="status-accent">AVAILABLE</span> for senior roles
   </div>
-  <div class="status-item">Lagos, Nigeria → Remote / Relocation</div>
-  <div class="status-item" style="margin-left:auto">CKA · CKAD · AWS · Terraform</div>
+  <div class="status-item">Lagos, Nigeria → Remote / DE · NL · CA</div>
+  <div class="status-item" style="margin-left:auto">CKA · AWS · Terraform · HashiCorp</div>
 </div>
 
 <!-- HERO -->
@@ -1295,7 +1295,7 @@
 
       <div class="hero-top">
         <div>
-          <div class="hero-tag">DevOps · MLOps · Platform Engineering</div>
+          <div class="hero-tag">Platform Engineering · AI Infrastructure · DevOps</div>
           <h1 class="hero-name">
             Amanyi<br>
             <span class="line2">Daniel</span>
@@ -1319,7 +1319,7 @@
           <span class="terminal-bar-label">session — whoami</span>
         </div>
         <div class="terminal-body">
-          <div class="term-prompt-line"><span class="term-accent">$</span> whoami — Senior Platform Engineer</div>
+          <div class="term-prompt-line"><span class="term-accent">$</span> whoami — Platform/Infrastructure Engineer</div>
           <div class="term-output" id="termOutput"><span class="term-cursor"></span></div>
         </div>
       </div>
@@ -1330,11 +1330,11 @@
       </div>
       <div class="hero-stats" id="heroStats">
         <div>
-          <div class="stat-num" id="stat0" data-target="4" data-suffix="+">0</div>
+          <div class="stat-num" id="stat0" data-target="6" data-suffix="+">0</div>
           <div class="stat-label">Years Production</div>
         </div>
         <div>
-          <div class="stat-num" id="stat1" data-target="7" data-suffix="">0</div>
+          <div class="stat-num" id="stat1" data-target="8" data-suffix="">0</div>
           <div class="stat-label">Certifications</div>
         </div>
         <div>
@@ -1614,6 +1614,62 @@
       </div>
     </div>
 
+    <!-- PROJECT 6: KUBENOTES -->
+    <div class="project-card reveal" onclick="toggleProject(this)">
+      <div class="project-header">
+        <div class="project-meta">
+          <div class="project-id">PROJ-006 · KUBERNETES / GITOPS</div>
+          <div class="project-name">KubeNotes</div>
+          <div class="project-tagline">Minimalist REST API purpose-built for Kubernetes-native deployment — CI/CD, GitOps, Helm, Kustomize</div>
+        </div>
+        <div class="project-badges">
+          <span class="badge badge-accent">Open Source</span>
+          <span class="badge">Kubernetes</span>
+          <span class="badge">GitOps</span>
+        </div>
+        <div class="expand-icon">+</div>
+      </div>
+      <div class="project-body">
+        <div class="project-grid">
+          <div class="proj-section">
+            <div class="proj-section-label">Problem Context</div>
+            <p>Most "Kubernetes demo apps" are either too trivial (hello-world) or too complex (entire microservices platforms) to illustrate the operational deployment patterns clearly. KubeNotes is scoped to be exactly complex enough: a real REST API with state, deployed with production-grade tooling, so the Kubernetes patterns are the focus rather than the application logic.</p>
+          </div>
+          <div class="proj-section">
+            <div class="proj-section-label">What It Demonstrates</div>
+            <ul>
+              <li>CI/CD automation from commit to deployment with no manual steps</li>
+              <li>GitOps delivery — cluster state declared in Git, reconciled automatically</li>
+              <li>Helm packaging with environment-specific value overrides</li>
+              <li>Kustomize overlays for multi-environment promotion (dev/staging/prod)</li>
+              <li>Kubernetes-native deployment patterns: readiness probes, resource limits, rolling updates</li>
+            </ul>
+          </div>
+          <div class="proj-section">
+            <div class="proj-section-label">Stack</div>
+            <div class="stack-chips">
+              <span class="chip">Kubernetes</span>
+              <span class="chip">Helm</span>
+              <span class="chip">Kustomize</span>
+              <span class="chip">ArgoCD</span>
+              <span class="chip">GitHub Actions</span>
+              <span class="chip">Docker</span>
+              <span class="chip">Python</span>
+            </div>
+          </div>
+          <div class="proj-section">
+            <div class="proj-section-label">Design Intent</div>
+            <p>Kept intentionally minimal on the application side so reviewers can focus on the infrastructure and delivery patterns. The app is a note-taking REST API — trivial enough to understand in 30 seconds, substantial enough to require real deployment care (persistent state, health checks, environment-specific config).</p>
+          </div>
+        </div>
+        <div style="margin-top:14px">
+          <a href="https://github.com/DanielAmanyi/kubenote-app" target="_blank" class="btn btn-ghost" style="font-size:11px;padding:8px 16px;display:inline-flex">
+            ↗ View on GitHub
+          </a>
+        </div>
+      </div>
+    </div>
+
   </div>
 </section>
 <section id="thinking">
@@ -1825,48 +1881,55 @@
         <div class="cert-icon">CKA</div>
         <div>
           <div class="cert-name">Certified Kubernetes Administrator</div>
-          <div class="cert-issuer">CNCF / Linux Foundation</div>
-        </div>
-      </div>
-      <div class="cert-item cert-fly">
-        <div class="cert-icon">CKAD</div>
-        <div>
-          <div class="cert-name">Certified Kubernetes App Developer</div>
-          <div class="cert-issuer">CNCF / Linux Foundation</div>
-        </div>
-      </div>
-      <div class="cert-item cert-fly">
-        <div class="cert-icon">SAA</div>
-        <div>
-          <div class="cert-name">AWS Solutions Architect Associate</div>
-          <div class="cert-issuer">Amazon Web Services</div>
-        </div>
-      </div>
-      <div class="cert-item cert-fly">
-        <div class="cert-icon">DVA</div>
-        <div>
-          <div class="cert-name">AWS Developer Associate</div>
-          <div class="cert-issuer">Amazon Web Services</div>
+          <div class="cert-issuer">CNCF / Linux Foundation · Nov 2025</div>
         </div>
       </div>
       <div class="cert-item cert-fly">
         <div class="cert-icon">SOA</div>
         <div>
           <div class="cert-name">AWS SysOps Administrator Associate</div>
-          <div class="cert-issuer">Amazon Web Services</div>
+          <div class="cert-issuer">Amazon Web Services · Jan 2024</div>
+        </div>
+      </div>
+      <div class="cert-item cert-fly">
+        <div class="cert-icon">DVA</div>
+        <div>
+          <div class="cert-name">AWS Developer Associate</div>
+          <div class="cert-issuer">Amazon Web Services · Jul 2023</div>
+        </div>
+      </div>
+      <div class="cert-item cert-fly">
+        <div class="cert-icon">SAA</div>
+        <div>
+          <div class="cert-name">AWS Solutions Architect Associate</div>
+          <div class="cert-issuer">Amazon Web Services · May 2023</div>
+        </div>
+      </div>
+      <div class="cert-item cert-fly">
+        <div class="cert-icon">CCP</div>
+        <div>
+          <div class="cert-name">AWS Cloud Practitioner</div>
+          <div class="cert-issuer">Amazon Web Services · Mar 2023</div>
         </div>
       </div>
       <div class="cert-item cert-fly">
         <div class="cert-icon">TF</div>
         <div>
-          <div class="cert-name">HashiCorp Terraform Associate</div>
-          <div class="cert-issuer">HashiCorp</div>
+          <div class="cert-name">HashiCorp Terraform Associate (003)</div>
+          <div class="cert-issuer">HashiCorp · Feb 2024</div>
         </div>
       </div>
       <div class="cert-item cert-fly">
         <div class="cert-icon">N+</div>
         <div>
           <div class="cert-name">CompTIA Network+</div>
+          <div class="cert-issuer">CompTIA</div>
+        </div>
+      </div>
+      <div class="cert-item cert-fly">
+        <div class="cert-icon">A+</div>
+        <div>
+          <div class="cert-name">CompTIA A+</div>
           <div class="cert-issuer">CompTIA</div>
         </div>
       </div>
@@ -1887,48 +1950,55 @@
     <div class="timeline">
       <div class="timeline-item reveal">
         <div class="timeline-period">Jan 2026 – Present</div>
-        <div class="timeline-role">DevOps / Platform Engineer — Consultant</div>
-        <div class="timeline-company">Networksx (Australia)</div>
+        <div class="timeline-role">Infrastructure & Platform Consultant</div>
+        <div class="timeline-company">NetworksX · Remote (Advisory)</div>
         <ul class="timeline-points">
-          <li>Designed mTLS-based identity architecture for distributed AI agent communication — evaluated CRL vs OCSP trade-offs under failure and latency conditions</li>
-          <li>Built certificate lifecycle and key rotation strategies for large-scale deployments; identified trust-chain and control-plane failure risks</li>
-          <li>Advised on resilience patterns and blast radius containment strategies across distributed systems</li>
+          <li>Conducted independent technical risk assessment of an mTLS-based identity and control-plane architecture for a distributed AI agent system</li>
+          <li>Identified revocation lag on long-lived connections as the primary operational risk; recommended forcing reconnects during incidents rather than relying on certificate expiry</li>
+          <li>Recommended segmenting enforcement domains so CRL distribution failures degrade locally rather than triggering fleet-wide outages</li>
+          <li>Identified downstream dependency validation — not cryptography or rotation mechanics — as the real bottleneck in emergency key rotation</li>
+          <li>Delivered written assessment with production-viability verdict: directionally sound, contingent on disciplined operational governance</li>
         </ul>
       </div>
 
       <div class="timeline-item reveal">
-        <div class="timeline-period">May 2024 – May 2025</div>
+        <div class="timeline-period">May 2024 – May 2026</div>
         <div class="timeline-role">DevOps Engineer</div>
-        <div class="timeline-company">Capshall</div>
+        <div class="timeline-company">Capshall Technologies · Southampton, UK (Remote)</div>
         <ul class="timeline-points">
-          <li>Designed and operated AWS infrastructure with Terraform across multiple environments — resolved state drift, enforced IaC consistency</li>
-          <li>Built CI/CD pipelines (Jenkins, CodePipeline) improving deployment reliability and eliminating manual intervention</li>
-          <li>Managed Kubernetes workloads on EKS: scheduling issues, resource contention, networking misconfigurations</li>
-          <li>Deployed observability stack (Prometheus, Grafana, ELK) for real-time monitoring and incident debugging</li>
-          <li>Hardened IAM boundaries and improved reliability across production workloads</li>
+          <li>Owned cloud platform behind an event-driven receipt-processing system (~233 active users) — architected on S3, DynamoDB, API Gateway, and Lambda, fully Terraform-managed</li>
+          <li>Provisioned and operated Amazon Bedrock and SageMaker for AI inference orchestration; integrated AWS Textract for document extraction — owned the operational platform layer</li>
+          <li>Eliminated runaway SageMaker idle-compute costs by redesigning from scheduled shutdowns to Spot Instances backed by a custom on-demand AMI — reduced monthly spend from ~$2,700 to ~$80 within two billing cycles</li>
+          <li>Diagnosed and resolved a self-inflicted IAM lockout: Terraform-managed policy change introduced an explicit deny that blocked the permissions needed to fix itself — traced via CloudTrail, resolved without AWS support escalation</li>
+          <li>Diagnosed and resolved a five-layer cascading Kubernetes failure (pod OOM → kubelet eviction → nodeAffinity loop → HPA scaling wrong metric → etcd OOM on co-located node) in ~40 minutes; built a ValidatingWebhookConfiguration to enforce memory limits at admission, eliminating the root cause structurally</li>
+          <li>Drove monolithic-to-event-driven architecture migration, cutting cloud costs 75% while improving resilience</li>
+          <li>Built governed risk-acceptance process for security scan findings (Trivy, Checkov): validated findings, confirmed no-fix-available status with vendors, hard-blocked all fixable critical CVEs</li>
         </ul>
       </div>
 
       <div class="timeline-item reveal">
-        <div class="timeline-period">Oct 2022 – Apr 2024</div>
-        <div class="timeline-role">Cloud Engineer</div>
-        <div class="timeline-company">Cloudboosta</div>
+        <div class="timeline-period">Oct 2022 – Oct 2024</div>
+        <div class="timeline-role">DevOps Engineer / Cloud Engineer</div>
+        <div class="timeline-company">Cloudboosta · Coventry, UK</div>
         <ul class="timeline-points">
-          <li>Provisioned multi-AZ AWS infrastructure with Terraform and CloudFormation, reducing manual provisioning overhead</li>
-          <li>Supported serverless and microservices systems across Lambda, API Gateway, and ECS</li>
-          <li>Designed secure VPC architectures, IAM policies, and network isolation strategies</li>
-          <li>Optimized cloud cost and performance through right-sizing and resource planning</li>
+          <li>Developed IaC for a multi-tier stack using Terraform and Ansible, enabling consistent automated deployments across environments</li>
+          <li>Migrated on-prem systems to AWS event-driven architecture, achieving 42% reduction in infrastructure costs</li>
+          <li>Built end-to-end GitLab CI/CD pipelines that accelerated release cycles and standardized delivery workflows</li>
+          <li>Managed and optimized EKS clusters, improving workload reliability and streamlining Helm-based deployments</li>
+          <li>Led implementation of core security controls including IAM policy design and AWS Firewall configuration</li>
         </ul>
       </div>
 
       <div class="timeline-item reveal">
-        <div class="timeline-period">Jun 2020 – Oct 2022</div>
-        <div class="timeline-role">Systems Engineer</div>
-        <div class="timeline-company">Urban Cloudworks</div>
+        <div class="timeline-period">Apr 2020 – Present</div>
+        <div class="timeline-role">Independent Infrastructure Consultant</div>
+        <div class="timeline-company">Urban Cloudworks · Lagos, Nigeria (Self-employed, concurrent)</div>
         <ul class="timeline-points">
-          <li>Managed Linux-based infrastructure and web hosting environments (Nginx, Apache)</li>
-          <li>Automated operational workflows using Bash and Python</li>
-          <li>Maintained system uptime and resolved production issues across client environments</li>
+          <li>Migrated on-prem workloads to AWS Lambda and auto-scaling EC2, delivering 38% reduction in infrastructure costs</li>
+          <li>Decomposed monolithic application into Dockerized microservices on Amazon EKS with Helm — zero downtime during migration</li>
+          <li>Maintained 11 months of zero downtime across multi-AZ, load-balanced deployments on EC2 and Apache Tomcat</li>
+          <li>Built and automated CI/CD pipelines with Jenkins, Git, and Docker, cutting release cycles from weeks to hours</li>
+          <li>Engineered real-time data pipelines using AWS Glue, Kinesis, and DynamoDB, reducing processing time by 25%</li>
         </ul>
       </div>
     </div>
@@ -1948,16 +2018,16 @@
     <div class="about-grid">
       <div class="about-text reveal">
         <p>
-          I'm a DevOps and Platform Engineer based in Lagos, Nigeria, with 4+ years of production experience across AWS, Kubernetes, and distributed infrastructure. My work sits at the intersection of <strong>systems reliability, platform automation, and operational engineering</strong>.
+          I'm a Platform/Infrastructure Engineer based in Lagos, Nigeria, with 4–5 years of production experience across AWS, Kubernetes, and Terraform. My work sits at the intersection of <strong>systems reliability, operational engineering, and AI platform infrastructure</strong>.
         </p>
         <p>
-          I'm not a tool operator — I'm an engineer who understands why systems fail and how to build them so that when they do, the damage is contained and the recovery is fast. I've designed mTLS identity architectures, built serverless AI pipelines, operated EKS and bare-metal Kubernetes, and written the runbooks that others follow.
+          What differentiates my work is a consistent practice of treating outages and technical debt as organizational and cognitive failures — not purely technical ones. I back this with verified incident narratives: a five-layer cascading Kubernetes failure diagnosed in ~40 minutes, a self-inflicted IAM lockout resolved without AWS support escalation, and a governed security risk-acceptance process built from scratch.
         </p>
         <p>
-          Currently building toward <strong>AI Platform Engineering</strong> — specifically the infrastructure layer for inference systems: GPU-aware scheduling, serving stacks (vLLM, Triton), and AI-specific observability. Also actively building TITAN, a bare-metal Kubernetes research testbed focused on distributed system behavior and fault tolerance semantics.
+          Currently extending a production managed-AI-services background (Bedrock, SageMaker, Textract) into <strong>infrastructure-layer AI platform engineering</strong> — the operational systems that keep inference running, not the models themselves. Open to senior Platform Engineering and AI Infrastructure roles with relocation to Germany, Netherlands, or Canada.
         </p>
         <p>
-          BSc Computer Science, Crawford University Nigeria (CGPA 4.3/5.0). Open to senior roles with relocation to Europe or Canada.
+          BSc Computer Science, Crawford University Nigeria. Also: HND IT Operations (Zaria), CS50 (Harvard), Cloudboosta DevOps Bootcamp.
         </p>
       </div>
 
@@ -1996,7 +2066,7 @@
           let's <span>talk</span>.
         </div>
         <p class="contact-note">
-          Available for senior DevOps, Platform Engineering, and MLOps roles. Open to remote positions and relocation to Europe or Canada. Response time: usually within 24 hours.
+          Available for senior Platform Engineering, DevOps, and AI Infrastructure roles. Open to remote positions and relocation to Germany, Netherlands, or Canada. Response time: usually within 24 hours.
         </p>
       </div>
 
@@ -2037,8 +2107,8 @@
 <!-- FOOTER -->
 <footer>
   <div class="footer-inner">
-    <span>Amanyi Daniel — Platform Engineer · amanyidaniel.io@gmail.com</span>
-    <span>Lagos, Nigeria · <span style="color:var(--accent)">Open to Relocation</span></span>
+    <span>Amanyi Daniel — Platform/Infrastructure Engineer · amanyidaniel.io@gmail.com</span>
+    <span>Lagos, Nigeria · <span style="color:var(--accent)">Open to Relocation: DE · NL · CA</span></span>
   </div>
 </footer>
 
@@ -2080,7 +2150,7 @@
   const heroSectionEl = document.getElementById('hero');
   const portraitWrap = document.getElementById('portraitWrap');
 
-  const TERMINAL_TEXT = "DevOps and Platform Engineer with 4+ years designing and operating Kubernetes-native systems across AWS and on-prem environments. Strong focus on reliability engineering, failure handling, and infrastructure consistency. Known for diagnosing complex infra failures, minimizing blast radius, and maintaining control plane stability under stress.";
+  const TERMINAL_TEXT = "Platform/Infrastructure Engineer with 4–5 years of production experience across AWS, Kubernetes, and Terraform. Differentiated by treating outages and technical debt as organizational failures — backed by verified incident narratives, not generic responsibility statements. Currently extending a production managed-AI-services background into infrastructure-layer AI platform engineering.";
   const AUTO_TYPE_CHARS = 129; // stops cleanly after "...on-prem environments."
 
   // ─────────────────────────────────────────────────────────────────
@@ -2250,20 +2320,26 @@
   // Stats count up as the user scrolls — each stat fills proportionally
   // to how far past the hero-stats row the visitor has scrolled (item 5).
   const heroStatsEl = document.getElementById('heroStats');
-  const STATS_SCROLL_RANGE = 400; // px of scroll over which all stats fill
-  let statsPrevProgress = 0;
-  let statsStarted = [false, false, false, false];
+  const STATS_SCROLL_RANGE = 600; // px of scroll over which all stats fill
+  let statsPrevProgress = -1;
 
-  const STAT_TARGETS = [4, 7, 5, null]; // null = infinity
+  const STAT_TARGETS = [5, 8, 5, null]; // null = infinity (updated per resume)
   const STAT_SUFFIXES = ['+', '', '', ''];
-  // Each stat starts counting at a staggered progress threshold (0→1 range)
+  // Each stat starts at a staggered scroll threshold so they fire sequentially
   const STAT_STARTS = [0, 0.25, 0.5, 0.75];
+
+  function getStatsPageTop() {
+    if (!heroStatsEl) return 0;
+    // getBoundingClientRect().top + scrollY gives true absolute page position
+    // regardless of any nested offset parents
+    return heroStatsEl.getBoundingClientRect().top + window.scrollY;
+  }
 
   function renderStatAtProgress(el, target, suffix, localProgress) {
     const p = Math.max(0, Math.min(1, localProgress));
     if (target === null) {
-      el.textContent = p >= 1 ? '∞' : Math.random() > 0.5 ? '∞' : '0';
-      if (p >= 1) el.textContent = '∞';
+      // Infinity: flicker between random chars then lock in
+      el.textContent = p >= 1 ? '∞' : (Math.random() > 0.5 ? '∞' : '0');
     } else {
       const val = Math.floor(p * target);
       el.textContent = val + (p >= 1 ? suffix : '');
@@ -2272,7 +2348,7 @@
 
   function updateStatsOnScroll() {
     if (!heroStatsEl || statEls.length === 0) return;
-    const statsTop = heroStatsEl.offsetTop;
+    const statsTop = getStatsPageTop();
     const scrollY = window.scrollY;
     const overallProgress = Math.max(0, Math.min(1,
       (scrollY - statsTop) / STATS_SCROLL_RANGE
@@ -2282,16 +2358,14 @@
 
     statEls.forEach((el, i) => {
       const start = STAT_STARTS[i];
-      const localRange = 1 - start;
       const localProgress = Math.max(0, Math.min(1,
-        (overallProgress - start) / localRange
+        (overallProgress - start) / (1 - start)
       ));
       renderStatAtProgress(el, STAT_TARGETS[i], STAT_SUFFIXES[i], localProgress);
     });
   }
 
   window.addEventListener('scroll', updateStatsOnScroll, { passive: true });
-  // Stats initialise at 0 and only start rolling once stage 4 arms them
 
 
   const reveals = document.querySelectorAll('.reveal');
