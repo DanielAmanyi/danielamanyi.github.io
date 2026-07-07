@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Abstract Reasoning — Doctrine &amp; Practice</title>
+<style>
+  :root{
+    --ink:#1f2733; --muted:#5b6472; --accent:#2f5d8a; --accent-light:#eaf1f8;
+    --good:#1f7a4d; --bad:#a13a3a; --line:#d9dee5; --bg-card:#f7f9fb;
+    --bg:#ffffff; --surface:#ffffff;
+    --good-bg:#eaf5ef; --bad-bg:#fbeeee; --selected-bg:#eaf1f8;
+    --contrast-bg:#1f2733; --contrast-text:#ffffff; --contrast-sub:#cfd8e3;
+    --warn:#9a6b0a; --warn-bg:#fff6e0;
+  }
+  html.dark{
+    --ink:#e8ecf1; --muted:#98a3b3; --accent:#7fb0e8; --accent-light:#1f2b3a;
+    --good:#4ddb8a; --bad:#f08787; --line:#2a323d; --bg-card:#1a1f27;
+    --bg:#11151b; --surface:#181d25;
+    --good-bg:#123524; --bad-bg:#3a1c1c; --selected-bg:#1f2b3a;
+    --contrast-bg:#0b0e13; --contrast-text:#f2f5f8; --contrast-sub:#aab4c0;
+    --warn:#e0b84d; --warn-bg:#3a2f10;
+  }
+  *{box-sizing:border-box;}
+  html{ background:var(--bg); }
+  body{
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    color:var(--ink); max-width:960px; margin:0 auto; padding:40px 32px 100px;
+    line-height:1.65; background:var(--bg); transition:background 0.2s, color 0.2s;
+  }
+  .theme-toggle{
+    position:fixed; top:16px; right:16px; z-index:50;
+    background:var(--surface); border:1px solid var(--line); color:var(--ink);
+    padding:8px 16px; border-radius:20px; font-size:13px; font-weight:600;
+    cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.1);
+  }
+  .theme-toggle:hover{ border-color:var(--accent); }
+  header{ text-align:center; border-bottom:3px solid var(--accent); padding-bottom:22px; margin-bottom:32px; }
+  header .eyebrow{ letter-spacing:2px; text-transform:uppercase; font-size:12px; color:var(--accent); font-weight:700; }
+  header h1{ font-size:30px; margin:8px 0 6px; }
+  header .sub{ color:var(--muted); font-size:14px; }
+
+  nav.toc{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-bottom:44px; }
+  nav.toc a{ font-size:13px; text-decoration:none; color:var(--accent); border:1px solid var(--accent); padding:6px 14px; border-radius:20px; font-weight:600; }
+  nav.toc a:hover{ background:var(--accent); color:#fff; }
+
+  h2{ font-size:22px; color:var(--accent); border-left:5px solid var(--accent); padding-left:14px; margin-top:56px; scroll-margin-top:16px; }
+  p{ margin:10px 0; }
+  .lede{ font-size:16.5px; color:var(--muted); font-style:italic; }
+  .note{ background:var(--bg-card); border:1px solid var(--line); border-radius:10px; padding:16px 20px; font-size:14.5px; }
+
+  .prime{ background:var(--contrast-bg); color:var(--contrast-text); border-radius:12px; padding:26px 30px; margin:20px 0; font-size:17px; font-style:italic; line-height:1.7; }
+  .prime strong{ color:#e8c46a; font-style:normal; }
+
+  .flow{ background:var(--bg-card); border:1px solid var(--line); border-radius:10px; padding:20px 24px; margin:18px 0; }
+  .flow-step{ padding:10px 14px; background:var(--surface); border:1px solid var(--line); border-radius:6px; font-weight:600; text-align:center; }
+  .flow-arrow{ text-align:center; color:var(--accent); font-size:18px; line-height:1.4; }
+
+  .rule-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(400px,1fr)); gap:16px; margin:20px 0; }
+  .rule-card{ border:1px solid var(--line); border-radius:10px; padding:16px 20px; background:var(--surface); }
+  .rule-card .rule-num{ display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:50%; background:var(--accent); color:#fff; font-weight:700; font-size:12.5px; margin-right:8px; }
+  .rule-card h4{ display:inline; font-size:15.5px; margin:0; }
+  .rule-card p{ font-size:13.8px; color:var(--muted); margin:8px 0 0; }
+  .rule-card a.jump{ font-size:12px; color:var(--accent); }
+
+  .mistakes{ display:flex; flex-direction:column; gap:10px; margin:18px 0; }
+  .mistake-row{ display:flex; gap:16px; align-items:center; font-size:14.5px; flex-wrap:wrap; }
+  .mistake-row .no{ color:var(--bad); font-weight:700; }
+  .mistake-row .yes{ color:var(--good); font-weight:700; }
+  .mistake-row .arrow{ color:var(--muted); }
+
+  .checklist{ background:var(--bg-card); border:1px solid var(--line); border-radius:10px; padding:20px 24px; }
+  .checklist ol{ padding-left:20px; margin:0; }
+  .checklist li{ margin-bottom:6px; font-size:14.5px; }
+
+  .final-doctrine{ background:var(--contrast-bg); color:var(--contrast-text); border-radius:12px; padding:28px 32px; margin-top:20px; font-style:italic; font-size:15.5px; line-height:1.8; }
+  .final-doctrine strong{ color:#e8c46a; font-style:normal; }
+
+  hr.section-break{ border:none; border-top:1px solid var(--line); margin:52px 0; }
+
+  .strip-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:18px; margin:20px 0; }
+  .strip-card{ border:1px solid var(--line); border-radius:10px; padding:14px; background:var(--surface); }
+  .strip-card h4{ margin:0 0 8px; font-size:14px; color:var(--ink); }
+  .strip-row{ display:flex; align-items:center; gap:6px; }
+  .strip-row svg{ background:var(--surface); border:1px solid var(--line); border-radius:6px; }
+  .strip-arrow{ color:var(--accent); font-weight:700; font-size:16px; }
+  .strip-caption{ margin-top:8px; font-size:12.5px; color:var(--muted); font-style:italic; }
+
+  .session-bar{ position:sticky; top:0; background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:14px 20px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; margin:20px 0; z-index:10; box-shadow:0 2px 8px rgba(0,0,0,0.04); }
+  .session-bar .clock{ font-family:monospace; font-size:20px; font-weight:700; color:var(--accent); }
+  .session-bar .status{ font-size:13px; color:var(--muted); }
+  .btn{ font-size:14px; padding:10px 18px; border-radius:8px; border:1px solid var(--accent); background:var(--accent); color:#fff; cursor:pointer; font-weight:600; }
+  .btn:hover{ opacity:0.9; }
+  .btn.secondary{ background:var(--surface); color:var(--accent); }
+  .btn:disabled{ opacity:0.4; cursor:not-allowed; }
+
+  .start-screen{ text-align:center; padding:36px 20px; border:1px dashed var(--line); border-radius:12px; background:var(--bg-card); }
+  .start-screen p{ color:var(--muted); max-width:560px; margin:8px auto 16px; font-size:14.5px; }
+  .start-screen select{ font-size:14px; padding:8px 12px; border-radius:8px; border:1px solid var(--line); margin-right:10px; }
+  .pool-stat{ font-size:12.5px; color:var(--muted); margin-top:14px; }
+
+  .puzzle{ border:1px solid var(--line); border-radius:12px; padding:22px 24px; margin:20px 0; background:var(--surface); }
+  .puzzle-head{ margin-bottom:12px; }
+  .puzzle-title{ font-size:16px; font-weight:700; color:var(--muted); }
+  .puzzle-title b{ color:var(--ink); }
+  .grid-badge{ display:inline-block; font-size:11px; font-weight:700; color:var(--accent); background:var(--accent-light); border-radius:12px; padding:2px 9px; margin-left:8px; vertical-align:middle; }
+
+  .matrix-grid{ display:grid; gap:6px; background:var(--line); padding:6px; border-radius:8px; width:max-content; margin:14px 0; }
+  .matrix-grid svg{ background:var(--surface); border-radius:4px; }
+  .options-row{ display:flex; gap:14px; margin:14px 0; flex-wrap:wrap; }
+  .option-btn{ border:2px solid var(--line); border-radius:10px; padding:8px; background:var(--surface); cursor:pointer; text-align:center; transition:0.15s; }
+  .option-btn:hover{ border-color:var(--accent); }
+  .option-btn.selected{ border-color:var(--accent); background:var(--selected-bg); }
+  .option-btn.correct{ border-color:var(--good); background:var(--good-bg); }
+  .option-btn.incorrect{ border-color:var(--bad); background:var(--bad-bg); }
+  .option-label{ font-size:12px; font-weight:700; color:var(--muted); margin-top:2px; }
+  .explain{ display:none; background:var(--accent-light); border-left:4px solid var(--accent); padding:12px 16px; border-radius:0 8px 8px 0; font-size:14px; margin-top:10px; }
+  .explain strong{ color:var(--accent); }
+
+  .results-panel{ display:none; text-align:center; padding:28px 20px; border-radius:12px; background:var(--contrast-bg); color:var(--contrast-text); margin:24px 0; }
+  .results-panel .score{ font-size:38px; font-weight:800; margin:4px 0; }
+  .results-panel .time{ font-family:monospace; font-size:16px; color:var(--contrast-sub); }
+  .results-panel .msg{ font-size:14px; color:var(--contrast-sub); margin:10px 0 18px; }
+
+  footer{ margin-top:60px; padding-top:20px; border-top:1px solid var(--line); font-size:13px; color:var(--muted); text-align:center; }
+
+  .progress-summary{ display:flex; gap:16px; flex-wrap:wrap; margin:18px 0; }
+  .progress-stat{ background:var(--bg-card); border:1px solid var(--line); border-radius:10px; padding:14px 22px; min-width:130px; text-align:center; }
+  .progress-stat .num{ font-size:24px; font-weight:800; color:var(--accent); }
+  .progress-stat .plabel{ font-size:11.5px; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; margin-top:4px; }
+
+  .verdict-box{ border-radius:12px; padding:18px 22px; margin:16px 0; }
+  .verdict-box.good{ background:var(--good-bg); border:1px solid var(--good); }
+  .verdict-box.warn{ background:var(--warn-bg); border:1px solid var(--warn); }
+  .verdict-box.bad{ background:var(--bad-bg); border:1px solid var(--bad); }
+  .verdict-box.neutral{ background:var(--bg-card); border:1px solid var(--line); }
+  .verdict-label{ font-weight:800; font-size:16px; margin-bottom:6px; }
+  .verdict-box.good .verdict-label{ color:var(--good); }
+  .verdict-box.warn .verdict-label{ color:var(--warn); }
+  .verdict-box.bad .verdict-label{ color:var(--bad); }
+  .verdict-box.neutral .verdict-label{ color:var(--muted); }
+  .verdict-box p{ font-size:14px; margin:4px 0 0; color:var(--ink); }
+
+  .rule-bar-row{ display:grid; grid-template-columns:200px 1fr 64px; gap:12px; align-items:center; font-size:13.5px; margin:8px 0; }
+  .rule-bar-track{ background:var(--bg-card); border:1px solid var(--line); border-radius:6px; height:10px; overflow:hidden; }
+  .rule-bar-fill{ height:100%; border-radius:6px; }
+  .rule-bar-pct{ text-align:right; color:var(--muted); font-variant-numeric:tabular-nums; }
+
+  .reset-progress-btn{ font-size:12.5px; color:var(--muted); background:none; border:1px solid var(--line); padding:7px 14px; border-radius:8px; cursor:pointer; margin-top:16px; }
+  .reset-progress-btn:hover{ border-color:var(--bad); color:var(--bad); }
+</style>
+</head>
+<body>
+
+<button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">🌙 Dark Mode</button>
+
+<header>
+  <div class="eyebrow">Internal Doctrine + Applied Practice</div>
+  <h1>Abstract Reasoning — Doctrine &amp; Practice</h1>
+  <div class="sub">Version 1.1 · Read the doctrine once, then drill against a generated question bank</div>
+</header>
+
+<nav class="toc">
+  <a href="#mission">Mission</a>
+  <a href="#hierarchy">Analysis Hierarchy</a>
+  <a href="#rules">The 12 Rules</a>
+  <a href="#transformations">Common Transformations</a>
+  <a href="#mistakes">Common Mistakes</a>
+  <a href="#checklist">Before Every Question</a>
+  <a href="#mindset">Engineer's Mindset</a>
+  <a href="#progress">Progress</a>
+  <a href="#practice">Mock Session</a>
+</nav>
+
+<h2 id="mission">Mission</h2>
+<p class="lede">Identify the transformation rule, not the answer.</p>
+<p>Every abstract reasoning question is a search for one or more logical rules. Unlike a personality assessment, this section has objectively correct answers — you're training a skill, not expressing a preference.</p>
+
+<h2>The Prime Directive</h2>
+<div class="prime">
+  <strong>Do not look for the correct answer. Look for the rule that generated the pattern.</strong>
+  <p style="margin-top:14px; font-size:14.5px; color:var(--contrast-sub);">Candidates who search for familiar shapes perform worse than those who search for transformations.</p>
+</div>
+
+<h2 id="hierarchy">The Analysis Hierarchy</h2>
+<div class="flow">
+  <div class="flow-step">Observe</div>
+  <div class="flow-arrow">↓</div>
+  <div class="flow-step">Identify what changes</div>
+  <div class="flow-arrow">↓</div>
+  <div class="flow-step">Identify what stays constant</div>
+  <div class="flow-arrow">↓</div>
+  <div class="flow-step">Identify the transformation rule</div>
+  <div class="flow-arrow">↓</div>
+  <div class="flow-step">Predict the missing figure</div>
+</div>
+<p><em>Never jump straight to the options.</em></p>
+
+<h2 id="rules">The 12 Rules</h2>
+<div class="rule-grid">
+  <div class="rule-card"><h4><span class="rule-num">1</span>Separate Constants from Variables</h4><p>Every puzzle contains things that change and things that stay the same. Name the constant first, then the rule only has to explain the variable. <a class="jump" href="#transformations">See it in the gallery →</a></p></div>
+  <div class="rule-card"><h4><span class="rule-num">2</span>Only One or Two Rules Usually Exist</h4><p>Don't invent complicated explanations. Most matrices are built from rotation, reflection, counting, alternation, addition/subtraction, overlay, position, fill, or size. If you think you've found five rules, you're probably wrong.</p></div>
+  <div class="rule-card"><h4><span class="rule-num">3</span>Examine Rows Before Columns</h4><p>Most matrices are generated row-wise. If rows don't explain the pattern, check columns. Only then consider diagonals.</p></div>
+  <div class="rule-card"><h4><span class="rule-num">4</span>Look for Change, Not Objects</h4><p>Instead of "there is a triangle," say "the triangle rotated 90°" or "the triangle became striped." Naming the transformation is what solves the puzzle.</p></div>
+  <div class="rule-card"><h4><span class="rule-num">5</span>One Feature at a Time</h4><p>Separate every visual feature — shape, position, size, colour, fill, rotation, direction, number, border, symmetry. Never analyse everything together.</p></div>
+  <div class="rule-card"><h4><span class="rule-num">6</span>Count Everything</h4><p>Many difficult questions are simply counting: shapes, dots, lines, corners, filled objects, empty objects.</p></div>
+  <div class="rule-card"><h4><span class="rule-num">7</span>Rotation Has Predictable Angles</h4><p>Common rotations are 90°, 180°, 270°, clockwise or counter-clockwise. Don't eyeball it — measure mentally.</p></div>
+  <div class="rule-card"><h4><span class="rule-num">8</span>Reflection Is Different from Rotation</h4><p>Many candidates confuse these. Mirror images are not rotations — an asymmetric shape makes the difference obvious. <a class="jump" href="#transformations">See it in the gallery →</a></p></div>
+  <div class="rule-card"><h4><span class="rule-num">9</span>Eliminate Impossible Answers First</h4><p>Instead of hunting for the correct answer, remove obviously incorrect ones. If all figures contain exactly 3 objects, discard every option containing 2 or 4.</p></div>
+  <div class="rule-card"><h4><span class="rule-num">10</span>Complexity Is Usually Linear</h4><p>Don't assume magic. Typical sequences run 1, 2, 3, 4 — not 1, 17, 4, 93. Treat this as a strong prior, not an absolute law.</p></div>
+  <div class="rule-card"><h4><span class="rule-num">11</span>When Stuck</h4><p>Ask "what changed?" — not "what is missing?" The first points you at the rule; the second sends you back to guessing.</p></div>
+  <div class="rule-card"><h4><span class="rule-num">12</span>Time Is Part of the Test</h4><p>If you cannot identify the rule within about 45–60 seconds: guess, move, return later if time permits. One difficult question should not cost three easy ones.</p></div>
+</div>
+
+<h2 id="transformations">Common Transformations — Visual Reference</h2>
+<p>Here's each rule rendered directly, in isolation, before it gets mixed into full matrices below.</p>
+<div id="gallery" class="strip-grid"></div>
+
+<h2 id="mistakes">Common Mistakes</h2>
+<div class="mistakes">
+  <div class="mistake-row"><span class="no">❌</span> Looking at the options first. <span class="arrow">→</span> <span class="yes">✔</span> Solve first.</div>
+  <div class="mistake-row"><span class="no">❌</span> Looking at the whole picture. <span class="arrow">→</span> <span class="yes">✔</span> Separate attributes.</div>
+  <div class="mistake-row"><span class="no">❌</span> Guessing the designer's intention. <span class="arrow">→</span> <span class="yes">✔</span> Find the mathematical rule.</div>
+  <div class="mistake-row"><span class="no">❌</span> Overcomplicating. <span class="arrow">→</span> <span class="yes">✔</span> Prefer the simplest rule that explains all figures.</div>
+</div>
+
+<h2 id="checklist">Before Every Question</h2>
+<div class="checklist">
+  <ol>
+    <li>Count objects.</li><li>Check rotation.</li><li>Check reflection.</li><li>Check fill.</li><li>Check position.</li>
+    <li>Check size.</li><li>Check alternation.</li><li>Check overlay.</li><li>Check rows.</li><li>Check columns.</li>
+  </ol>
+  <p style="margin-top:14px; font-size:13.5px; color:var(--muted);">This becomes automatic with practice — that's what the mock session below is for.</p>
+</div>
+
+<h2 id="mindset">The Engineer's Mindset</h2>
+<p>You're not solving a puzzle. You're reverse-engineering an algorithm. Every matrix is effectively a tiny program:</p>
+<div class="flow">
+  <div class="flow-step">Input</div><div class="flow-arrow">↓</div>
+  <div class="flow-step">Transformation Rule</div><div class="flow-arrow">↓</div>
+  <div class="flow-step">Output</div>
+</div>
+<p>Think of each puzzle like debugging a system: the first image is the input, the second shows the state transition, the third should follow the same deterministic rule.</p>
+
+<div class="final-doctrine">
+  <p>A workplace abstract reasoning question is not testing whether I recognize a shape. It is testing whether I can find <strong>the deterministic rule</strong> that generated the pattern, under time pressure, without inventing complexity that isn't there.</p>
+  <p>I will separate constants from variables, examine rows before columns, isolate one feature at a time, and eliminate rather than guess. If I cannot find the rule within a minute, I move on.</p>
+</div>
+
+<hr class="section-break">
+
+<hr class="section-break">
+
+<h2 id="progress">Progress &amp; Readiness</h2>
+<div class="note">
+  <strong>Note on persistence:</strong> this file has no login or server, so progress is tracked only for as long as this tab stays open — it resets on reload. Treat everything below as a live readout of your current study sitting, and finish a few sessions before trusting the verdict.
+</div>
+<div id="progressPanel"></div>
+
+<hr class="section-break">
+
+<h2 id="practice">Mock Session</h2>
+<div class="note">
+  <strong>How this works:</strong> No feedback while you're answering — one gross clock for the whole set, results only on submit. Every session draws a fresh random sample from a bank of <span id="poolCountInline">…</span> generated questions across 2×2, 2×3, and 3×3 grids, so no two attempts look the same.
+</div>
+
+<div id="startScreen" class="start-screen">
+  <p><strong>No feedback until you finish.</strong> Pick how many questions, then submit at the end to see your score, total time, and a full review tied back to the doctrine rules above.</p>
+  <div>
+    <label for="lengthSelect">Questions per session:&nbsp;</label>
+    <select id="lengthSelect">
+      <option value="10">10</option>
+      <option value="15" selected>15</option>
+      <option value="20">20</option>
+      <option value="30">30</option>
+      <option value="all">All (full bank)</option>
+    </select>
+    <button class="btn" id="startBtn">Start Practice Session</button>
+  </div>
+  <div class="pool-stat" id="poolStat"></div>
+</div>
+
+<div id="sessionBar" class="session-bar" style="display:none;">
+  <div><span class="status">Elapsed time</span><br><span class="clock" id="clockDisplay">00:00</span></div>
+  <div class="status" id="progressStatus">0 / 0 answered</div>
+  <button class="btn" id="submitBtn" disabled>Submit &amp; See Results</button>
+</div>
+
+<div id="resultsPanel" class="results-panel">
+  <div class="status" style="color:var(--contrast-sub);">SESSION COMPLETE</div>
+  <div class="score" id="scoreDisplay">0 / 0</div>
+  <div class="time" id="finalTimeDisplay">00:00</div>
+  <div class="msg">Review your answers below — every explanation ties back to a specific doctrine rule.</div>
+  <button class="btn secondary" id="retakeBtn">New Random Session</button>
+</div>
+
+<div id="puzzles-root"></div>
+
+<footer>Doctrine + a generated bank of practice questions across three grid sizes. Read once, drill until the recognition order becomes reflexive.</footer>
+
+<script>
+// ================= SVG rendering helpers =================
+function ns(tag){ return document.createElementNS('http://www.w3.org/2000/svg', tag); }
+
+function drawSingleShape(spec, cx, cy, r){
+  const g = ns('g');
+  g.setAttribute('transform', `translate(${cx},${cy}) rotate(${spec.rotation||0}) scale(${spec.mirror?-1:1},1)`);
+  const color = spec.color || '#2f5d8a';
+  const opacity = spec.opacity!==undefined ? spec.opacity : 1;
+
+  function makeShapeEl(){
+    let el;
+    if(spec.shape==='circle'){ el=ns('circle'); el.setAttribute('cx',0); el.setAttribute('cy',0); el.setAttribute('r',r); }
+    else if(spec.shape==='square'){ el=ns('rect'); el.setAttribute('x',-r); el.setAttribute('y',-r); el.setAttribute('width',r*2); el.setAttribute('height',r*2); }
+    else if(spec.shape==='triangle'){ el=ns('polygon'); const pts=[[0,-r],[r*0.87,r*0.5],[-r*0.87,r*0.5]]; el.setAttribute('points', pts.map(p=>p.join(',')).join(' ')); }
+    else if(spec.shape==='rtri'){ el=ns('polygon'); const pts=[[-r,-r],[r,-r],[-r,r]]; el.setAttribute('points', pts.map(p=>p.join(',')).join(' ')); }
+    else if(spec.shape==='polygon'){ el=ns('polygon'); const sides=spec.sides||5; const pts=[]; for(let i=0;i<sides;i++){ const ang=-Math.PI/2+i*2*Math.PI/sides; pts.push([r*Math.cos(ang), r*Math.sin(ang)]); } el.setAttribute('points', pts.map(p=>p.join(',')).join(' ')); }
+    return el;
+  }
+
+  const outline = makeShapeEl();
+  outline.setAttribute('fill', spec.fill==='solid' ? color : '#ffffff');
+  outline.setAttribute('fill-opacity', spec.fill==='solid' ? opacity : 1);
+  outline.setAttribute('stroke', color);
+  outline.setAttribute('stroke-width', 3);
+  g.appendChild(outline);
+
+  if(spec.fill==='half'){
+    const clipId = 'clip'+Math.random().toString(36).slice(2,9);
+    const defs = ns('defs');
+    const clip = ns('clipPath'); clip.setAttribute('id', clipId);
+    const rectClip = ns('rect'); rectClip.setAttribute('x',-r-2); rectClip.setAttribute('y',-r-2); rectClip.setAttribute('width', r+2); rectClip.setAttribute('height',(r+2)*2);
+    clip.appendChild(rectClip); defs.appendChild(clip); g.appendChild(defs);
+    const fillHalf = makeShapeEl();
+    fillHalf.setAttribute('fill', color);
+    fillHalf.setAttribute('fill-opacity', opacity);
+    fillHalf.setAttribute('clip-path', `url(#${clipId})`);
+    g.appendChild(fillHalf);
+  }
+  return g;
+}
+
+function shapeGroup(spec){
+  const g = ns('g');
+  let baseCy = 50;
+  if(spec.position==='top') baseCy = 26;
+  if(spec.position==='bottom') baseCy = 74;
+
+  if(spec.overlay){
+    spec.overlay.forEach(sub => g.appendChild(drawSingleShape(sub, 50, baseCy, sub.size||28)));
+    return g;
+  }
+  if(spec.count && spec.count>1){
+    const n = spec.count, spacing=24, totalW=spacing*(n-1), startX=50-totalW/2;
+    for(let i=0;i<n;i++){ g.appendChild(drawSingleShape({...spec, count:1}, startX+i*spacing, baseCy, 10)); }
+    return g;
+  }
+  g.appendChild(drawSingleShape(spec, 50, baseCy, spec.size||28));
+  return g;
+}
+
+function cell(spec, size){
+  size = size || 90;
+  const svg = ns('svg');
+  svg.setAttribute('viewBox','0 0 100 100');
+  svg.setAttribute('width', size); svg.setAttribute('height', size);
+  if(spec===null){
+    const text = ns('text');
+    text.setAttribute('x',50); text.setAttribute('y',64); text.setAttribute('text-anchor','middle');
+    text.setAttribute('font-size','40'); text.setAttribute('fill','#aab2bd'); text.setAttribute('font-weight','700');
+    text.textContent = '?';
+    svg.appendChild(text);
+  } else {
+    svg.appendChild(shapeGroup(spec));
+  }
+  return svg;
+}
+
+function strip(cells, size){
+  const wrap = document.createElement('div'); wrap.className='strip-row';
+  cells.forEach((c,i)=>{
+    wrap.appendChild(cell(c, size||60));
+    if(i<cells.length-1){ const arrow=document.createElement('span'); arrow.className='strip-arrow'; arrow.textContent='→'; wrap.appendChild(arrow); }
+  });
+  return wrap;
+}
+
+// ================= Concept gallery =================
+const gallery = [
+  {title:'Rotation', cells:[{shape:'triangle',fill:'solid',rotation:0},{shape:'triangle',fill:'solid',rotation:90},{shape:'triangle',fill:'solid',rotation:180}], caption:'Rule 7 — rotates 90° clockwise each step.'},
+  {title:'Reflection', cells:[{shape:'rtri',fill:'solid',mirror:false},{shape:'rtri',fill:'solid',mirror:true},{shape:'rtri',fill:'solid',mirror:false}], caption:'Rule 8 — a mirror flip, not a rotation.'},
+  {title:'Fill', cells:[{shape:'circle',fill:'none'},{shape:'circle',fill:'half'},{shape:'circle',fill:'solid'}], caption:'Shading progresses: empty → half → full.'},
+  {title:'Counting', cells:[{shape:'circle',fill:'solid',count:1},{shape:'circle',fill:'solid',count:2},{shape:'circle',fill:'solid',count:3}], caption:'Rule 6 — quantity increases by one.'},
+  {title:'Size', cells:[{shape:'circle',fill:'solid',size:14},{shape:'circle',fill:'solid',size:23},{shape:'circle',fill:'solid',size:34}], caption:'Size increases in fixed steps.'},
+  {title:'Position', cells:[{shape:'square',fill:'solid',position:'top'},{shape:'square',fill:'solid',position:'mid'},{shape:'square',fill:'solid',position:'bottom'}], caption:'Shape shifts along one axis.'},
+  {title:'Addition', cells:[{shape:'circle',fill:'solid',opacity:0.6}, {shape:'square',fill:'solid',opacity:0.6,color:'#a13a3a'}, {overlay:[{shape:'circle',fill:'solid',opacity:0.55,size:30},{shape:'square',fill:'solid',opacity:0.55,size:24,color:'#a13a3a'}]}], caption:'Two components combine into one.'},
+  {title:'Subtraction', cells:[{overlay:[{shape:'circle',fill:'solid',opacity:0.55,size:30},{shape:'square',fill:'solid',opacity:0.55,size:24,color:'#a13a3a'}]}, {shape:'square',fill:'solid',opacity:0.6,color:'#a13a3a'}, {shape:'circle',fill:'solid',opacity:0.6}], caption:'Reverse of addition — a component is removed.'},
+  {title:'Alternation', cells:[{shape:'circle',fill:'solid'},{shape:'circle',fill:'none'},{shape:'circle',fill:'solid'}], caption:'Pattern repeats A-B-A.'},
+  {title:'Progression', cells:[{shape:'polygon',sides:3,fill:'solid'},{shape:'polygon',sides:4,fill:'solid'},{shape:'polygon',sides:5,fill:'solid'}], caption:'Sides increase by one each step.'}
+];
+const galleryRoot = document.getElementById('gallery');
+gallery.forEach(g=>{
+  const card = document.createElement('div'); card.className='strip-card';
+  const h4 = document.createElement('h4'); h4.textContent = g.title; card.appendChild(h4);
+  card.appendChild(strip(g.cells));
+  const cap = document.createElement('div'); cap.className='strip-caption'; cap.textContent = g.caption;
+  card.appendChild(cap);
+  galleryRoot.appendChild(card);
+});
+
+// ================= Question bank generators =================
+const PALETTE = ['#2f5d8a','#a13a3a','#1f7a4d','#6a4c93','#c46a1f','#4c5a9c','#2f8a6a','#b0448a'];
+const RED = '#a13a3a';
+function rnd(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+function shuffle(arr){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function sameSpec(a,b){ return JSON.stringify(a)===JSON.stringify(b); }
+
+function buildGrid(rows, cols, specFn){
+  const grid = [];
+  for(let r=0;r<rows;r++){
+    for(let c=0;c<cols;c++){
+      grid.push((r===rows-1 && c===cols-1) ? null : specFn(r,c));
+    }
+  }
+  return { grid, correctSpec: specFn(rows-1, cols-1) };
+}
+
+function finalize(correctSpec, rawDistractors, explain, name, rows, cols, grid){
+  const cleaned = rawDistractors.map(d => sameSpec(d, correctSpec) ? {...d, size:(d.size||28)+7} : d);
+  const arr = shuffle([{spec:correctSpec, ok:true}, ...cleaned.map(s=>({spec:s, ok:false}))]);
+  return {
+    name, gridRows:rows, gridCols:cols, grid,
+    options: arr.map(x=>x.spec),
+    correct: arr.findIndex(x=>x.ok),
+    explain
+  };
+}
+
+function genRotation(rows, cols){
+  const shape = rnd(['triangle','rtri']);
+  const color = rnd(PALETTE);
+  const startRot = rnd([0,90,180,270]);
+  const specFn = (r,c) => ({shape, fill:'solid', color, rotation:(startRot + c*90 + r*90) % 360});
+  const {grid, correctSpec} = buildGrid(rows, cols, specFn);
+  const base = correctSpec.rotation;
+  const distractors = [90,180,270].map(off => ({shape, fill:'solid', color, rotation:(base+off)%360}));
+  const explain = `Rule 7: rotation advances 90° per column${rows>1?' and each row is offset 90° from the row above':''}. Measure the angle rather than eyeballing it.`;
+  return finalize(correctSpec, distractors, explain, 'Rotation', rows, cols, grid);
+}
+
+function genReflection(rows, cols){
+  const color = rnd(PALETTE);
+  const specFn = (r,c) => ({shape:'rtri', fill:'solid', color, mirror:(c%2===1)});
+  const {grid, correctSpec} = buildGrid(rows, cols, specFn);
+  const distractors = [
+    {shape:'rtri', fill:'solid', color, mirror: !correctSpec.mirror},
+    {shape:'rtri', fill:'solid', color, rotation:90},
+    {shape:'triangle', fill:'solid', color}
+  ];
+  const explain = 'Rule 8: mirroring alternates by column while rows repeat the same pattern (Rule 3). The rotation option tests whether a flip is being confused with a turn.';
+  return finalize(correctSpec, distractors, explain, 'Reflection', rows, cols, grid);
+}
+
+function genFill(rows, cols){
+  const shape = rnd(['circle','square','triangle']);
+  const color = rnd(PALETTE);
+  const cycle = ['none','half','solid'];
+  const startIdx = rnd([0,1,2]);
+  const specFn = (r,c) => ({shape, color, fill:cycle[(startIdx+c)%3]});
+  const {grid, correctSpec} = buildGrid(rows, cols, specFn);
+  const others = cycle.filter(f => f!==correctSpec.fill);
+  const wrongShape = rnd(['circle','square','triangle'].filter(s=>s!==shape));
+  const distractors = [
+    {shape, color, fill:others[0]},
+    {shape, color, fill:others[1]},
+    {shape:wrongShape, color, fill:correctSpec.fill}
+  ];
+  const explain = 'Rule 5: fill is the only variable; shape and colour stay constant. Shading follows a fixed cycle: empty → half → full.';
+  return finalize(correctSpec, distractors, explain, 'Fill Progression', rows, cols, grid);
+}
+
+function genCount(rows, cols){
+  const shapePool = shuffle(['circle','square','triangle','polygon']).slice(0, rows);
+  const color = rnd(PALETTE);
+  const specFn = (r,c) => ({shape:shapePool[r], fill:'solid', color, count:c+1});
+  const {grid, correctSpec} = buildGrid(rows, cols, specFn);
+  const otherRowShape = shapePool[0]===shapePool[rows-1] ? shapePool[1%shapePool.length] : shapePool[0];
+  const distractors = [
+    {shape:shapePool[rows-1], fill:'solid', color, count:Math.max(1, cols-1)},
+    {shape:shapePool[rows-1], fill:'solid', color, count:cols+1},
+    {shape:otherRowShape, fill:'solid', color, count:cols}
+  ];
+  const explain = 'Rule 6: count everything. Each row uses its own shape but follows the same count sequence across columns.';
+  return finalize(correctSpec, distractors, explain, 'Counting', rows, cols, grid);
+}
+
+function genSize(rows, cols){
+  const shape = rnd(['circle','square','triangle']);
+  const color = rnd(PALETTE);
+  const sizeArr = cols===2 ? [16,34] : cols===3 ? [14,24,34] : [12,20,28,36];
+  const specFn = (r,c) => ({shape, fill:'solid', color, size:sizeArr[c]});
+  const {grid, correctSpec} = buildGrid(rows, cols, specFn);
+  const wrongShape = rnd(['circle','square','triangle'].filter(s=>s!==shape));
+  const distractors = [
+    {shape, fill:'solid', color, size:sizeArr[Math.max(0, cols-2)]},
+    {shape, fill:'solid', color, size:correctSpec.size + 14},
+    {shape:wrongShape, fill:'solid', color, size:correctSpec.size}
+  ];
+  const explain = 'One feature at a time (Rule 5): size increases in fixed steps while shape and fill stay constant.';
+  return finalize(correctSpec, distractors, explain, 'Size', rows, cols, grid);
+}
+
+function genPosition(rows, cols){
+  const shape = rnd(['circle','square','triangle']);
+  const color = rnd(PALETTE);
+  const posArr = cols===2 ? ['top','bottom'] : ['top','mid','bottom'];
+  const specFn = (r,c) => ({shape, fill:'solid', color, position:posArr[c % posArr.length]});
+  const {grid, correctSpec} = buildGrid(rows, cols, specFn);
+  const otherPos = posArr.find(p => p!==correctSpec.position) || 'mid';
+  const wrongShape = rnd(['circle','square','triangle'].filter(s=>s!==shape));
+  const distractors = [
+    {shape, fill:'solid', color, position:otherPos},
+    {shape:wrongShape, fill:'solid', color, position:correctSpec.position},
+    {shape, fill:'solid', color, position: posArr[(posArr.indexOf(correctSpec.position)+1)%posArr.length]}
+  ];
+  const explain = 'Position is the sole variable; shape and fill hold constant across the row.';
+  return finalize(correctSpec, distractors, explain, 'Position', rows, cols, grid);
+}
+
+function genAlternation(rows, cols){
+  const shape = rnd(['circle','square','triangle']);
+  const color = rnd(PALETTE);
+  const specFn = (r,c) => ({shape, color, fill:(c%2===0?'solid':'none')});
+  const {grid, correctSpec} = buildGrid(rows, cols, specFn);
+  const flip = correctSpec.fill==='solid' ? 'none' : 'solid';
+  const wrongShape = rnd(['circle','square','triangle'].filter(s=>s!==shape));
+  const distractors = [
+    {shape, color, fill:flip},
+    {shape, color, fill:'half'},
+    {shape:wrongShape, color, fill:correctSpec.fill}
+  ];
+  const explain = 'A-B-A-B is still a rule. Watch for a value like "half" that never appeared in the sequence tempting you away from the established alternation.';
+  return finalize(correctSpec, distractors, explain, 'Alternation', rows, cols, grid);
+}
+
+function genProgressionSides(rows, cols){
+  const color = rnd(PALETTE);
+  const startSides = rnd([3,4,5]);
+  const specFn = (r,c) => ({shape:'polygon', fill:'solid', color, sides:startSides + r + c});
+  const {grid, correctSpec} = buildGrid(rows, cols, specFn);
+  const distractors = [-1,1,2].map(delta => ({shape:'polygon', fill:'solid', color, sides:Math.max(3, correctSpec.sides+delta)}));
+  const explain = 'Sides increase by one per column and per row — the same additive rule as rotation, applied to a different feature.';
+  return finalize(correctSpec, distractors, explain, 'Progression (Sides)', rows, cols, grid);
+}
+
+function genCombined(rows, cols){
+  const shape = rnd(['triangle','rtri']);
+  const color = rnd(PALETTE);
+  const startRot = rnd([0,90]);
+  const cycle = ['none','half','solid'];
+  const specFn = (r,c) => ({shape, color, rotation:(startRot + c*90 + (rows>1? r*90:0))%360, fill:cycle[c%3]});
+  const {grid, correctSpec} = buildGrid(rows, cols, specFn);
+  const distractors = [
+    {...correctSpec, fill:cycle[(cycle.indexOf(correctSpec.fill)+1)%3]},
+    {...correctSpec, rotation:(correctSpec.rotation+90)%360},
+    {...correctSpec, rotation:(correctSpec.rotation+180)%360, fill:cycle[(cycle.indexOf(correctSpec.fill)+2)%3]}
+  ];
+  const explain = 'Real tests often stack two rules on one figure (Rule 2). Fix rotation and fill separately — each distractor here nails one attribute and misses the other.';
+  return finalize(correctSpec, distractors, explain, 'Combined Rule (Rotation + Fill)', rows, cols, grid);
+}
+
+function genAddition(rows, cols){
+  const shapeA = rnd(['circle','triangle']);
+  const colorA = rnd(PALETTE.filter(c=>c!==RED));
+  const specFn = (r,c) => {
+    if(c===0) return {shape:shapeA, fill:'solid', color:colorA, opacity:0.6};
+    if(c===1) return {shape:'square', fill:'solid', color:RED, opacity:0.6};
+    return {overlay:[{shape:shapeA, fill:'solid', opacity:0.55, size:30, color:colorA},{shape:'square', fill:'solid', opacity:0.55, size:24, color:RED}]};
+  };
+  const {grid, correctSpec} = buildGrid(rows, cols, specFn);
+  const distractors = [
+    {shape:shapeA, fill:'solid', color:colorA, opacity:0.6},
+    {shape:'square', fill:'solid', color:RED, opacity:0.6},
+    {overlay:[{shape:shapeA, fill:'solid', opacity:0.55, size:30, color:colorA},{shape:(shapeA==='circle'?'triangle':'circle'), fill:'solid', opacity:0.55, size:24, color:RED}]}
+  ];
+  const explain = 'The last column is always the sum of the first two overlaid. Distractors that show only one component, or swap in the wrong second shape, test whether you tracked both.';
+  return finalize(correctSpec, distractors, explain, 'Addition (Overlay)', rows, cols, grid);
+}
+
+// ================= Build the bank =================
+const GRID_SHAPES = [ {rows:2, cols:2, label:'2×2', variants:4}, {rows:2, cols:3, label:'2×3', variants:3}, {rows:3, cols:3, label:'3×3', variants:3} ];
+const GENERATORS = [
+  {fn:genRotation, needsCols3:false},
+  {fn:genReflection, needsCols3:false},
+  {fn:genFill, needsCols3:false},
+  {fn:genCount, needsCols3:false},
+  {fn:genSize, needsCols3:false},
+  {fn:genPosition, needsCols3:false},
+  {fn:genAlternation, needsCols3:false},
+  {fn:genProgressionSides, needsCols3:false},
+  {fn:genCombined, needsCols3:false},
+  {fn:genAddition, needsCols3:true}
+];
+
+let idCounter = 0;
+const puzzleBank = [];
+GRID_SHAPES.forEach(gs => {
+  GENERATORS.forEach(gen => {
+    if(gen.needsCols3 && gs.cols < 3) return;
+    for(let i=0;i<gs.variants;i++){
+      const p = gen.fn(gs.rows, gs.cols);
+      p.id = idCounter++;
+      p.gridLabel = gs.label;
+      puzzleBank.push(p);
+    }
+  });
+});
+
+document.getElementById('poolStat').textContent = `Bank size: ${puzzleBank.length} generated questions across 2×2, 2×3, and 3×3 grids.`;
+document.getElementById('poolCountInline').textContent = puzzleBank.length;
+
+// ================= Session logic =================
+let activeSet = [];
+let answers = {};
+let timerInterval = null;
+let startTime = null;
+let submitted = false;
+let allSessions = [];
+
+const startScreen = document.getElementById('startScreen');
+const sessionBar = document.getElementById('sessionBar');
+const clockDisplay = document.getElementById('clockDisplay');
+const progressStatus = document.getElementById('progressStatus');
+const submitBtn = document.getElementById('submitBtn');
+const resultsPanel = document.getElementById('resultsPanel');
+const scoreDisplay = document.getElementById('scoreDisplay');
+const finalTimeDisplay = document.getElementById('finalTimeDisplay');
+const retakeBtn = document.getElementById('retakeBtn');
+const root = document.getElementById('puzzles-root');
+const lengthSelect = document.getElementById('lengthSelect');
+
+function formatTime(ms){
+  const totalSec = Math.floor(ms/1000);
+  const m = String(Math.floor(totalSec/60)).padStart(2,'0');
+  const s = String(totalSec%60).padStart(2,'0');
+  return `${m}:${s}`;
+}
+
+function buildActiveSet(){
+  const val = lengthSelect.value;
+  const n = val==='all' ? puzzleBank.length : Math.min(parseInt(val,10), puzzleBank.length);
+  const shuffledPool = shuffle(puzzleBank).slice(0, n);
+  return shuffledPool.map(p => {
+    const idxs = shuffle(p.options.map((_,i)=>i));
+    const newOptions = idxs.map(i => p.options[i]);
+    const newCorrect = idxs.indexOf(p.correct);
+    return { id:p.id, name:p.name, gridLabel:p.gridLabel, gridRows:p.gridRows, gridCols:p.gridCols, grid:p.grid, options:newOptions, correct:newCorrect, explain:p.explain };
+  });
+}
+
+function renderPuzzles(){
+  root.innerHTML = '';
+  answers = {};
+  activeSet.forEach((p, qIndex) => {
+    const box = document.createElement('div'); box.className='puzzle';
+    box.dataset.pid = p.id;
+
+    const head = document.createElement('div'); head.className='puzzle-head';
+    const t = document.createElement('div'); t.className='puzzle-title';
+    t.innerHTML = `Question ${qIndex+1} of ${activeSet.length} — <b>${p.name}</b><span class="grid-badge">${p.gridLabel}</span>`;
+    head.appendChild(t);
+    box.appendChild(head);
+
+    const matrixWrap = document.createElement('div'); matrixWrap.className='matrix-grid';
+    matrixWrap.style.gridTemplateColumns = `repeat(${p.gridCols}, 90px)`;
+    p.grid.forEach(spec => matrixWrap.appendChild(cell(spec)));
+    box.appendChild(matrixWrap);
+
+    const optWrap = document.createElement('div'); optWrap.className='options-row';
+    const explainDiv = document.createElement('div'); explainDiv.className='explain';
+    explainDiv.innerHTML = '<strong>Why:</strong> ' + p.explain;
+
+    p.options.forEach((opt, i) => {
+      const btn = document.createElement('button'); btn.className='option-btn';
+      btn.appendChild(cell(opt, 70));
+      const label = document.createElement('div'); label.className='option-label'; label.textContent = String.fromCharCode(65+i);
+      btn.appendChild(label);
+      btn.onclick = () => {
+        if(submitted) return;
+        answers[p.id] = i;
+        Array.from(optWrap.children).forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        updateProgress();
+      };
+      optWrap.appendChild(btn);
+    });
+    box.appendChild(optWrap);
+    box.appendChild(explainDiv);
+    root.appendChild(box);
+  });
+}
+
+function updateProgress(){
+  const answeredCount = Object.keys(answers).length;
+  progressStatus.textContent = `${answeredCount} / ${activeSet.length} answered`;
+  submitBtn.disabled = answeredCount < activeSet.length;
+}
+
+function startSession(){
+  submitted = false;
+  activeSet = buildActiveSet();
+  renderPuzzles();
+  startScreen.style.display = 'none';
+  resultsPanel.style.display = 'none';
+  sessionBar.style.display = 'flex';
+  updateProgress();
+
+  startTime = Date.now();
+  clockDisplay.textContent = '00:00';
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    clockDisplay.textContent = formatTime(Date.now() - startTime);
+  }, 1000);
+}
+
+function submitSession(){
+  submitted = true;
+  clearInterval(timerInterval);
+  const elapsed = Date.now() - startTime;
+
+  let score = 0;
+  const perRule = {};
+  document.querySelectorAll('.puzzle').forEach((box) => {
+    const pid = Number(box.dataset.pid);
+    const p = activeSet.find(x => x.id === pid);
+    const chosen = answers[pid];
+    const isCorrect = chosen === p.correct;
+    if(isCorrect) score++;
+    if(!perRule[p.name]) perRule[p.name] = {correct:0, total:0};
+    perRule[p.name].total++;
+    if(isCorrect) perRule[p.name].correct++;
+
+    const optWrap = box.querySelectorAll('.options-row')[0];
+    Array.from(optWrap.children).forEach((btn, i) => {
+      btn.classList.remove('selected');
+      if(i === p.correct) btn.classList.add('correct');
+      else if(i === chosen) btn.classList.add('incorrect');
+    });
+    box.querySelector('.explain').style.display = 'block';
+  });
+
+  scoreDisplay.textContent = `${score} / ${activeSet.length}`;
+  finalTimeDisplay.textContent = 'Total time: ' + formatTime(elapsed);
+  resultsPanel.style.display = 'block';
+  sessionBar.style.display = 'none';
+  resultsPanel.scrollIntoView({behavior:'smooth', block:'start'});
+
+  allSessions.push({ timestamp:Date.now(), score, total:activeSet.length, elapsedMs:elapsed, perRule });
+  renderProgress();
+}
+
+function renderProgress(){
+  const panel = document.getElementById('progressPanel');
+  if(allSessions.length === 0){
+    panel.innerHTML = '<p class="lede">No sessions completed yet. Finish a mock session below and your stats will appear here.</p>';
+    return;
+  }
+
+  let sumCorrect=0, sumTotal=0, sumElapsed=0;
+  const rulesAgg = {};
+  allSessions.forEach(s => {
+    sumCorrect += s.score; sumTotal += s.total; sumElapsed += s.elapsedMs;
+    Object.entries(s.perRule).forEach(([name, stat]) => {
+      if(!rulesAgg[name]) rulesAgg[name] = {correct:0, total:0};
+      rulesAgg[name].correct += stat.correct;
+      rulesAgg[name].total += stat.total;
+    });
+  });
+
+  const accuracy = (sumCorrect/sumTotal)*100;
+  const avgTimePerQ = (sumElapsed/1000)/sumTotal;
+
+  const ruleRows = Object.entries(rulesAgg)
+    .map(([name, stat]) => ({name, pct: (stat.correct/stat.total)*100, correct:stat.correct, total:stat.total}))
+    .sort((a,b) => a.pct - b.pct);
+
+  const weak = ruleRows.filter(r => r.total >= 3 && r.pct < 70);
+
+  let verdict;
+  if(sumTotal < 20){
+    verdict = { label:'Not enough data yet', cls:'neutral',
+      message:`You've answered ${sumTotal} of about 20 questions needed for a reliable read. Keep completing sessions — the assessment sharpens with more attempts.` };
+  } else if(accuracy >= 85 && avgTimePerQ <= 35){
+    verdict = { label:'Ready', cls:'good',
+      message:'Strong accuracy and pace. This looks like real-test-ready performance — a light review before the exam should be enough.' };
+  } else if(accuracy >= 70){
+    if(avgTimePerQ > 40){
+      verdict = { label:'Almost ready — work on speed', cls:'warn',
+        message:`Accuracy (${accuracy.toFixed(0)}%) is solid but you're averaging ${avgTimePerQ.toFixed(0)}s per question. Real tests run close to Rule 12's 45–60s ceiling — drill for speed, not just correctness.` };
+    } else if(weak.length){
+      verdict = { label:'Almost ready', cls:'warn',
+        message:`Overall accuracy is solid (${accuracy.toFixed(0)}%). Concentrate remaining practice on: ${weak.map(w=>w.name).join(', ')}.` };
+    } else {
+      verdict = { label:'Almost ready', cls:'warn',
+        message:`Accuracy (${accuracy.toFixed(0)}%) and pace are both reasonable across the board. A bit more volume should lock it in.` };
+    }
+  } else {
+    verdict = { label:'Not yet ready', cls:'bad',
+      message: weak.length
+        ? `Accuracy (${accuracy.toFixed(0)}%) needs work, particularly on: ${weak.map(w=>w.name).join(', ')}. Re-read those rows in the doctrine above, then retake.`
+        : `Accuracy (${accuracy.toFixed(0)}%) needs work across most rule types. Re-read the doctrine, then retake without the pressure of a timer first.` };
+  }
+
+  const barColor = pct => pct>=80 ? 'var(--good)' : pct>=60 ? 'var(--warn)' : 'var(--bad)';
+
+  panel.innerHTML = `
+    <div class="progress-summary">
+      <div class="progress-stat"><div class="num">${allSessions.length}</div><div class="plabel">Sessions</div></div>
+      <div class="progress-stat"><div class="num">${sumTotal}</div><div class="plabel">Questions Answered</div></div>
+      <div class="progress-stat"><div class="num">${accuracy.toFixed(0)}%</div><div class="plabel">Overall Accuracy</div></div>
+      <div class="progress-stat"><div class="num">${avgTimePerQ.toFixed(0)}s</div><div class="plabel">Avg Time / Question</div></div>
+    </div>
+    <div class="verdict-box ${verdict.cls}">
+      <div class="verdict-label">${verdict.label}</div>
+      <p>${verdict.message}</p>
+    </div>
+    <h3 style="font-size:14px; text-transform:uppercase; letter-spacing:0.5px; color:var(--muted); margin:20px 0 6px;">Accuracy by Rule Type</h3>
+    ${ruleRows.map(r => `
+      <div class="rule-bar-row">
+        <span>${r.name}</span>
+        <div class="rule-bar-track"><div class="rule-bar-fill" style="width:${r.pct.toFixed(0)}%; background:${barColor(r.pct)};"></div></div>
+        <span class="rule-bar-pct">${r.correct}/${r.total}</span>
+      </div>`).join('')}
+    <button class="reset-progress-btn" id="resetProgressBtn">Reset tracked progress</button>
+  `;
+
+  document.getElementById('resetProgressBtn').onclick = () => {
+    if(confirm('Clear all tracked progress for this session?')){
+      allSessions = [];
+      renderProgress();
+    }
+  };
+}
+
+renderProgress();
+
+document.getElementById('startBtn').onclick = startSession;
+submitBtn.onclick = submitSession;
+retakeBtn.onclick = startSession;
+
+// ================= Dark mode toggle =================
+const themeToggle = document.getElementById('themeToggle');
+themeToggle.onclick = () => {
+  const isDark = document.documentElement.classList.toggle('dark');
+  themeToggle.textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+};
+</script>
+</body>
+</html>

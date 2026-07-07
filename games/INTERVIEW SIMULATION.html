@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DOCTRINE — Daniel Amanyi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Source+Serif+4:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink: #15171C;
+    --ink-2: #1C1F26;
+    --ink-3: #23262F;
+    --paper: #E9E6DD;
+    --paper-dim: #B8B4A8;
+    --paper-faint: #7C7A72;
+    --amber: #D4A33E;
+    --amber-dim: #8A6B2C;
+    --alert: #B8503F;
+    --alert-bg: #2B1C18;
+    --rule: #34373F;
+    --mono: 'IBM Plex Mono', monospace;
+    --serif: 'Source Serif 4', serif;
+    --measure: 700px;
+  }
+
+  *{ box-sizing: border-box; }
+  html{ scroll-behavior: smooth; }
+
+  body{
+    margin:0;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--serif);
+    font-size: 18px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ===== Texture: faint paper grain via noise svg, very subtle ===== */
+  body::before{
+    content:"";
+    position: fixed; inset:0;
+    background-image: radial-gradient(circle at 1px 1px, rgba(232,230,224,0.025) 1px, transparent 0);
+    background-size: 3px 3px;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .page{
+    position: relative;
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 0 32px 160px;
+  }
+
+  /* ===== Spine: persistent left rule with chapter ticks ===== */
+  .spine{
+    position: fixed;
+    top:0; bottom:0; left: calc(50% - 490px);
+    width: 1px;
+    background: var(--rule);
+    z-index: 0;
+  }
+  @media (max-width: 1040px){ .spine{ display:none; } }
+
+  /* ===== Cover ===== */
+  .cover{
+    min-height: 92vh;
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: 60px;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 64px;
+  }
+  .cover-eyebrow{
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.32em;
+    color: var(--amber);
+    text-transform: uppercase;
+    margin-bottom: 28px;
+  }
+  .cover-eyebrow::before{ content:"§ "; color: var(--amber-dim); }
+  .cover h1{
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: clamp(48px, 9vw, 96px);
+    letter-spacing: 0.02em;
+    line-height: 0.98;
+    margin: 0 0 24px;
+    color: var(--paper);
+  }
+  .cover-sub{
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 22px;
+    color: var(--paper-dim);
+    max-width: 520px;
+    margin: 0 0 36px;
+  }
+  .cover-meta{
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--paper-faint);
+    display:flex;
+    gap: 28px;
+    flex-wrap: wrap;
+    border-top: 1px solid var(--rule);
+    padding-top: 20px;
+    max-width: 560px;
+  }
+  .cover-meta span b{ color: var(--paper-dim); font-weight:600; }
+
+  /* ===== Usage callout on cover ===== */
+  .usage-block{
+    margin-top: 44px;
+    max-width: 620px;
+    border-left: 2px solid var(--amber-dim);
+    padding: 4px 0 4px 22px;
+  }
+  .usage-block p{
+    margin: 0 0 14px;
+    font-size: 16.5px;
+    color: var(--paper-dim);
+  }
+  .usage-block strong{ color: var(--amber); font-weight: 600; }
+  .usage-block p:last-child{ margin-bottom:0; }
+
+  /* ===== Chapter scaffolding ===== */
+  .chapter{
+    margin: 0 0 88px;
+    max-width: var(--measure);
+  }
+  .chapter-head{
+    display:flex;
+    align-items: baseline;
+    gap: 18px;
+    margin-bottom: 28px;
+  }
+  .chapter-num{
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--ink);
+    background: var(--amber);
+    padding: 3px 9px;
+    border-radius: 2px;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    height: fit-content;
+  }
+  .chapter h2{
+    font-family: var(--mono);
+    font-size: 14px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--paper);
+    margin: 0;
+    padding-top: 2px;
+    font-weight: 600;
+  }
+  .chapter-rule{
+    height:1px;
+    background: linear-gradient(to right, var(--rule), transparent);
+    margin-bottom: 30px;
+  }
+
+  .chapter p{
+    color: var(--paper-dim);
+    margin: 0 0 20px;
+    max-width: 640px;
+  }
+  .chapter p.lede{
+    font-size: 21px;
+    color: var(--paper);
+    font-style: italic;
+  }
+  .chapter strong{ color: var(--paper); font-weight: 600; }
+  .chapter em.signature{
+    display:block;
+    font-style: italic;
+    font-size: 24px;
+    color: var(--amber);
+    margin: 28px 0 28px;
+    padding-left: 20px;
+    border-left: 2px solid var(--amber-dim);
+  }
+
+  /* ===== Doctrine law list (Chapter 5 style) ===== */
+  .law-list{
+    list-style: none;
+    margin: 24px 0;
+    padding: 0;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .law-list li{
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--rule);
+    font-size: 17px;
+    color: var(--paper);
+    font-weight: 500;
+    background: var(--ink-2);
+  }
+  .law-list li:last-child{ border-bottom:none; }
+  .law-list li::before{
+    content: "RULE";
+    display:block;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: var(--amber-dim);
+    margin-bottom: 6px;
+  }
+
+  /* ===== Reasoning chain diagram ===== */
+  .chain{
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--ink-2);
+    padding: 28px 32px;
+    margin: 28px 0;
+  }
+  .chain-step{
+    font-family: var(--mono);
+    font-size: 15px;
+    color: var(--paper);
+    padding: 9px 0;
+    display:flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .chain-step .dot{
+    width:6px; height:6px; border-radius:50%;
+    background: var(--amber-dim);
+    flex: none;
+  }
+  .chain-step.final .dot{ background: var(--amber); }
+  .chain-step.final{ color: var(--amber); font-weight: 600; }
+  .chain-arrow{
+    font-family: var(--mono);
+    color: var(--paper-faint);
+    padding-left: 3px;
+    font-size: 13px;
+  }
+
+  /* ===== Evidence / confidence block ===== */
+  .evidence-card{
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--ink-2);
+    padding: 18px 22px;
+    margin: 22px 0;
+    font-family: var(--mono);
+    font-size: 13.5px;
+  }
+  .evidence-card .row{
+    display:flex; justify-content: space-between; gap: 16px;
+    padding: 6px 0;
+    border-bottom: 1px dashed var(--rule);
+  }
+  .evidence-card .row:last-child{ border-bottom:none; }
+  .evidence-card .label{ color: var(--paper-faint); letter-spacing:0.05em; }
+  .evidence-card .value{ color: var(--paper); text-align:right; }
+  .confidence-high{ color: #7FA86B; }
+  .confidence-open{ color: var(--alert); }
+
+  /* ===== Decision tree ===== */
+  .tree{
+    font-family: var(--mono);
+    font-size: 15px;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    padding: 26px 30px;
+    background: var(--ink-2);
+    margin: 24px 0;
+    overflow-x: auto;
+  }
+  .tree .q{ color: var(--paper); margin-bottom: 14px; }
+  .tree .branch{ padding: 7px 0 7px 26px; color: var(--paper-dim); position:relative; }
+  .tree .branch::before{ content:"└─"; position:absolute; left:0; color: var(--rule); }
+  .tree .branch b{ color: var(--paper); }
+  .tree .branch.flagged{ color: var(--alert); }
+  .tree .branch.flagged b{ color: var(--alert); }
+
+  /* ===== Case file ===== */
+  .case{
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    margin: 0 0 56px;
+    overflow: hidden;
+    background: var(--ink-2);
+    max-width: var(--measure);
+  }
+  .case-stamp{
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 26px;
+    background: var(--ink-3);
+    border-bottom: 1px solid var(--rule);
+  }
+  .case-id{
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    color: var(--amber-dim);
+    text-transform: uppercase;
+  }
+  .case-title{
+    font-family: var(--mono);
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--paper);
+  }
+  .case-domain{
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--paper-faint);
+    text-align:right;
+  }
+  .case-body{ padding: 30px 32px 8px; }
+
+  .case-field{ margin-bottom: 24px; }
+  .case-field-label{
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    color: var(--amber-dim);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display:block;
+  }
+  .case-field p{ margin:0; color: var(--paper-dim); }
+  .case-field ol, .case-field ul{ margin: 4px 0 0; padding-left: 22px; color: var(--paper-dim); }
+  .case-field li{ margin-bottom: 6px; }
+
+  .lesson-line{
+    font-style: italic;
+    font-size: 19px;
+    color: var(--amber);
+    border-left: 2px solid var(--amber-dim);
+    padding-left: 18px;
+    margin: 4px 0;
+  }
+
+  .scope-flag{
+    border: 1px dashed var(--alert);
+    background: var(--alert-bg);
+    border-radius: 3px;
+    padding: 18px 20px;
+    color: #E8C9C2;
+  }
+  .scope-flag .case-field-label{ color: var(--alert); }
+  .scope-flag p{ color: #E0B8B0; }
+  .scope-flag strong{ color: #F0D8D2; }
+
+  /* follow-up table */
+  .followups{ width:100%; border-collapse: collapse; margin-top: 4px; }
+  .followups td{
+    padding: 12px 0;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+    font-size: 16px;
+    color: var(--paper-dim);
+  }
+  .followups tr:last-child td{ border-bottom:none; }
+  .followups td.q{
+    width: 38%;
+    color: var(--paper);
+    font-weight: 500;
+    padding-right: 20px;
+  }
+  .followups td.q::before{ content: "Q — "; color: var(--amber-dim); font-family: var(--mono); font-size: 11px; }
+
+  /* ===== Index table ===== */
+  .index-table{ width:100%; border-collapse: collapse; }
+  .index-table tr{ border-bottom: 1px solid var(--rule); }
+  .index-table tr:last-child{ border-bottom:none; }
+  .index-table td{ padding: 14px 8px; font-size: 16px; }
+  .index-table td.principle{ color: var(--paper); font-weight:500; width:55%; }
+  .index-table td.ref{ font-family: var(--mono); font-size: 13px; color: var(--amber-dim); }
+  .index-table tr.reserved td{ color: var(--paper-faint); font-style: italic; }
+  .index-table tr.reserved td.ref{ color: var(--paper-faint); }
+
+  /* review block */
+  .review-block{
+    font-family: var(--mono);
+    font-size: 13.5px;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    padding: 20px 24px;
+    background: var(--ink-2);
+    color: var(--paper-faint);
+    line-height: 2.0;
+  }
+
+  .closing{
+    text-align:center;
+    font-style: italic;
+    color: var(--paper-faint);
+    font-size: 16px;
+    margin-top: 100px;
+    padding-top: 36px;
+    border-top: 1px solid var(--rule);
+  }
+
+  ::selection{ background: var(--amber-dim); color: var(--ink); }
+
+  /* ===== Portal switcher ===== */
+  .portal-switch{
+    position: fixed;
+    top: 18px; right: 18px;
+    z-index: 50;
+    display:flex;
+    gap: 2px;
+    background: var(--ink-2);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 3px;
+  }
+  .portal-switch button{
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: transparent;
+    color: var(--paper-faint);
+    border: none;
+    padding: 7px 14px;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  .portal-switch button.active{
+    background: var(--amber);
+    color: var(--ink);
+    font-weight: 600;
+  }
+  @media (max-width: 640px){
+    .portal-switch{ top: 10px; right: 10px; }
+    .portal-switch button{ padding: 6px 10px; font-size: 10px; }
+  }
+
+  .view{ display:none; }
+  .view.active{ display:block; }
+
+  /* ===== Drill portal ===== */
+  .drill-page{
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 90px 24px 120px;
+  }
+  .drill-eyebrow{
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.28em;
+    color: var(--amber);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .drill-h1{
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 40px;
+    color: var(--paper);
+    margin: 0 0 8px;
+  }
+  .drill-sub{
+    font-family: var(--serif);
+    font-style: italic;
+    color: var(--paper-dim);
+    font-size: 17px;
+    margin: 0 0 36px;
+    max-width: 520px;
+  }
+
+  /* Record reminder bar */
+  .rec-bar{
+    display:flex;
+    align-items:center;
+    gap: 12px;
+    border: 1px solid var(--alert);
+    background: var(--alert-bg);
+    border-radius: 4px;
+    padding: 12px 18px;
+    margin-bottom: 28px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .rec-bar.is-on{
+    border-color: #355c3a;
+    background: #15241a;
+  }
+  .rec-dot{
+    width: 11px; height: 11px;
+    border-radius: 50%;
+    background: var(--alert);
+    flex: none;
+    box-shadow: 0 0 0 0 rgba(184,80,63,0.6);
+    animation: recPulse 1.4s infinite;
+  }
+  .rec-bar.is-on .rec-dot{
+    background: #5FBF6E;
+    animation: none;
+  }
+  @keyframes recPulse{
+    0%{ box-shadow: 0 0 0 0 rgba(184,80,63,0.55); }
+    70%{ box-shadow: 0 0 0 9px rgba(184,80,63,0); }
+    100%{ box-shadow: 0 0 0 0 rgba(184,80,63,0); }
+  }
+  .rec-text{
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    color: #E8C9C2;
+    text-transform: uppercase;
+    flex: 1;
+  }
+  .rec-bar.is-on .rec-text{ color: #BFE3C4; }
+  .rec-hint{
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--paper-faint);
+  }
+
+  /* Case selector */
+  .case-picker{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px,1fr));
+    gap: 8px;
+    margin-bottom: 28px;
+  }
+  .case-pick-btn{
+    font-family: var(--mono);
+    font-size: 12px;
+    text-align:left;
+    background: var(--ink-2);
+    border: 1px solid var(--rule);
+    color: var(--paper-dim);
+    border-radius: 4px;
+    padding: 12px 14px;
+    cursor: pointer;
+    line-height: 1.5;
+  }
+  .case-pick-btn .n{ color: var(--amber-dim); display:block; font-size:10px; letter-spacing:0.1em; margin-bottom:4px; }
+  .case-pick-btn.active{
+    border-color: var(--amber-dim);
+    background: var(--ink-3);
+    color: var(--paper);
+  }
+  .case-pick-btn.active .n{ color: var(--amber); }
+
+  /* Timer face */
+  .drill-stage{
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    background: var(--ink-2);
+    padding: 36px 30px;
+    text-align:center;
+    margin-bottom: 24px;
+  }
+  .drill-stage.dimmed{ opacity: 0.45; }
+  .stage-meta{
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--amber-dim);
+    margin-bottom: 10px;
+  }
+  .stage-name{
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 26px;
+    color: var(--paper);
+    margin-bottom: 6px;
+  }
+  .stage-prompt{
+    font-size: 14px;
+    color: var(--paper-faint);
+    margin-bottom: 22px;
+    min-height: 20px;
+  }
+  .stage-clock{
+    font-family: var(--mono);
+    font-size: 56px;
+    font-weight: 700;
+    color: var(--paper);
+    font-variant-numeric: tabular-nums;
+    margin-bottom: 10px;
+  }
+  .stage-bar-track{
+    height: 5px;
+    background: var(--rule);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 26px;
+  }
+  .stage-bar-fill{
+    height: 100%;
+    background: var(--amber);
+    width: 100%;
+  }
+  .stage-controls{
+    display:flex;
+    gap: 10px;
+    justify-content:center;
+    flex-wrap: wrap;
+  }
+  .stage-controls button{
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    background: var(--ink-3);
+    border: 1px solid var(--rule);
+    color: var(--paper);
+    padding: 10px 18px;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  .stage-controls button.primary{
+    background: var(--amber);
+    color: var(--ink);
+    border-color: var(--amber);
+    font-weight: 600;
+  }
+  .stage-controls button.danger{
+    border-color: var(--alert);
+    color: #E8C9C2;
+  }
+
+  /* sequence ladder */
+  .ladder{ display:flex; flex-direction: column; gap: 6px; margin-bottom: 28px; }
+  .ladder-row{
+    display:flex;
+    align-items:center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 3px;
+    border: 1px solid var(--rule);
+    background: var(--ink-2);
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--paper-dim);
+  }
+  .ladder-row.current{ border-color: var(--amber-dim); background: var(--ink-3); color: var(--paper); }
+  .ladder-row.done{ color: var(--paper-faint); }
+  .ladder-row .sec{ color: var(--paper-faint); font-size: 11px; min-width: 30px; }
+
+  /* timing rationale */
+  .rationale{
+    border-left: 2px solid var(--amber-dim);
+    padding-left: 18px;
+    color: var(--paper-dim);
+    font-size: 14px;
+    margin-bottom: 28px;
+  }
+  .rationale strong{ color: var(--paper); }
+
+  .ramble-row{ display:flex; gap:10px; }
+  .ramble-row button{
+    flex:1;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    background: var(--ink-2);
+    border: 1px solid var(--rule);
+    color: var(--paper-dim);
+    padding: 12px;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  .ramble-log{
+    margin-top: 14px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--paper-faint);
+  }
+
+  @media (max-width: 640px){
+    body{ font-size: 16.5px; }
+    .case-body{ padding: 22px 20px 4px; }
+    .chapter-head{ flex-direction: column; align-items: flex-start; gap: 8px; }
+    .followups td.q{ width: 100%; display:block; padding-right:0; }
+    .followups tr{ display:block; padding: 14px 0; }
+    .followups td{ display:block; padding: 4px 0; border-bottom: none; }
+    .followups tr:not(:last-child){ border-bottom: 1px solid var(--rule); }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior: auto; }
+  }
+</style>
+</head>
+<body>
+<div class="portal-switch">
+  <button id="tabDoctrine" class="active">Doctrine</button>
+  <button id="tabDrill">Drill</button>
+</div>
+<div class="spine"></div>
+<div class="page view active" id="viewDoctrine">
+
+  <!-- ===== COVER ===== -->
+  <div class="cover">
+    <div class="cover-eyebrow">Engineering Reasoning, Preserved</div>
+    <h1>DOCTRINE</h1>
+    <p class="cover-sub">A living record of how I think, not a script of what I say.</p>
+    <div class="cover-meta">
+      <span><b>Subject</b> &nbsp;Daniel Amanyi</span>
+      <span><b>Built</b> &nbsp;29 June 2026</span>
+      <span><b>Status</b> &nbsp;Living document</span>
+    </div>
+    <div class="usage-block">
+      <p><strong>Two weeks out:</strong> read Chapters 1–6 once, slowly, on day one. Spend the rest of the time re-deriving each relevant case from the Reasoning Model — not re-reading your old answer. If you can reconstruct the diagnosis chain from memory, you're ready.</p>
+      <p><strong>Ten minutes out:</strong> read only the Lesson and Scope lines of each relevant case. Nothing else.</p>
+    </div>
+  </div>
+
+  <!-- ===== CHAPTER 1 ===== -->
+  <div class="chapter" id="ch1">
+    <div class="chapter-head">
+      <span class="chapter-num">CH. 01</span>
+      <h2>Why This Document Exists</h2>
+    </div>
+    <div class="chapter-rule"></div>
+    <p class="lede">Not to prepare for interviews. To preserve engineering reasoning.</p>
+    <p>Experience fades. Architectures change. Repos disappear. Employers shut down. The exact sequence of a five-layer cascading failure from eighteen months ago will not stay sharp in memory on its own — but the reasoning that diagnosed it should outlast the memory of the specific incident, because the same reasoning will diagnose the next one too.</p>
+    <p>This document exists because the reasoning is the durable asset. The incidents are just where it's been tested so far.</p>
+  </div>
+
+  <!-- ===== CHAPTER 2 ===== -->
+  <div class="chapter" id="ch2">
+    <div class="chapter-head">
+      <span class="chapter-num">CH. 02</span>
+      <h2>Engineering Philosophy</h2>
+    </div>
+    <div class="chapter-rule"></div>
+    <p>I don't optimize answers. I optimize understanding. An interview — or a production incident — merely exposes whether the understanding exists.</p>
+    <em class="signature">Narrow before you exaggerate.</em>
+    <p>When a claim is broader than what was actually done, the move is to shrink the claim to fit the evidence — not defend the bigger version. This isn't modesty. Confident precision survives scrutiny; confident vagueness doesn't. The gap between those two only shows up under pressure, which is exactly when it matters most.</p>
+  </div>
+
+  <!-- ===== CHAPTER 3 ===== -->
+  <div class="chapter" id="ch3">
+    <div class="chapter-head">
+      <span class="chapter-num">CH. 03</span>
+      <h2>The Engineering Reasoning Model</h2>
+    </div>
+    <div class="chapter-rule"></div>
+    <p>Every case study in this document follows the same chain. Internalize the chain, not the stories.</p>
+    <div class="chain">
+      <div class="chain-step"><span class="dot"></span>Incident</div>
+      <div class="chain-arrow">↓</div>
+      <div class="chain-step"><span class="dot"></span>Observation</div>
+      <div class="chain-arrow">↓</div>
+      <div class="chain-step"><span class="dot"></span>Hypotheses</div>
+      <div class="chain-arrow">↓</div>
+      <div class="chain-step"><span class="dot"></span>Evidence</div>
+      <div class="chain-arrow">↓</div>
+      <div class="chain-step"><span class="dot"></span>Diagnosis</div>
+      <div class="chain-arrow">↓</div>
+      <div class="chain-step"><span class="dot"></span>Decision</div>
+      <div class="chain-arrow">↓</div>
+      <div class="chain-step"><span class="dot"></span>Implementation</div>
+      <div class="chain-arrow">↓</div>
+      <div class="chain-step"><span class="dot"></span>Validation</div>
+      <div class="chain-arrow">↓</div>
+      <div class="chain-step"><span class="dot"></span>Structural Prevention</div>
+      <div class="chain-arrow">↓</div>
+      <div class="chain-step final"><span class="dot"></span>Transferable Principle</div>
+    </div>
+    <p>The chain doesn't end at "fixed it." It ends at "and here's the principle that now applies to problems I haven't seen yet." That last step is what separates a story from doctrine.</p>
+  </div>
+
+  <!-- ===== CHAPTER 4 ===== -->
+  <div class="chapter" id="ch4">
+    <div class="chapter-head">
+      <span class="chapter-num">CH. 04</span>
+      <h2>Evidence Doctrine</h2>
+    </div>
+    <div class="chapter-rule"></div>
+    <p>A claim without an evidence trail is an anecdote. A claim with one is engineering fact. Every case study below carries an evidence block recording what actually backs the claim, and how confident that makes it.</p>
+    <div class="evidence-card">
+      <div class="row"><span class="label">EVIDENCE</span><span class="value">Resume / GitHub / Architecture / Terraform / Production artifact / Whitepaper / LinkedIn / Interview-verified</span></div>
+      <div class="row"><span class="label">CONFIDENCE</span><span class="value">High / Medium / Open</span></div>
+    </div>
+    <p><strong>High</strong> means a primary source exists with no unresolved conflict. <strong>Open</strong> means a real conflict exists between sources and hasn't been resolved — see Chapter 6's fifth branch. An Open rating is not a flaw in the documentation. It's the documentation working correctly: telling you not to oversell that detail until it's resolved.</p>
+  </div>
+
+  <!-- ===== CHAPTER 5 ===== -->
+  <div class="chapter" id="ch5">
+    <div class="chapter-head">
+      <span class="chapter-num">CH. 05</span>
+      <h2>Scope Doctrine</h2>
+    </div>
+    <div class="chapter-rule"></div>
+    <p>This is the defining characteristic of this entire body of work. It deserves to be stated as law, not as a habit.</p>
+    <ul class="law-list">
+      <li>Never claim ownership of implementation if your contribution was architecture.</li>
+      <li>Never claim architecture if your contribution was implementation.</li>
+      <li>Never substitute team ownership for personal ownership.</li>
+      <li>Never let an interviewer upgrade your contribution.</li>
+    </ul>
+    <p>Scope discipline is not a hedge against being caught. It's a claim about reliability: if I tell you precisely what I did, you can trust precisely what I tell you next time. That trust compounds across an entire interview in a way no single impressive-sounding line can.</p>
+  </div>
+
+  <!-- ===== CHAPTER 6 ===== -->
+  <div class="chapter" id="ch6">
+    <div class="chapter-head">
+      <span class="chapter-num">CH. 06</span>
+      <h2>Interview Decision Tree</h2>
+    </div>
+    <div class="chapter-rule"></div>
+    <div class="tree">
+      <div class="q">IF ASKED SOMETHING YOU'VE CLAIMED →&nbsp; "Can I prove it?"</div>
+      <div class="branch"><b>Yes</b> &nbsp;→&nbsp; Answer.</div>
+      <div class="branch"><b>No</b> &nbsp;→&nbsp; Narrow the claim to what's provable.</div>
+      <div class="branch"><b>Not sure</b> &nbsp;→&nbsp; Ask a clarifying question before answering.</div>
+      <div class="branch"><b>Need an assumption</b> &nbsp;→&nbsp; State it explicitly, then answer.</div>
+      <div class="branch flagged"><b>Evidence conflicts</b> &nbsp;→&nbsp; Name the conflict out loud. Don't silently pick the flattering version.</div>
+    </div>
+    <p>That fifth branch is not hypothetical — it's the exact situation Case 5 (NetworksX) is in right now. Two real sources describe the same engagement in different terms. The correct move is to say so, not to quietly choose whichever version sounds better in the room.</p>
+  </div>
+
+  <!-- ===== CHAPTER 7 INTRO ===== -->
+  <div class="chapter" id="ch7">
+    <div class="chapter-head">
+      <span class="chapter-num">CH. 07</span>
+      <h2>Case Study Template</h2>
+    </div>
+    <div class="chapter-rule"></div>
+    <p>Every case study below — and every future one — follows this exact shape. No exceptions, no skipped sections: Context, Architecture, Trigger, Observation, Ruled-out Hypotheses, Diagnosis, Decision, Fix, Prevention, Lesson, Scope, Evidence, Follow-ups.</p>
+  </div>
+
+  <!-- ===== CASE 1 ===== -->
+  <div class="case" id="case1">
+    <div class="case-stamp">
+      <div><div class="case-id">Case File 01</div><div class="case-title">The Cascading Kubernetes Failure</div></div>
+      <div class="case-domain">Kubernetes /<br>Incident Response</div>
+    </div>
+    <div class="case-body">
+      <div class="case-field">
+        <span class="case-field-label">Context</span>
+        <p>Production Kubernetes cluster, multi-service workload. A five-layer cascading failure at 2AM — the hardest kind to diagnose, because each layer disguises the one underneath it.</p>
+      </div>
+      <div class="case-field">
+        <span class="case-field-label">Architecture</span>
+        <p>Co-located control-plane and workload nodes (etcd sharing a node with application pods — a latent risk in itself). HPA configured on CPU metrics. nodeAffinity rules governing workload placement.</p>
+      </div>
+      <div class="case-field">
+        <span class="case-field-label">Trigger</span>
+        <p>One pod deployed without a memory limit.</p>
+      </div>
+      <div class="case-field">
+        <span class="case-field-label">Diagnosis Chain</span>
+        <ol>
+          <li>Kubelet evicted pods on the pressured node under memory pressure.</li>
+          <li>A nodeAffinity rule kept rescheduling evicted pods back onto the <em>same</em> pressured node — the scheduler's own constraints fighting recovery.</li>
+          <li>HPA scaled on CPU, which looked normal — the giveaway that monitoring watched the wrong signal while memory went unaddressed.</li>
+          <li>etcd, co-located on that node, got OOM-killed — a workload problem became a control-plane problem.</li>
+          <li>kube-proxy couldn't get fresh data from a dead etcd, so stale iptables rules stayed live — 503s on routes that no longer reflected reality.</li>
+        </ol>
+      </div>
+      <div class="case-field">
+        <span class="case-field-label">Fix — Immediate (~40 min)</span>
+        <p>Cordon the node → freeze the HPA → patch the missing memory limit → drain the node → restart kube-proxy to flush stale state.</p>
+      </div>
+      <div class="case-field">
+        <span class="case-field-label">Prevention — Structural (2 sprints)</span>
+        <p>Built a custom <code>ValidatingWebhookConfiguration</code> rejecting any pod missing a memory limit at admission time — a hard gate, not a convention someone could skip.</p>
+      </div>
+      <div class="case-field">
+        <span class="case-field-label">Lesson</span>
+        <p class="lesson-line">"The cost of enforcing limits at admission is one rejected PR. The cost of not enforcing them is a 2AM page and a partial cluster outage."</p>
+      </div>
+      <div class="case-field">
+        <span class="case-field-label">Scope</span>
+        <p>Hand-rolled webhook, not Gatekeeper or Kyverno. Name the tradeoff unprompted — more long-term maintenance vs. lower lift since the infra was already in place. That's what makes the story credible rather than convenient.</p>
+      </div>
+      <div class="evidence-card">
+        <div class="row"><span class="label">EVIDENCE</span><span class="value">Interview Calibration Script, 28 Jun 2026</span></div>
+        <div class="row"><span class="label">CONFIDENCE</span><span class="value confidence-high">High</span></div>
+      </div>
+      <div class="case-field">
+        <span class="case-field-label">Follow-ups</span>
+        <table class="followups">
+          <tr><td class="q">Why was etcd on the same node as workloads?</td><td>Name it as a real architectural risk, not a missed detail — co-location is what let this cascade happen. Stricter setups run etcd on dedicated nodes for this reason.</td></tr>
+          <tr><td class="q">Why not Gatekeeper/Kyverno?</td><td>The custom webhook was already in place; lower lift to extend it mid-response than introduce a new policy engine. Acknowledge the long-term maintenance tradeoff.</td></tr>
+          <tr><td class="q">How did you know it was a memory limit issue?</td><td>Kubelet eviction events pointed at memory pressure first; HPA's CPU-based scaling was the giveaway that monitoring watched the wrong signal.</td></tr>
+          <tr><td class="q">What would you do differently?</td><td>The webhook should have existed before the incident, not after. Say it plainly — it reads as ownership.</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CASE 2 ===== -->
+  <div class="case" id="case2">
+    <div class="case-stamp">
+      <div><div class="case-id">Case File 02</div><div class="case-title">The IAM Explicit-Deny Lockout</div></div>
+      <div class="case-domain">Terraform / IAM /<br>AWS Permissions</div>
+    </div>
+    <div class="case-body">
+      <div class="case-field"><span class="case-field-label">Context</span><p>Iterative infrastructure changes around a SageMaker deployment, managed via Terraform.</p></div>
+      <div class="case-field"><span class="case-field-label">Trigger</span><p>A policy update introduced an explicit deny. In AWS IAM, an explicit deny overrides every other grant, no exception — and this one blocked the administrative actions needed to fix IAM policy through Terraform itself.</p></div>
+      <div class="case-field"><span class="case-field-label">Ruled-out Hypotheses</span><p>First diagnostic question, before touching anything: is this a Terraform <em>state</em> problem, or an AWS <em>permission-model</em> problem? Guessing wrong wastes the most valuable resource in a lockout — time.</p></div>
+      <div class="case-field"><span class="case-field-label">Diagnosis</span><p>Used CloudTrail and IAM policy evaluation tooling to trace the actual denial. Confirmed it was the policy itself, not Terraform state corruption.</p></div>
+      <div class="case-field"><span class="case-field-label">Decision</span><p>Stopped making further infrastructure changes immediately, rather than pushing another <code>terraform apply</code> through an already-blocked path.</p></div>
+      <div class="case-field"><span class="case-field-label">Fix</span><p>Redesigned the IAM policy — removed the conflicting explicit deny <em>and</em> reduced unnecessary permissions in the same pass, rather than patching one line.</p></div>
+      <div class="case-field"><span class="case-field-label">Lesson</span><p class="lesson-line">"Infrastructure as Code doesn't eliminate the need to understand the underlying cloud platform. IAM mistakes can affect the deployment system itself, so policy changes deserve the same engineering discipline as application code."</p></div>
+      <div class="case-field"><span class="case-field-label">Scope</span><p>Full ownership — diagnosis, fix, and validation were all personally executed.</p></div>
+      <div class="evidence-card">
+        <div class="row"><span class="label">EVIDENCE</span><span class="value">Interview Calibration Script</span></div>
+        <div class="row"><span class="label">CONFIDENCE</span><span class="value confidence-high">High</span></div>
+      </div>
+      <div class="case-field">
+        <span class="case-field-label">Follow-ups</span>
+        <table class="followups">
+          <tr><td class="q">How did you know not to push another Terraform change?</td><td>Explicit denies override grants — pushing more changes through an already-blocked path burns time. The triage step was recognizing the failure domain before acting.</td></tr>
+          <tr><td class="q">What tools did you use to trace it?</td><td>CloudTrail for event history; IAM policy evaluation/simulation to confirm which statement fired the deny.</td></tr>
+          <tr><td class="q">Could this have been caught before production?</td><td>Yes — same lesson as Case 1. A policy-linting or plan-review step before apply would have caught the explicit deny pre-merge.</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CASE 3 ===== -->
+  <div class="case" id="case3">
+    <div class="case-stamp">
+      <div><div class="case-id">Case File 03</div><div class="case-title">The Trivy / Checkov Risk-Acceptance Call</div></div>
+      <div class="case-domain">CI/CD / DevSecOps /<br>Security Governance</div>
+    </div>
+    <div class="case-body">
+      <div class="case-field"><span class="case-field-label">Context</span><p>CI/CD pipeline with Trivy and Checkov integrated as hard-blocking security gates.</p></div>
+      <div class="case-field"><span class="case-field-label">Trigger</span><p>The pipeline began repeatedly failing on findings. Standout case: Trivy flagged a critical CVE in a base image with no vendor-patched version available.</p></div>
+      <div class="case-field"><span class="case-field-label">Ruled-out Hypotheses</span><p>Did not assume the finding was a false positive. Validated it first — confirmed the CVE genuinely affected the base image, not application code.</p></div>
+      <div class="case-field"><span class="case-field-label">Diagnosis</span><p>Checked for any remediation path — none existed. Reviewed Trivy's own guidance and the vendor's documented "will not fix" status — confirmed, not assumed.</p></div>
+      <div class="case-field"><span class="case-field-label">Decision &amp; Fix</span><p>Classified it as a documented no-fix-available case, distinct from an actionable fixable critical — made a formal, justified risk-acceptance decision for that specific case only.</p></div>
+      <div class="case-field"><span class="case-field-label">Prevention</span><p>Continued hard-blocking on any finding that <em>was</em> fixable — the risk-acceptance path stayed narrowly scoped, never a general escape hatch.</p></div>
+      <div class="case-field"><span class="case-field-label">Lesson</span><p class="lesson-line">"Scanners provide evidence, but engineers are responsible for making risk-based release decisions."</p></div>
+      <div class="case-field scope-flag">
+        <span class="case-field-label">Scope — Do Not Overclaim</span>
+        <p>Did <strong>not</strong> perform full exploitability/reachability analysis (verifying the vulnerable code path was actually reachable at runtime). That's a deeper discipline, typically a security/app-team collaboration. State this plainly if asked.</p>
+      </div>
+      <div class="evidence-card">
+        <div class="row"><span class="label">EVIDENCE</span><span class="value">Interview Calibration Script</span></div>
+        <div class="row"><span class="label">CONFIDENCE</span><span class="value confidence-high">High</span></div>
+      </div>
+      <div class="case-field">
+        <span class="case-field-label">Follow-ups</span>
+        <table class="followups">
+          <tr><td class="q">Did you verify the vulnerable code path was reachable?</td><td>No — that's a different, deeper discipline involving security and app teams directly. My piece was validating the finding, confirming no fix existed, and making the governed call.</td></tr>
+          <tr><td class="q">How do you decide acceptable risk vs. hard block?</td><td>Fixable critical findings: hard block, no exceptions. Documented no-fix-available findings: risk-accepted with a paper trail, reviewed on a cadence.</td></tr>
+          <tr><td class="q">What stops this becoming a rubber stamp?</td><td>Every other fixable critical CVE still blocks the pipeline. The risk-acceptance path is reserved specifically for the no-fix-available case.</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CASE 4 ===== -->
+  <div class="case" id="case4">
+    <div class="case-stamp">
+      <div><div class="case-id">Case File 04</div><div class="case-title">QReceipts — Production AI Infrastructure</div></div>
+      <div class="case-domain">AI-Adjacent<br>Cloud Infrastructure</div>
+    </div>
+    <div class="case-body">
+      <div class="case-field"><span class="case-field-label">Context</span><p>Event-driven receipt-processing system at Capshall. ~233 active users at time of leaving — early-growth stage, not hyperscale.</p></div>
+      <div class="case-field"><span class="case-field-label">Architecture</span><p>S3, DynamoDB, API Gateway, Lambda — all Terraform-managed. Amazon Bedrock and SageMaker for AI inference orchestration. AWS Textract for document extraction.</p></div>
+      <div class="case-field"><span class="case-field-label">What Was Actually Done</span><p>Architected and maintained the cloud infrastructure. Provisioned and managed Bedrock/SageMaker for inference orchestration. Integrated Textract. Owned automation, IAM, and the operational lifecycle of the entire pipeline.</p></div>
+      <div class="case-field"><span class="case-field-label">Lesson</span><p class="lesson-line">"I owned the cloud platform, service integration, automation, IAM, and operational lifecycle — not developing or training the ML models themselves."</p></div>
+      <div class="case-field scope-flag">
+        <span class="case-field-label">Scope — The Honest Pivot Story</span>
+        <p>This is managed-AI-services experience (Bedrock, SageMaker-as-orchestration, Textract) — <strong>not</strong> infrastructure-level ML experience (no GPU scheduling, no custom model serving, no distributed inference). Not a weakness to minimize: already shipped production AI services, now deepening into the infra-heavy layer underneath.</p>
+      </div>
+      <div class="evidence-card">
+        <div class="row"><span class="label">EVIDENCE</span><span class="value">Interview Calibration Script</span></div>
+        <div class="row"><span class="label">CONFIDENCE</span><span class="value confidence-high">High</span></div>
+      </div>
+      <div class="case-field">
+        <span class="case-field-label">Follow-ups</span>
+        <table class="followups">
+          <tr><td class="q">What scale did this run at?</td><td>~233 active users at time of leaving — early growth stage. Responsibility was correctness/reliability, not hyperscale optimization.</td></tr>
+          <tr><td class="q">Did you train or fine-tune any models?</td><td>No — not in scope. Owned the platform integration layer around Bedrock/SageMaker/Textract.</td></tr>
+          <tr><td class="q">How does this connect to AI Platform Engineering?</td><td>This is the managed-services end of AI infrastructure. GPU scheduling, K8s-native model serving, vector databases, distributed inference is the infra-heavy layer being built toward next — not starting from zero.</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CASE 5 ===== -->
+  <div class="case" id="case5">
+    <div class="case-stamp">
+      <div><div class="case-id">Case File 05</div><div class="case-title">NetworksX — Advisory Security Architecture</div></div>
+      <div class="case-domain">Security Architecture /<br>Advisory</div>
+    </div>
+    <div class="case-body">
+      <div class="case-field"><span class="case-field-label">Context</span><p>Independent consultancy engagement, Jan–Feb 2026 (now closed; remain on the firm's consultant rota). Advisory and architectural role reviewing a proposed mTLS-based identity architecture for distributed AI workloads.</p></div>
+      <div class="case-field"><span class="case-field-label">What Was Actually Done</span>
+        <ul>
+          <li>Reviewed the proposed mTLS architecture; evaluated certificate lifecycle approaches (issuance, renewal, key rotation)</li>
+          <li>Analyzed CRL vs. OCSP trade-offs, producing a technical decision document the engineering team adopted</li>
+          <li>Led blast-radius analysis for control-plane failure scenarios — identified multiple critical risk classes</li>
+          <li>Produced resilience playbooks covering trust-chain failure modes</li>
+        </ul>
+      </div>
+      <div class="case-field"><span class="case-field-label">Lesson</span><p class="lesson-line">"My contribution was shaping the architecture and documenting the recommended approach — not configuring the PKI infrastructure or deploying the service mesh myself."</p></div>
+      <div class="case-field scope-flag">
+        <span class="case-field-label">⚠ Active Open Conflict — Read Before Any Relevant Interview</span>
+        <p>The calibration session described this engagement as strictly advisory. A separate Q&amp;A transcript from the actual engagement uses operationally specific, first-person-plural language ("we forced connection churn at the proxy layer"). <strong>This has not been resolved.</strong> Per Chapter 6's fifth branch: name the distinction rather than picking whichever framing sounds better in the room.</p>
+        <p style="margin-top:10px;"><strong>Honest answer until resolved:</strong> "My primary role was advisory — evaluating the proposed architecture and recommending approaches. Some recommendations describe operational tactics the team executed based on that guidance; I'd want to be precise about which specific actions were mine versus the team's before claiming hands-on credit for any one of them."</p>
+      </div>
+      <div class="evidence-card">
+        <div class="row"><span class="label">EVIDENCE</span><span class="value">NetworksX Technical Assessment + Q&amp;A Transcript</span></div>
+        <div class="row"><span class="label">CONFIDENCE — FINDINGS</span><span class="value confidence-high">High</span></div>
+        <div class="row"><span class="label">CONFIDENCE — ATTRIBUTION</span><span class="value confidence-open">Open</span></div>
+      </div>
+      <div class="case-field">
+        <span class="case-field-label">Follow-ups</span>
+        <table class="followups">
+          <tr><td class="q">Have you personally configured cert rotation in a service mesh?</td><td>Not in this engagement specifically — role was evaluating proposed approach and trade-offs. Resolve the attribution conflict above before an interview where this is likely to come up directly.</td></tr>
+          <tr><td class="q">What were the single points of failure you found?</td><td>Revocation lag on long-lived connections; tight coupling between identity, enforcement, and availability; correlated CRL distribution failure; downstream-dependency-driven rotation delays.</td></tr>
+          <tr><td class="q">Why CRL vs. OCSP — what did you recommend?</td><td>The real recommendation was about segmentation and degradation handling — segment enforcement domains so CRL failures degrade locally, and treat "stale" and "missing" revocation data as materially different states.</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CHAPTER 8 ===== -->
+  <div class="chapter" id="ch8">
+    <div class="chapter-head">
+      <span class="chapter-num">CH. 08</span>
+      <h2>Interview Philosophy</h2>
+    </div>
+    <div class="chapter-rule"></div>
+    <p class="lede">The interview is not the performance. The interview is the retrieval test.</p>
+    <p>You don't prepare by memorizing answers. You prepare by making retrieval effortless — by internalizing the Reasoning Model deeply enough that any story, including ones not yet written down, comes out in the right shape automatically: trigger, diagnosis, decision, prevention, lesson, scope. If the shape is automatic, the content takes care of itself.</p>
+  </div>
+
+  <!-- ===== CHAPTER 9 ===== -->
+  <div class="chapter" id="ch9">
+    <div class="chapter-head">
+      <span class="chapter-num">CH. 09</span>
+      <h2>Continuous Improvement</h2>
+    </div>
+    <div class="chapter-rule"></div>
+    <p>Every case study, revisited periodically, answers four questions. Append the answers — never replace the original.</p>
+    <div class="review-block">
+      REVIEW: ___________&nbsp;&nbsp;&nbsp; NEXT REVIEW: ___________<br><br>
+      What have I learned since?<br>
+      Would I solve this differently today?<br>
+      What new technologies change this solution?
+    </div>
+    <p style="margin-top:24px;">This is what keeps the document alive rather than fossilized. A case study from two years ago that's never been revisited isn't doctrine — it's just an old memory with a template applied to it.</p>
+  </div>
+
+  <!-- ===== APPENDIX ===== -->
+  <div class="chapter" id="appendix">
+    <div class="chapter-head">
+      <span class="chapter-num">APP.</span>
+      <h2>Engineering Principles Index</h2>
+    </div>
+    <div class="chapter-rule"></div>
+    <p>Search by principle, not by story. When asked "tell me about governance" or "tell me about ownership," retrieval starts here, not from scratch.</p>
+    <table class="index-table">
+      <tr><td class="principle">Admission control / policy-as-code</td><td class="ref">→ Case 01</td></tr>
+      <tr><td class="principle">Cascading failure diagnosis</td><td class="ref">→ Case 01</td></tr>
+      <tr><td class="principle">Control-plane / workload isolation</td><td class="ref">→ Case 01</td></tr>
+      <tr><td class="principle">Least-privilege / IAM policy design</td><td class="ref">→ Case 02</td></tr>
+      <tr><td class="principle">Failure-domain triage (state vs. permissions)</td><td class="ref">→ Case 02</td></tr>
+      <tr><td class="principle">Infrastructure-as-Code discipline</td><td class="ref">→ Case 02</td></tr>
+      <tr><td class="principle">Risk governance / risk acceptance</td><td class="ref">→ Case 03</td></tr>
+      <tr><td class="principle">Security gate design</td><td class="ref">→ Case 03</td></tr>
+      <tr><td class="principle">Managed AI services / platform ownership</td><td class="ref">→ Case 04</td></tr>
+      <tr><td class="principle">AI infrastructure pivot narrative</td><td class="ref">→ Case 04</td></tr>
+      <tr><td class="principle">Architectural advisory vs. implementation</td><td class="ref">→ Case 05</td></tr>
+      <tr><td class="principle">Certificate lifecycle / PKI</td><td class="ref">→ Case 05</td></tr>
+      <tr><td class="principle">Blast-radius analysis</td><td class="ref">→ Case 05</td></tr>
+      <tr><td class="principle">Identity / availability coupling</td><td class="ref">→ Case 05</td></tr>
+      <tr class="reserved"><td class="principle">— reserved for TITAN case study —</td><td class="ref">—</td></tr>
+      <tr class="reserved"><td class="principle">— reserved for TITAN case study —</td><td class="ref">—</td></tr>
+      <tr class="reserved"><td class="principle">— reserved for future incident —</td><td class="ref">—</td></tr>
+    </table>
+  </div>
+
+  <div class="closing">
+    End of current doctrine.<br>
+    Next entry point: whichever case study is closest to the role ahead of you.
+  </div>
+
+</div>
+<!-- ===== /viewDoctrine ===== -->
+
+<!-- ===== DRILL PORTAL ===== -->
+<div class="view" id="viewDrill">
+  <div class="drill-page">
+    <div class="drill-eyebrow">§ Delivery Rehearsal</div>
+    <h1 class="drill-h1">DRILL</h1>
+    <p class="drill-sub">Section-by-section timer for case studies. The clock advances whether you've landed the point or not — that's the mechanism, not a bug.</p>
+
+    <div class="rec-bar" id="recBar">
+      <div class="rec-dot"></div>
+      <div class="rec-text" id="recText">NOT RECORDING — tap to confirm you've started</div>
+      <div class="rec-hint">manual toggle, doesn't control your camera</div>
+    </div>
+
+    <div class="case-picker" id="casePicker"></div>
+
+    <div class="drill-stage" id="stage">
+      <div class="stage-meta" id="stageMeta">Section 1 of 6</div>
+      <div class="stage-name" id="stageName">Context</div>
+      <div class="stage-prompt" id="stagePrompt">What system, what stakes, why it mattered.</div>
+      <div class="stage-clock" id="stageClock">0:30</div>
+      <div class="stage-bar-track"><div class="stage-bar-fill" id="stageBar"></div></div>
+      <div class="stage-controls">
+        <button class="primary" id="startBtn"><i class="ti ti-player-play" aria-hidden="true" style="vertical-align:-2px;margin-right:5px;"></i>Start</button>
+        <button id="nextBtn"><i class="ti ti-arrow-right" aria-hidden="true" style="vertical-align:-2px;margin-right:5px;"></i>Skip section</button>
+        <button class="danger" id="resetBtn"><i class="ti ti-refresh" aria-hidden="true" style="vertical-align:-2px;margin-right:5px;"></i>Reset run</button>
+      </div>
+    </div>
+
+    <div class="ladder" id="ladder"></div>
+
+    <div class="rationale">
+      <strong>Why the seconds differ per section:</strong> recall sections (Context, Trigger) get the tightest clock because rambling rarely happens while stating a fact. Reasoning sections (Diagnosis, Decision) get more room because that's where genuine thinking happens. Lesson gets the tightest clock of all — it should be one sentence, said once. As a case starts feeling easy under its clock, that's the signal to stop using the timer for it, not to loosen the clock.
+    </div>
+
+    <div class="ramble-row">
+      <button id="logRamble"><i class="ti ti-flag" aria-hidden="true" style="vertical-align:-2px;margin-right:5px;"></i>Mark ramble — right now</button>
+      <button id="askFollowup">Get a tough follow-up ↗</button>
+    </div>
+    <div class="ramble-log" id="rambleLog"></div>
+  </div>
+</div>
+<!-- ===== /DRILL PORTAL ===== -->
+
+<script>
+  // ---------- Portal switching ----------
+  const tabDoctrine = document.getElementById('tabDoctrine');
+  const tabDrill = document.getElementById('tabDrill');
+  const viewDoctrine = document.getElementById('viewDoctrine');
+  const viewDrill = document.getElementById('viewDrill');
+  tabDoctrine.addEventListener('click', ()=>{
+    tabDoctrine.classList.add('active'); tabDrill.classList.remove('active');
+    viewDoctrine.classList.add('active'); viewDrill.classList.remove('active');
+    window.scrollTo(0,0);
+  });
+  tabDrill.addEventListener('click', ()=>{
+    tabDrill.classList.add('active'); tabDoctrine.classList.remove('active');
+    viewDrill.classList.add('active'); viewDoctrine.classList.remove('active');
+    window.scrollTo(0,0);
+  });
+
+  // ---------- Record reminder ----------
+  let recOn = false;
+  const recBar = document.getElementById('recBar');
+  const recText = document.getElementById('recText');
+  recBar.addEventListener('click', ()=>{
+    recOn = !recOn;
+    recBar.classList.toggle('is-on', recOn);
+    recText.textContent = recOn ? "RECORDING CONFIRMED — tap again when you stop" : "NOT RECORDING — tap to confirm you've started";
+  });
+
+  // ---------- Case data, drawn directly from the five DOCTRINE cases ----------
+  // seconds chosen per the rationale above: recall sections tight, reasoning sections
+  // slightly looser, Lesson tightest of all.
+  const cases = [
+    { name:"Case 01 — Cascading Kubernetes Failure", sections:[
+        {label:"Context", sec:25, prompt:"What system, what stakes, why it mattered."},
+        {label:"Trigger", sec:20, prompt:"The specific event that started it — one pod, no memory limit."},
+        {label:"Diagnosis chain", sec:60, prompt:"Walk the five layers in order — don't skip the nodeAffinity loop."},
+        {label:"Fix — immediate", sec:30, prompt:"Cordon, freeze HPA, patch, drain, restart kube-proxy."},
+        {label:"Prevention", sec:25, prompt:"The admission webhook — and the Gatekeeper/Kyverno tradeoff if asked."},
+        {label:"Lesson", sec:15, prompt:"One sentence. Say it once. Don't build up to it."}
+    ]},
+    { name:"Case 02 — IAM Explicit-Deny Lockout", sections:[
+        {label:"Context", sec:20, prompt:"SageMaker deployment, iterative Terraform changes."},
+        {label:"Trigger", sec:20, prompt:"Explicit deny blocks the tool meant to fix it."},
+        {label:"Ruled-out hypotheses", sec:30, prompt:"State vs. permissions — why that question came first."},
+        {label:"Diagnosis", sec:35, prompt:"CloudTrail, IAM policy evaluation — confirm the actual denial."},
+        {label:"Fix", sec:30, prompt:"Redesigned the policy, tightened it in the same pass."},
+        {label:"Lesson", sec:15, prompt:"One sentence. Say it once."}
+    ]},
+    { name:"Case 03 — Trivy/Checkov Risk-Acceptance", sections:[
+        {label:"Context", sec:20, prompt:"Trivy and Checkov as hard-blocking gates."},
+        {label:"Trigger", sec:20, prompt:"Critical CVE, no vendor-patched version."},
+        {label:"Validation steps", sec:35, prompt:"Confirmed the finding, checked remediation paths, vendor status."},
+        {label:"Decision", sec:30, prompt:"Documented risk-acceptance, scoped narrowly — not a blanket exception."},
+        {label:"Lesson + scope", sec:20, prompt:"Scanners provide evidence — and name what you didn't do (reachability)."}
+    ]},
+    { name:"Case 04 — QReceipts AI Infrastructure", sections:[
+        {label:"Context", sec:20, prompt:"~233 users, early-growth stage, not hyperscale."},
+        {label:"Architecture", sec:30, prompt:"S3, DynamoDB, API Gateway, Lambda, Terraform-managed."},
+        {label:"What you did", sec:35, prompt:"Bedrock/SageMaker orchestration, Textract — platform, not models."},
+        {label:"Result", sec:20, prompt:"Production-ready, built to scale without re-architecture."},
+        {label:"Lesson + scope", sec:20, prompt:"Owned the platform — not training the models. Say it plainly."}
+    ]},
+    { name:"Case 05 — NetworksX Advisory", sections:[
+        {label:"Context", sec:20, prompt:"Jan–Feb 2026, advisory and architectural role."},
+        {label:"What you did", sec:35, prompt:"mTLS review, certificate lifecycle, blast-radius analysis."},
+        {label:"Findings", sec:35, prompt:"Revocation lag, identity/availability coupling, CRL correlation."},
+        {label:"Lesson", sec:15, prompt:"Shaped the architecture — didn't configure it. One line."},
+        {label:"Scope — open item", sec:30, prompt:"Name the advisory-vs-hands-on conflict directly if it comes up."}
+    ]}
+  ];
+
+  let currentCase = 0;
+  let idx = -1;
+  let remaining = 0;
+  let timerId = null;
+  let running = false;
+  let rambleCount = 0;
+
+  const casePicker = document.getElementById('casePicker');
+  const stageMeta = document.getElementById('stageMeta');
+  const stageName = document.getElementById('stageName');
+  const stagePrompt = document.getElementById('stagePrompt');
+  const stageClock = document.getElementById('stageClock');
+  const stageBar = document.getElementById('stageBar');
+  const ladder = document.getElementById('ladder');
+  const startBtn = document.getElementById('startBtn');
+  const rambleLog = document.getElementById('rambleLog');
+
+  function renderPicker(){
+    casePicker.innerHTML = '';
+    cases.forEach((c,i)=>{
+      const b = document.createElement('button');
+      b.className = 'case-pick-btn' + (i===currentCase ? ' active' : '');
+      b.innerHTML = '<span class="n">CASE ' + String(i+1).padStart(2,'0') + '</span>' + c.name.split('—')[1].trim();
+      b.addEventListener('click', ()=>{ selectCase(i); });
+      casePicker.appendChild(b);
+    });
+  }
+
+  function selectCase(i){
+    currentCase = i;
+    clearInterval(timerId);
+    running = false;
+    idx = -1;
+    rambleCount = 0;
+    rambleLog.textContent = '';
+    startBtn.innerHTML = '<i class="ti ti-player-play" aria-hidden="true" style="vertical-align:-2px;margin-right:5px;"></i>Start';
+    renderPicker();
+    goToSection(0);
+  }
+
+  function renderLadder(){
+    ladder.innerHTML = '';
+    cases[currentCase].sections.forEach((s,i)=>{
+      const row = document.createElement('div');
+      row.className = 'ladder-row' + (i===idx ? ' current' : '') + (i<idx ? ' done' : '');
+      row.innerHTML = '<span class="sec">' + (i<idx ? '<i class=\"ti ti-check\" aria-hidden=\"true\"></i>' : (i+1)+'.') + '</span><span>' + s.label + '</span><span style="margin-left:auto; color:var(--paper-faint);">' + s.sec + 's</span>';
+      ladder.appendChild(row);
+    });
+  }
+
+  function goToSection(i){
+    idx = i;
+    const sections = cases[currentCase].sections;
+    if(idx >= sections.length){
+      stageMeta.textContent = 'Run complete';
+      stageName.textContent = 'All sections done';
+      stagePrompt.textContent = 'Reset to run again, or pick another case.';
+      stageClock.textContent = '0:00';
+      stageBar.style.width = '0%';
+      running = false;
+      clearInterval(timerId);
+      renderLadder();
+      return;
+    }
+    const s = sections[idx];
+    stageMeta.textContent = 'Section ' + (idx+1) + ' of ' + sections.length;
+    stageName.textContent = s.label;
+    stagePrompt.textContent = s.prompt;
+    remaining = s.sec;
+    updateClock(s.sec);
+    renderLadder();
+  }
+
+  function updateClock(total){
+    const m = Math.floor(remaining/60);
+    const sec = remaining%60;
+    stageClock.textContent = m + ':' + String(sec).padStart(2,'0');
+    stageBar.style.width = Math.max(0,(remaining/total)*100) + '%';
+    stageBar.style.background = remaining <= 5 ? 'var(--alert)' : 'var(--amber)';
+  }
+
+  function tick(){
+    const s = cases[currentCase].sections[idx];
+    remaining -= 1;
+    if(remaining < 0){ goToSection(idx+1); return; }
+    updateClock(s.sec);
+  }
+
+  startBtn.addEventListener('click', ()=>{
+    if(running){
+      running = false;
+      clearInterval(timerId);
+      startBtn.innerHTML = '<i class="ti ti-player-play" aria-hidden="true" style="vertical-align:-2px;margin-right:5px;"></i>Resume';
+      return;
+    }
+    if(idx === -1) goToSection(0);
+    running = true;
+    startBtn.innerHTML = '<i class="ti ti-player-pause" aria-hidden="true" style="vertical-align:-2px;margin-right:5px;"></i>Pause';
+    clearInterval(timerId);
+    timerId = setInterval(tick, 1000);
+  });
+
+  document.getElementById('nextBtn').addEventListener('click', ()=>{ goToSection(idx+1); });
+
+  document.getElementById('resetBtn').addEventListener('click', ()=>{
+    clearInterval(timerId);
+    running = false;
+    rambleCount = 0;
+    rambleLog.textContent = '';
+    startBtn.innerHTML = '<i class="ti ti-player-play" aria-hidden="true" style="vertical-align:-2px;margin-right:5px;"></i>Start';
+    goToSection(0);
+  });
+
+  document.getElementById('logRamble').addEventListener('click', ()=>{
+    rambleCount += 1;
+    const label = (idx >= 0 && cases[currentCase].sections[idx]) ? cases[currentCase].sections[idx].label : 'pre-start';
+    rambleLog.textContent = 'Ramble flagged ' + rambleCount + 'x this run — last one during "' + label + '"';
+  });
+
+  document.getElementById('askFollowup').addEventListener('click', ()=>{
+    const msg = 'Give me a tough follow-up question for ' + cases[currentCase].name;
+    if(typeof sendPrompt === 'function'){
+      sendPrompt(msg);
+    } else {
+      alert('Ask your interview-prep assistant:\\n\\n"' + msg + '"');
+    }
+  });
+
+  renderPicker();
+  goToSection(0);
+</script>
+
+</body>
+</html>

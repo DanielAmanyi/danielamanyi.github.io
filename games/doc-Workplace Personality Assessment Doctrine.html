@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Workplace Personality Assessment Doctrine</title>
+<style>
+  :root{
+    --ink:#1f2733;
+    --muted:#5b6472;
+    --accent:#2f5d8a;
+    --accent-light:#eaf1f8;
+    --good:#1f7a4d;
+    --bad:#a13a3a;
+    --line:#d9dee5;
+    --bg-card:#f7f9fb;
+  }
+  *{box-sizing:border-box;}
+  body{
+    font-family: Georgia, 'Times New Roman', serif;
+    color:var(--ink);
+    max-width:880px;
+    margin:0 auto;
+    padding:48px 40px 80px;
+    line-height:1.6;
+    background:#ffffff;
+  }
+  header{
+    text-align:center;
+    border-bottom:3px solid var(--accent);
+    padding-bottom:24px;
+    margin-bottom:40px;
+  }
+  header .eyebrow{
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    font-size:12px;
+    color:var(--accent);
+    font-weight:600;
+  }
+  header h1{
+    font-size:32px;
+    margin:10px 0 6px;
+    color:var(--ink);
+  }
+  header .version{
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size:13px;
+    color:var(--muted);
+  }
+  h2{
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size:22px;
+    color:var(--accent);
+    border-left:5px solid var(--accent);
+    padding-left:14px;
+    margin-top:52px;
+    margin-bottom:16px;
+  }
+  h3{
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size:16px;
+    color:var(--ink);
+    margin-top:28px;
+    margin-bottom:8px;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+    color:var(--muted);
+  }
+  p{margin:10px 0;}
+  .lede{
+    font-size:17px;
+    color:var(--muted);
+    font-style:italic;
+  }
+  .flow{
+    font-family:'Helvetica Neue', Arial, sans-serif;
+    background:var(--bg-card);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:20px 24px;
+    margin:18px 0;
+  }
+  .flow-step{
+    padding:10px 14px;
+    background:#ffffff;
+    border:1px solid var(--line);
+    border-radius:6px;
+    font-weight:600;
+  }
+  .flow-arrow{
+    text-align:center;
+    color:var(--accent);
+    font-size:18px;
+    line-height:1;
+    margin:2px 0;
+  }
+  .statement-block{
+    background:var(--accent-light);
+    border-left:4px solid var(--accent);
+    padding:14px 18px;
+    margin:16px 0;
+    border-radius:0 6px 6px 0;
+    font-family:'Helvetica Neue', Arial, sans-serif;
+  }
+  .statement-block .label{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    color:var(--accent);
+    font-weight:700;
+    display:block;
+    margin-bottom:4px;
+  }
+  .contrast{
+    display:flex;
+    gap:20px;
+    margin:20px 0;
+    font-family:'Helvetica Neue', Arial, sans-serif;
+  }
+  .contrast .col{
+    flex:1;
+    border-radius:8px;
+    padding:16px 18px;
+  }
+  .contrast .wrong{
+    background:#fbeeee;
+    border:1px solid #e3c4c4;
+  }
+  .contrast .right{
+    background:#eaf5ef;
+    border:1px solid #bfe0cd;
+  }
+  .contrast .col .tag{
+    font-weight:700;
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+    display:block;
+    margin-bottom:8px;
+  }
+  .contrast .wrong .tag{color:var(--bad);}
+  .contrast .right .tag{color:var(--good);}
+  .contrast ul{margin:0; padding-left:18px;}
+  .contrast p{margin:4px 0;}
+  table{
+    width:100%;
+    border-collapse:collapse;
+    margin:20px 0;
+    font-family:'Helvetica Neue', Arial, sans-serif;
+    font-size:14px;
+  }
+  th,td{
+    border:1px solid var(--line);
+    padding:10px 14px;
+    text-align:left;
+    vertical-align:top;
+  }
+  th{
+    background:var(--accent);
+    color:#fff;
+    font-weight:600;
+  }
+  tr:nth-child(even) td{background:var(--bg-card);}
+  .principle-num{
+    display:inline-block;
+    background:var(--accent);
+    color:#fff;
+    font-family:'Helvetica Neue', Arial, sans-serif;
+    font-weight:700;
+    font-size:13px;
+    width:26px;
+    height:26px;
+    line-height:26px;
+    text-align:center;
+    border-radius:50%;
+    margin-right:10px;
+  }
+  .principle-title{
+    font-family:'Helvetica Neue', Arial, sans-serif;
+    font-size:20px;
+    font-weight:700;
+    color:var(--ink);
+  }
+  .checklist{
+    background:var(--bg-card);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:20px 24px;
+    font-family:'Helvetica Neue', Arial, sans-serif;
+  }
+  .checklist ol{padding-left:20px;}
+  .checklist li{margin-bottom:10px;}
+  .profile-list{
+    columns:2;
+    column-gap:32px;
+    font-family:'Helvetica Neue', Arial, sans-serif;
+    list-style:none;
+    padding:0;
+  }
+  .profile-list li{
+    padding:6px 0 6px 22px;
+    position:relative;
+    break-inside:avoid;
+  }
+  .profile-list li::before{
+    content:"✓";
+    position:absolute;
+    left:0;
+    color:var(--good);
+    font-weight:700;
+  }
+  .final-doctrine{
+    background:var(--ink);
+    color:#fff;
+    border-radius:12px;
+    padding:32px 36px;
+    margin-top:24px;
+    font-style:italic;
+    font-size:16.5px;
+    line-height:1.8;
+  }
+  .final-doctrine strong{color:#e8c46a; font-style:normal;}
+  hr.section-break{
+    border:none;
+    border-top:1px solid var(--line);
+    margin:48px 0;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Internal Doctrine</div>
+  <h1>Workplace Personality Assessment Doctrine</h1>
+  <div class="version">Version 1.0 &nbsp;·&nbsp; Interpreting Personality Assessments Correctly</div>
+</header>
+
+<h2>Purpose</h2>
+<p class="lede">This doctrine exists to prevent incorrect interpretation of personality assessment questions.</p>
+<p>Psychometric assessments are not scenario-based judgment tests. They are designed to measure stable behavioral preferences, such as integrity, conscientiousness, openness, collaboration, emotional stability, and ownership.</p>
+<p>The objective is not to identify the "best" answer. The objective is to answer consistently according to your genuine professional tendencies.</p>
+
+<h2>The Prime Directive</h2>
+<p><strong>Answer the underlying personality trait, not the scenario you imagine.</strong></p>
+<p>Most incorrect answers occur because candidates mentally create a complex real-world situation that the assessment never intended.</p>
+
+<h2>The Assessment Hierarchy</h2>
+<div class="flow">
+  <div class="flow-step">Read Statement</div>
+  <div class="flow-arrow">↓</div>
+  <div class="flow-step">Identify the Personality Trait</div>
+  <div class="flow-arrow">↓</div>
+  <div class="flow-step">Ignore imagined edge cases</div>
+  <div class="flow-arrow">↓</div>
+  <div class="flow-step">Answer your normal professional behaviour</div>
+</div>
+<p><em>Never reverse the order.</em></p>
+
+<hr class="section-break">
+
+<h2>Principle 1 — Governance Before Convenience</h2>
+<p>Professional engineers respect governance. Governance includes: policies, standards, security controls, change management, compliance, and approval processes.</p>
+<p>Good engineers improve governance. They do not casually bypass it.</p>
+
+<div class="statement-block"><span class="label">Statement</span>Rules can be ignored if they slow delivery.</div>
+
+<div class="contrast">
+  <div class="col wrong">
+    <span class="tag">Wrong interpretation</span>
+    <p>The CTO is unreachable. Production is down. Patients are affected.</p>
+    <p>This is incident management — the assessment is not asking about emergency response.</p>
+  </div>
+  <div class="col right">
+    <span class="tag">Correct interpretation</span>
+    <p>The trait being measured is:</p>
+    <ul><li>Integrity</li><li>Conscientiousness</li><li>Respect for governance</li></ul>
+  </div>
+</div>
+
+<h3>Contrast</h3>
+<div class="contrast">
+  <div class="col wrong">
+    <span class="tag">❌ Rule</span>
+    <p>"Sometimes breaking rules is acceptable."<br>↓<br>Imagined disaster scenario<br>↓<br>Incorrect answer</p>
+  </div>
+  <div class="col right">
+    <span class="tag">✅ Rule</span>
+    <p>"This measures whether I generally respect organizational governance."<br>↓<br>Answer your normal behaviour</p>
+  </div>
+</div>
+
+<h2>Principle 2 — Ownership Is Not Credit</h2>
+<p>Ownership means commitment. Ownership does not mean recognition.</p>
+<div class="statement-block"><span class="label">Statement</span>I feel responsible for the success of a project even when parts are outside my ownership.</div>
+<div class="contrast">
+  <div class="col wrong"><span class="tag">Wrong interpretation</span><p>Should I take credit for another team's work? No.</p></div>
+  <div class="col right"><span class="tag">Correct interpretation</span><p>The assessment asks: Will I stay engaged until the project succeeds?</p></div>
+</div>
+<h3>Contrast</h3>
+<div class="contrast">
+  <div class="col right"><span class="tag">Ownership</span><ul><li>Helping</li><li>Coordinating</li><li>Following through</li><li>Removing blockers</li></ul></div>
+  <div class="col wrong"><span class="tag">Credit</span><ul><li>Claiming someone else's contribution</li></ul></div>
+</div>
+
+<h2>Principle 3 — Ownership Is Not Blame</h2>
+<p>Ownership concerns commitment. Blame concerns fault. They are different.</p>
+<div class="statement-block"><span class="label">Statement</span>I feel responsible when projects fail.</div>
+<div class="contrast">
+  <div class="col wrong"><span class="tag">Wrong interpretation</span><p>Should I blame myself for another engineer's mistake?</p></div>
+  <div class="col right"><span class="tag">Correct interpretation</span><p>The assessment asks: Do I remain engaged in recovery and improvement?</p></div>
+</div>
+<h3>Contrast</h3>
+<div class="contrast">
+  <div class="col right"><span class="tag">Ownership</span><p>"I'll help fix it."</p></div>
+  <div class="col wrong"><span class="tag">Blame</span><p>"It's entirely my fault."</p></div>
+</div>
+
+<h2>Principle 4 — Innovation Is Not Deviance</h2>
+<p>Innovation happens inside governance. Deviance ignores governance.</p>
+<div class="statement-block"><span class="label">Statement</span>I prefer experimenting with new approaches.</div>
+<div class="contrast">
+  <div class="col wrong"><span class="tag">Wrong interpretation</span><p>I enjoy ignoring standards.</p></div>
+  <div class="col right"><span class="tag">Correct interpretation</span><p>The assessment measures: Openness, Curiosity, Continuous improvement</p></div>
+</div>
+<h3>Contrast</h3>
+<div class="contrast">
+  <div class="col right"><span class="tag">Innovation</span><p>Research → Prototype → Review → Approval → Production</p></div>
+  <div class="col wrong"><span class="tag">Deviance</span><p>Idea → Production</p></div>
+</div>
+
+<h2>Principle 5 — Collaboration Is Not Dependence</h2>
+<p>Seeking input is maturity. Depending on permission is insecurity.</p>
+<div class="statement-block"><span class="label">Statement</span>I seek input before making decisions.</div>
+<div class="contrast">
+  <div class="col wrong"><span class="tag">Wrong interpretation</span><p>I cannot make decisions myself.</p></div>
+  <div class="col right"><span class="tag">Correct interpretation</span><p>The assessment measures: Collaboration</p></div>
+</div>
+<h3>Contrast</h3>
+<div class="contrast">
+  <div class="col right"><span class="tag">Healthy collaboration</span><p>"I involve others when it improves decisions."</p></div>
+  <div class="col wrong"><span class="tag">Dependence</span><p>"I cannot decide."</p></div>
+</div>
+
+<h2>Principle 6 — Independence Is Not Isolation</h2>
+<p>Independent engineers still collaborate. Collaborative engineers still decide.</p>
+<div class="statement-block"><span class="label">Statement</span>I prefer making decisions independently.</div>
+<div class="contrast">
+  <div class="col wrong"><span class="tag">Wrong interpretation</span><p>I never ask for help.</p></div>
+  <div class="col right"><span class="tag">Correct interpretation</span><p>The assessment measures: Autonomy</p></div>
+</div>
+<h3>Contrast</h3>
+<div class="contrast">
+  <div class="col right"><span class="tag">Healthy independence</span><p>"I can decide when appropriate."</p></div>
+  <div class="col wrong"><span class="tag">Isolation</span><p>"I reject everyone else's input."</p></div>
+</div>
+
+<h2>Principle 7 — Calmness Is Not Inaction</h2>
+<p>Remaining calm does not mean waiting.</p>
+<div class="statement-block"><span class="label">Statement</span>I remain calm under pressure.</div>
+<div class="contrast">
+  <div class="col wrong"><span class="tag">Wrong interpretation</span><p>I delay action.</p></div>
+  <div class="col right"><span class="tag">Correct interpretation</span><p>The assessment measures: Emotional Stability</p></div>
+</div>
+<h3>Contrast</h3>
+<div class="contrast">
+  <div class="col right"><span class="tag">Calm</span><p>Observe → Think → Communicate → Act</p></div>
+  <div class="col wrong"><span class="tag">Passive</span><p>Observe → Wait → Hope</p></div>
+</div>
+
+<h2>Principle 8 — Clarification Is Not Incompetence</h2>
+<p>Questions reduce risk. Assumptions increase risk.</p>
+<div class="statement-block"><span class="label">Statement</span>I ask questions when requirements are unclear.</div>
+<div class="contrast">
+  <div class="col wrong"><span class="tag">Wrong interpretation</span><p>I don't know enough.</p></div>
+  <div class="col right"><span class="tag">Correct interpretation</span><p>The assessment measures: Humility, Risk awareness, Communication</p></div>
+</div>
+
+<h2>Principle 9 — Process Is Not Bureaucracy</h2>
+<p>Processes exist because organizations learn. Bad processes should improve, not disappear.</p>
+<div class="statement-block"><span class="label">Statement</span>I follow established processes.</div>
+<div class="contrast">
+  <div class="col wrong"><span class="tag">Wrong interpretation</span><p>I blindly obey everything forever.</p></div>
+  <div class="col right"><span class="tag">Correct interpretation</span><p>The assessment measures: Conscientiousness, Professional discipline</p></div>
+</div>
+<h3>Contrast</h3>
+<div class="contrast">
+  <div class="col right"><span class="tag">Professional</span><p>Follow → Measure → Improve → Standardize</p></div>
+  <div class="col wrong"><span class="tag">Cowboy</span><p>Ignore → Hope</p></div>
+</div>
+
+<h2>Principle 10 — Flexibility Is Not Chaos</h2>
+<p>Changing priorities does not mean abandoning discipline.</p>
+<div class="statement-block"><span class="label">Statement</span>I adapt quickly to changing priorities.</div>
+<div class="contrast">
+  <div class="col wrong"><span class="tag">Wrong interpretation</span><p>I constantly jump between tasks.</p></div>
+  <div class="col right"><span class="tag">Correct interpretation</span><p>The assessment measures: Adaptability</p></div>
+</div>
+<h3>Contrast</h3>
+<div class="contrast">
+  <div class="col right"><span class="tag">Healthy flexibility</span><p>Prioritize → Switch intentionally → Resume work</p></div>
+  <div class="col wrong"><span class="tag">Chaos</span><p>React → Abandon → Repeat</p></div>
+</div>
+
+<h2>Principle 11 — Confidence Is Not Recklessness</h2>
+<p>Professional decisions rarely have perfect information.</p>
+<div class="statement-block"><span class="label">Statement</span>I make decisions before I have all the information.</div>
+<div class="contrast">
+  <div class="col wrong"><span class="tag">Wrong interpretation</span><p>I guess.</p></div>
+  <div class="col right"><span class="tag">Correct interpretation</span><p>The assessment measures: Decisiveness</p></div>
+</div>
+<h3>Contrast</h3>
+<div class="contrast">
+  <div class="col right"><span class="tag">Professional</span><p>Enough evidence → Decision → Review</p></div>
+  <div class="col wrong"><span class="tag">Reckless</span><p>Little evidence → Guess</p></div>
+</div>
+
+<h2>Principle 12 — Attention To Detail Is Not Perfectionism</h2>
+<p>Verification has value. Perfection has diminishing returns.</p>
+<div class="statement-block"><span class="label">Statement</span>I double-check important work.</div>
+<div class="contrast">
+  <div class="col wrong"><span class="tag">Wrong interpretation</span><p>I endlessly polish everything.</p></div>
+  <div class="col right"><span class="tag">Correct interpretation</span><p>The assessment measures: Conscientiousness, Reliability</p></div>
+</div>
+
+<hr class="section-break">
+
+<h2>Common Interpretation Errors</h2>
+<table>
+  <thead>
+    <tr><th>Incorrect Interpretation</th><th>Correct Interpretation</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Governance = Bureaucracy</td><td>Governance = Organizational reliability</td></tr>
+    <tr><td>Innovation = Rule breaking</td><td>Innovation = Managed improvement</td></tr>
+    <tr><td>Responsibility = Credit</td><td>Responsibility = Ownership</td></tr>
+    <tr><td>Responsibility = Blame</td><td>Responsibility = Commitment</td></tr>
+    <tr><td>Collaboration = Dependence</td><td>Collaboration = Better decisions</td></tr>
+    <tr><td>Independence = Isolation</td><td>Independence = Professional autonomy</td></tr>
+    <tr><td>Calm = Passive</td><td>Calm = Composed action</td></tr>
+    <tr><td>Confidence = Guessing</td><td>Confidence = Decisive judgment</td></tr>
+    <tr><td>Flexibility = Chaos</td><td>Flexibility = Intentional reprioritization</td></tr>
+    <tr><td>Process = Blind obedience</td><td>Process = Disciplined execution with continuous improvement</td></tr>
+  </tbody>
+</table>
+
+<h2>Before Every Question</h2>
+<div class="checklist">
+  <p><strong>Ask yourself these three questions:</strong></p>
+  <ol>
+    <li>What personality trait is being measured?</li>
+    <li>Am I imagining an exceptional scenario? &nbsp;<em>If yes — stop, and return to the statement.</em></li>
+    <li>How do I normally behave at work? <em>Not</em> how would I behave during the worst incident of my career.</li>
+  </ol>
+</div>
+
+<h2>The Professional Profile</h2>
+<p>A mature Platform / DevOps engineer is generally:</p>
+<ul class="profile-list">
+  <li>Calm under pressure</li>
+  <li>Honest</li>
+  <li>Accountable</li>
+  <li>Evidence driven</li>
+  <li>Collaborative</li>
+  <li>Security conscious</li>
+  <li>Governance minded</li>
+  <li>Curious</li>
+  <li>Improvement oriented</li>
+  <li>Reliable</li>
+  <li>Adaptable</li>
+  <li>Customer focused</li>
+</ul>
+
+<h2>The Final Doctrine</h2>
+<div class="final-doctrine">
+  <p>A workplace personality assessment is not testing whether I can solve exceptional situations. It is testing the professional tendencies I consistently bring to everyday work.</p>
+  <p>I will answer <strong>the underlying trait being measured</strong>, not the hypothetical scenario I imagine.</p>
+  <p>I will distinguish governance from rigidity, innovation from recklessness, ownership from blame, collaboration from dependence, and confidence from impulsiveness.</p>
+  <p>Above all, I will answer honestly and consistently, because <strong>coherence is more valuable than trying to select the "perfect" response.</strong></p>
+</div>
+
+</body>
+</html>

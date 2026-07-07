@@ -1,0 +1,1019 @@
+<style>
+  :root{
+    --bg:#14161A;
+    --surface:#1C1F24;
+    --surface-2:#23262C;
+    --border:#2E323A;
+    --text:#EDEDEA;
+    --text-muted:#8B8F97;
+    --text-faint:#5B5F68;
+    --accent:#FF6A3D;
+    --accent-dim:#C9552B;
+    --good:#4FD1A5;
+    --warn:#F2C94C;
+    --bad:#E86464;
+    --font-display:'JetBrains Mono', monospace;
+    --font-body:'Inter', sans-serif;
+  }
+
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+  *{box-sizing:border-box;}
+
+  .ecs-root{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--font-body);
+    min-height:100vh;
+    padding:32px 20px 60px;
+    display:flex;
+    justify-content:center;
+  }
+
+  .ecs-shell{
+    width:100%;
+    max-width:560px;
+  }
+
+  /* ---------- Header ---------- */
+  .ecs-header{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    margin-bottom:28px;
+  }
+
+  .ecs-wordmark{
+    font-family:var(--font-display);
+    font-size:13px;
+    letter-spacing:0.14em;
+    color:var(--text-muted);
+    text-transform:uppercase;
+  }
+
+  .ecs-wordmark b{color:var(--accent); font-weight:700;}
+
+  .ecs-streak{
+    font-family:var(--font-display);
+    font-size:13px;
+    color:var(--text-muted);
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+
+  .ecs-streak b{color:var(--good); font-weight:700;}
+
+  .ecs-header-right{display:flex; align-items:center; gap:14px;}
+
+  .ecs-about-link{
+    font-family:var(--font-display);
+    font-size:12px;
+    color:var(--text-faint);
+    background:none;
+    border:none;
+    cursor:pointer;
+    text-decoration:underline;
+    text-underline-offset:2px;
+    padding:0;
+  }
+  .ecs-about-link:hover{color:var(--text-muted);}
+
+  /* ---------- About overlay ---------- */
+  .ecs-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(10,11,13,0.82);
+    z-index:50;
+    padding:24px 16px;
+    overflow-y:auto;
+  }
+  .ecs-overlay.active{display:flex; justify-content:center;}
+
+  .ecs-overlay-card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:4px;
+    max-width:560px;
+    width:100%;
+    height:fit-content;
+    padding:26px 24px 24px;
+  }
+
+  .ecs-overlay-header{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:18px;
+  }
+  .ecs-overlay-title{
+    font-family:var(--font-display);
+    font-size:13px; letter-spacing:0.1em; text-transform:uppercase;
+    color:var(--text-muted);
+  }
+  .ecs-overlay-close{
+    background:none; border:1px solid var(--border); color:var(--text-muted);
+    border-radius:3px; width:28px; height:28px; cursor:pointer; font-size:15px; line-height:1;
+  }
+  .ecs-overlay-close:hover{color:var(--text); border-color:var(--text-muted);}
+
+  .ecs-doc h3{
+    font-family:var(--font-display);
+    font-size:12px; letter-spacing:0.08em; text-transform:uppercase;
+    color:var(--accent);
+    margin:22px 0 10px;
+  }
+  .ecs-doc h3:first-child{margin-top:0;}
+  .ecs-doc p{font-size:13.5px; line-height:1.6; color:var(--text); margin:0 0 10px;}
+  .ecs-doc ul{margin:0 0 4px; padding-left:18px; display:flex; flex-direction:column; gap:6px;}
+  .ecs-doc li{font-size:13px; line-height:1.5; color:var(--text-muted);}
+  .ecs-doc .ecs-quote{
+    font-size:13px; color:var(--text-muted); font-style:italic;
+    border-left:2px solid var(--accent-dim); padding-left:12px; margin:14px 0;
+  }
+
+  /* ---------- Screens ---------- */
+  .ecs-screen{display:none;}
+  .ecs-screen.active{display:block;}
+
+  /* ---------- Home ---------- */
+  .ecs-home-hero{
+    text-align:center;
+    padding:36px 16px 30px;
+    border:1px solid var(--border);
+    border-radius:4px;
+    background:radial-gradient(circle at 50% 0%, rgba(255,106,61,0.08), transparent 70%);
+    margin-bottom:24px;
+  }
+
+  .ecs-home-hero p{
+    color:var(--text-muted);
+    font-size:14px;
+    margin:0 0 22px;
+    line-height:1.5;
+  }
+
+  .ecs-btn{
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:14px;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+    border:none;
+    border-radius:3px;
+    padding:15px 28px;
+    cursor:pointer;
+    transition:transform 0.12s ease, background 0.15s ease;
+  }
+  .ecs-btn:active{transform:scale(0.97);}
+  .ecs-btn:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+
+  .ecs-btn-primary{
+    background:var(--accent);
+    color:#14161A;
+  }
+  .ecs-btn-primary:hover{background:#ff7d55;}
+  .ecs-btn-primary:disabled{background:var(--surface-2); color:var(--text-faint); cursor:default;}
+
+  .ecs-btn-ghost{
+    background:transparent;
+    color:var(--text-muted);
+    border:1px solid var(--border);
+  }
+  .ecs-btn-ghost:hover{color:var(--text); border-color:var(--text-muted);}
+
+  .ecs-btn-danger-ghost{
+    background:transparent;
+    color:var(--bad);
+    border:1px solid var(--border);
+  }
+
+  .ecs-btn-row{display:flex; gap:10px; margin-top:16px;}
+  .ecs-btn-row .ecs-btn{flex:1;}
+
+  .ecs-section-label{
+    font-family:var(--font-display);
+    font-size:11px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--text-faint);
+    margin:0 0 12px;
+  }
+
+  /* dimension bars */
+  .ecs-dim-list{display:flex; flex-direction:column; gap:10px; margin-bottom:26px;}
+  .ecs-dim-row{display:flex; align-items:center; gap:12px;}
+  .ecs-dim-name{width:118px; font-size:12px; color:var(--text-muted); flex-shrink:0;}
+  .ecs-dim-track{flex:1; height:6px; background:var(--surface-2); border-radius:3px; overflow:hidden;}
+  .ecs-dim-fill{height:100%; border-radius:3px; background:var(--accent);}
+  .ecs-dim-val{width:30px; text-align:right; font-family:var(--font-display); font-size:12px; color:var(--text-muted);}
+
+  .ecs-empty{
+    color:var(--text-faint);
+    font-size:13px;
+    padding:18px 0;
+    text-align:center;
+    border:1px dashed var(--border);
+    border-radius:4px;
+  }
+
+  /* history list */
+  .ecs-history{display:flex; flex-direction:column; gap:8px;}
+  .ecs-history-row{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:11px 14px; background:var(--surface); border:1px solid var(--border); border-radius:4px;
+  }
+  .ecs-history-mode{font-size:12.5px; color:var(--text);}
+  .ecs-history-date{font-size:11px; color:var(--text-faint); font-family:var(--font-display);}
+  .ecs-history-score{font-family:var(--font-display); font-size:13px; font-weight:700;}
+
+  /* ---------- Prompt / Session screen ---------- */
+  .ecs-mode-tag{
+    display:inline-block;
+    font-family:var(--font-display);
+    font-size:10.5px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--accent);
+    border:1px solid var(--accent-dim);
+    padding:4px 9px;
+    border-radius:3px;
+    margin-bottom:14px;
+  }
+
+  .ecs-prompt-card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:4px;
+    padding:22px;
+    margin-bottom:20px;
+  }
+
+  .ecs-prompt-text{
+    font-size:17px;
+    line-height:1.5;
+    color:var(--text);
+  }
+
+  .ecs-rec-panel{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:14px;
+    padding:26px 0 8px;
+  }
+
+  .ecs-rec-dot{
+    width:11px; height:11px; border-radius:50%;
+    background:var(--bad);
+  }
+  .ecs-rec-dot.live{animation:ecsPulse 1.1s ease-in-out infinite;}
+
+  @keyframes ecsPulse{
+    0%,100%{opacity:1; transform:scale(1);}
+    50%{opacity:0.35; transform:scale(0.8);}
+  }
+
+  .ecs-rec-status{display:flex; align-items:center; gap:9px;}
+  .ecs-rec-timer{font-family:var(--font-display); font-size:22px; color:var(--text);}
+
+  .ecs-transcript-box{
+    width:100%;
+    min-height:120px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:4px;
+    color:var(--text);
+    font-family:var(--font-body);
+    font-size:14.5px;
+    line-height:1.55;
+    padding:14px;
+    resize:vertical;
+  }
+  .ecs-transcript-box:focus-visible{outline:2px solid var(--accent); outline-offset:1px;}
+  .ecs-transcript-box::placeholder{color:var(--text-faint);}
+
+  .ecs-hint{font-size:12px; color:var(--text-faint); margin-top:10px; line-height:1.5;}
+
+  /* ---------- Feedback screen ---------- */
+  .ecs-overall{
+    display:flex; align-items:baseline; gap:10px;
+    margin-bottom:22px;
+  }
+  .ecs-overall-num{font-family:var(--font-display); font-size:44px; font-weight:700;}
+  .ecs-overall-label{font-size:13px; color:var(--text-muted);}
+
+  .ecs-fb-block{margin-bottom:20px;}
+  .ecs-fb-block h4{
+    font-family:var(--font-display);
+    font-size:11px; letter-spacing:0.1em; text-transform:uppercase;
+    color:var(--text-faint); margin:0 0 10px;
+  }
+  .ecs-fb-block ul{margin:0; padding-left:18px; display:flex; flex-direction:column; gap:6px;}
+  .ecs-fb-block li{font-size:13.5px; line-height:1.5; color:var(--text);}
+  .ecs-fb-block.good h4{color:var(--good);}
+  .ecs-fb-block.improve h4{color:var(--warn);}
+
+  .ecs-rewrite{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:4px;
+    padding:16px;
+    font-size:13.5px;
+    line-height:1.6;
+  }
+  .ecs-rewrite .before{color:var(--text-faint); text-decoration:line-through; margin-bottom:8px;}
+  .ecs-rewrite .after{color:var(--good);}
+
+  .ecs-loading{
+    display:flex; flex-direction:column; align-items:center; gap:14px;
+    padding:50px 0; color:var(--text-muted); font-size:13px;
+  }
+  .ecs-spinner{
+    width:26px; height:26px; border-radius:50%;
+    border:2.5px solid var(--surface-2); border-top-color:var(--accent);
+    animation:ecsSpin 0.8s linear infinite;
+  }
+  @keyframes ecsSpin{to{transform:rotate(360deg);}}
+
+  .ecs-error{
+    color:var(--bad); font-size:13px; padding:12px 14px;
+    background:rgba(232,100,100,0.08); border:1px solid rgba(232,100,100,0.3);
+    border-radius:4px; margin-top:14px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .ecs-rec-dot.live, .ecs-spinner{animation:none;}
+  }
+</style>
+
+<div class="ecs-root">
+<div class="ecs-shell">
+
+  <div class="ecs-header">
+    <div class="ecs-wordmark">Comm<b>&middot;</b>Gym</div>
+    <div class="ecs-header-right">
+      <button class="ecs-about-link" id="ecsAboutBtn" type="button">about</button>
+      <div class="ecs-streak" id="ecsStreak">&mdash; day streak</div>
+    </div>
+  </div>
+
+  <!-- HOME -->
+  <div class="ecs-screen active" id="ecsScreenHome">
+    <div class="ecs-home-hero">
+      <p>One prompt. One answer. One piece of feedback.<br>Ten minutes, most days.</p>
+      <button class="ecs-btn ecs-btn-primary" id="ecsStartBtn">Start Session</button>
+    </div>
+
+    <div class="ecs-section-label">Your dimensions</div>
+    <div class="ecs-dim-list" id="ecsDimList"></div>
+
+    <div class="ecs-section-label">Recent sessions</div>
+    <div class="ecs-history" id="ecsHistory"></div>
+  </div>
+
+  <!-- PROMPT + RECORD -->
+  <div class="ecs-screen" id="ecsScreenPrompt">
+    <span class="ecs-mode-tag" id="ecsModeTag">Mode</span>
+    <div class="ecs-prompt-card">
+      <div class="ecs-prompt-text" id="ecsPromptText"></div>
+    </div>
+
+    <div id="ecsRecArea">
+      <div class="ecs-rec-panel">
+        <div class="ecs-rec-status">
+          <div class="ecs-rec-dot" id="ecsRecDot"></div>
+          <span class="ecs-rec-timer" id="ecsRecTimer">00:00</span>
+        </div>
+        <button class="ecs-btn ecs-btn-primary" id="ecsRecBtn">Start Recording</button>
+      </div>
+    </div>
+
+    <textarea class="ecs-transcript-box" id="ecsTranscriptBox" placeholder="Your response will appear here as you speak. You can edit it before submitting."></textarea>
+    <div class="ecs-hint" id="ecsInputHint"></div>
+
+    <div class="ecs-btn-row">
+      <button class="ecs-btn ecs-btn-ghost" id="ecsBackBtn">Back</button>
+      <button class="ecs-btn ecs-btn-primary" id="ecsSubmitBtn" disabled>Get Feedback</button>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  <div class="ecs-screen" id="ecsScreenLoading">
+    <div class="ecs-loading">
+      <div class="ecs-spinner"></div>
+      <div>Evaluating your response&hellip;</div>
+    </div>
+  </div>
+
+  <!-- FEEDBACK -->
+  <div class="ecs-screen" id="ecsScreenFeedback">
+    <div class="ecs-overall">
+      <div class="ecs-overall-num" id="ecsOverallNum">&mdash;</div>
+      <div class="ecs-overall-label">overall<br>this session</div>
+    </div>
+
+    <div class="ecs-dim-list" id="ecsFbDimList"></div>
+
+    <div class="ecs-fb-block good">
+      <h4>Strengths</h4>
+      <ul id="ecsFbGood"></ul>
+    </div>
+
+    <div class="ecs-fb-block improve">
+      <h4>Needs Improvement</h4>
+      <ul id="ecsFbImprove"></ul>
+    </div>
+
+    <div class="ecs-fb-block">
+      <h4>Try Rewriting</h4>
+      <div class="ecs-rewrite">
+        <div class="before" id="ecsRewriteBefore"></div>
+        <div class="after" id="ecsRewriteAfter"></div>
+      </div>
+    </div>
+
+    <div id="ecsFbError"></div>
+
+    <button class="ecs-btn ecs-btn-primary" id="ecsDoneBtn" style="width:100%; margin-top:8px;">Done - Back to Gym</button>
+  </div>
+
+</div>
+</div>
+
+<div class="ecs-overlay" id="ecsOverlay">
+  <div class="ecs-overlay-card">
+    <div class="ecs-overlay-header">
+      <div class="ecs-overlay-title">About Comm&middot;Gym</div>
+      <button class="ecs-overlay-close" id="ecsOverlayClose" type="button">&times;</button>
+    </div>
+    <div class="ecs-doc">
+      <h3>Project Objective</h3>
+      <p>A simple, personal training application that helps an engineer whose technical ability exceeds their communication ability close that gap through deliberate practice.</p>
+      <p>This is not a learning platform, LMS, course, RPG, or interview simulator product. It's a focused daily practice tool: click one button, get a realistic engineering communication prompt, respond by voice or text, get structured evaluation and actionable feedback, and the session is stored automatically. Over time, the data makes measurable progress visible.</p>
+      <p>The goal is to make engineering communication automatic through repetition and objective feedback &mdash; the same way coding proficiency comes from writing code repeatedly.</p>
+      <p>Every feature answers one question: <em>does this increase the quality or quantity of deliberate practice?</em> If not, it doesn't belong.</p>
+
+      <h3>Design Principles</h3>
+      <ul>
+        <li>One session takes less than 10 minutes.</li>
+        <li>One click starts practice.</li>
+        <li>No unnecessary navigation.</li>
+        <li>No gamification in v0.1.</li>
+        <li>Analytics matter more than achievements.</li>
+        <li>Feedback matters more than scores.</li>
+        <li>Consistency matters more than complexity.</li>
+        <li>Every session contributes to long-term progress tracking.</li>
+      </ul>
+
+      <h3>Anti-Goals</h3>
+      <p>This is deliberately not:</p>
+      <ul>
+        <li>A language learning app</li>
+        <li>A public speaking coach</li>
+        <li>An LMS or online course</li>
+        <li>A social platform</li>
+        <li>A multiplayer interview simulator</li>
+        <li>An RPG with levels, worlds, or achievements</li>
+        <li>A chatbot that teaches theory</li>
+      </ul>
+
+      <div class="ecs-quote">You arrive, train one specific communication skill, receive objective coaching, leave, and return tomorrow slightly better than yesterday.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+
+  // ---------- Prompt bank ----------
+  const DIMENSIONS = [
+    {key:'clarity', label:'Clarity'},
+    {key:'structure', label:'Structure'},
+    {key:'tradeoffs', label:'Trade-off Analysis'},
+    {key:'businessAwareness', label:'Business Awareness'},
+    {key:'leadership', label:'Leadership'},
+    {key:'conciseness', label:'Conciseness'}
+  ];
+
+  const PROMPTS = [
+    {mode:'Incident Response', dim:'clarity', text:"Your payment service is throwing 500s for 8% of requests. You're 4 minutes into the incident. Explain to the incident channel what you know, what you don't know yet, and what you're doing next."},
+    {mode:'Incident Response', dim:'clarity', text:"A customer-facing outage was just resolved after 40 minutes. Summarize what happened in three sentences a non-engineer support lead can repeat to an angry customer."},
+    {mode:'Incident Response', dim:'leadership', text:"Two engineers on the incident call disagree about the root cause and are talking over each other. As the person running the incident, redirect the conversation out loud."},
+    {mode:'Incident Response', dim:'conciseness', text:"You have 30 seconds before the exec briefing starts. Give the one-sentence status update you'd lead with."},
+
+    {mode:'Architecture Review', dim:'structure', text:"You're proposing moving a monolith's auth logic into a separate service. Walk a reviewer through the plan in under 90 seconds, in a clear before/after structure."},
+    {mode:'Architecture Review', dim:'tradeoffs', text:"A colleague suggests using a message queue where you'd chosen synchronous calls. Explain your reasoning and the trade-off you're making, without dismissing their idea."},
+    {mode:'Architecture Review', dim:'tradeoffs', text:"Explain why you chose eventual consistency for this feature instead of strong consistency, to someone who's skeptical about correctness."},
+    {mode:'Architecture Review', dim:'structure', text:"Describe your system's data flow from request to response, out loud, as if sketching it live for someone seeing it for the first time."},
+
+    {mode:'Executive Briefing', dim:'businessAwareness', text:"The CTO asks why the migration is taking longer than planned. Answer without using the words 'technical debt' or 'legacy code' - translate it into business terms."},
+    {mode:'Executive Briefing', dim:'businessAwareness', text:"Justify a two-week delay to a launch date to a product VP who only cares about the deadline. Be honest, not defensive."},
+    {mode:'Executive Briefing', dim:'conciseness', text:"You have one slide and 60 seconds to explain why the infrastructure budget needs to increase 20% next quarter."},
+    {mode:'Executive Briefing', dim:'leadership', text:"Recommend killing a project you've spent two months on, to the person who greenlit it, because you now believe it's the wrong call."},
+
+    {mode:'Postmortem', dim:'clarity', text:"Write the opening paragraph of a postmortem for an outage caused by a bad config push, out loud, as if reading it to the team that owns the config system."},
+    {mode:'Postmortem', dim:'tradeoffs', text:"Explain, without blaming anyone, why the alert that should have caught this issue earlier didn't fire."},
+    {mode:'Postmortem', dim:'structure', text:"Walk through the timeline of an incident - detection, diagnosis, mitigation, resolution - as five short, ordered statements."},
+
+    {mode:'Code Review', dim:'clarity', text:"Explain, out loud, why you're requesting changes on a PR that works but relies on a global mutable variable. Be specific, not just 'this feels wrong.'"},
+    {mode:'Code Review', dim:'leadership', text:"A junior engineer's PR has a subtle race condition. Explain the bug and why it matters, in a way that teaches rather than corrects."},
+
+    {mode:'Stand-up', dim:'conciseness', text:"Give a 20-second stand-up update: what you finished yesterday, what's blocking you today, and what you need from someone else."},
+    {mode:'Stand-up', dim:'businessAwareness', text:"You're behind on a ticket because of an unplanned dependency. Explain the delay to the team in a way that's honest but doesn't sound like an excuse."},
+
+    {mode:'Customer Call', dim:'businessAwareness', text:"A customer asks why their data export feature has been 'coming soon' for two quarters. Answer honestly without overpromising a new date."},
+    {mode:'Customer Call', dim:'clarity', text:"Explain what rate limiting is and why their integration just started failing, to a technical customer who is frustrated but not an engineer."},
+
+    {mode:'One-on-One', dim:'leadership', text:"Tell a teammate, directly but kindly, that their recent PRs have been taking too long to review because the descriptions are unclear."},
+    {mode:'One-on-One', dim:'tradeoffs', text:"Your manager asks if the team should prioritize paying down infrastructure debt or shipping the next feature. Give a real recommendation, not both-sides-ism."}
+  ];
+
+  // ---------- State ----------
+  let currentPrompt = null;
+  let recognition = null;
+  let recognizing = false;
+  let recStartTime = null;
+  let recTimerInterval = null;
+  let speechSupported = !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+  let finalTranscript = '';
+  let currentEval = null;
+
+  // ---------- Elements ----------
+  const screens = {
+    home: document.getElementById('ecsScreenHome'),
+    prompt: document.getElementById('ecsScreenPrompt'),
+    loading: document.getElementById('ecsScreenLoading'),
+    feedback: document.getElementById('ecsScreenFeedback')
+  };
+
+  function showScreen(name){
+    Object.values(screens).forEach(s => s.classList.remove('active'));
+    screens[name].classList.add('active');
+  }
+
+  // ---------- Storage ----------
+  const SESSIONS_KEY = 'ecs:sessions';
+
+  async function loadSessions(){
+    try{
+      const res = await window.storage.get(SESSIONS_KEY, false);
+      return res && res.value ? JSON.parse(res.value) : [];
+    }catch(e){
+      return [];
+    }
+  }
+
+  async function saveSessions(sessions){
+    try{
+      await window.storage.set(SESSIONS_KEY, JSON.stringify(sessions), false);
+    }catch(e){
+      console.error('Storage save failed', e);
+    }
+    broadcastToOS(sessions);
+  }
+
+  // ---------- TITAN OS integration ----------
+  // Protocol: write-only, two passive channels (localStorage + postMessage).
+  // Never reads other apps' keys. Always overwrites the full payload.
+  const OS_APP_ID = 'commgym';
+  const OS_STRONG_THRESHOLD = 80; // a dimension counts as "strong" at this avg
+
+  function buildOSPayload(sessions){
+    const recent = sessions.slice(-10);
+
+    const dimensionScores = {};
+    DIMENSIONS.forEach(d => {
+      const vals = recent.map(s => s.scores[d.key]).filter(v => typeof v === 'number');
+      dimensionScores[d.key] = vals.length ? Math.round(vals.reduce((a,b)=>a+b,0)/vals.length) : 0;
+    });
+
+    const strongDims = DIMENSIONS.filter(d => dimensionScores[d.key] >= OS_STRONG_THRESHOLD).length;
+
+    const overallVals = recent.map(s => s.scores.overall).filter(v => typeof v === 'number');
+    const avgOverall = overallVals.length ? Math.round(overallVals.reduce((a,b)=>a+b,0)/overallVals.length) : 0;
+
+    const lastSession = sessions.length ? sessions[sessions.length - 1] : null;
+
+    return {
+      source: OS_APP_ID,
+      version: 1,
+      timestamp: new Date().toISOString(),
+      overall: {
+        done: strongDims,
+        total: DIMENSIONS.length,
+        pct: Math.round((strongDims / DIMENSIONS.length) * 100)
+      },
+      totalSessions: sessions.length,
+      currentStreak: computeStreak(sessions),
+      avgOverallScore: avgOverall,
+      dimensionScores: dimensionScores,
+      lastSessionAt: lastSession ? new Date(lastSession.timestamp).toISOString() : null,
+      lastSessionMode: lastSession ? lastSession.mode : null
+    };
+  }
+
+  function broadcastToOS(sessions){
+    const payload = buildOSPayload(sessions);
+
+    try{
+      localStorage.setItem('titan_os_' + OS_APP_ID, JSON.stringify(payload));
+    }catch(e){
+      // Sandboxed preview environments (like this Claude.ai artifact) may block
+      // localStorage entirely - fail silently, this is expected here.
+    }
+
+    try{
+      if(window.parent !== window){
+        window.parent.postMessage(payload, '*');
+      }
+    }catch(e){
+      // Cross-origin postMessage can throw in some sandboxes - fail silently.
+    }
+  }
+
+  // ---------- Home rendering ----------
+  async function renderHome(){
+    const sessions = await loadSessions();
+    broadcastToOS(sessions);
+
+    // streak
+    const streakEl = document.getElementById('ecsStreak');
+    const streak = computeStreak(sessions);
+    streakEl.innerHTML = streak > 0
+      ? `<b>${streak}</b> day streak`
+      : `start today`;
+
+    // dimension averages (last 10 sessions)
+    const dimList = document.getElementById('ecsDimList');
+    if(sessions.length === 0){
+      dimList.innerHTML = '<div class="ecs-empty">No sessions yet. Your first one sets the baseline.</div>';
+    }else{
+      const recent = sessions.slice(-10);
+      dimList.innerHTML = DIMENSIONS.map(d => {
+        const vals = recent.map(s => s.scores[d.key]).filter(v => typeof v === 'number');
+        const avg = vals.length ? Math.round(vals.reduce((a,b)=>a+b,0)/vals.length) : 0;
+        return dimRowHtml(d.label, avg);
+      }).join('');
+    }
+
+    // history
+    const historyEl = document.getElementById('ecsHistory');
+    if(sessions.length === 0){
+      historyEl.innerHTML = '';
+    }else{
+      const recent = sessions.slice(-6).reverse();
+      historyEl.innerHTML = recent.map(s => `
+        <div class="ecs-history-row">
+          <div>
+            <div class="ecs-history-mode">${escapeHtml(s.mode)}</div>
+            <div class="ecs-history-date">${formatDate(s.timestamp)}</div>
+          </div>
+          <div class="ecs-history-score" style="color:${scoreColor(s.scores.overall)}">${s.scores.overall}</div>
+        </div>
+      `).join('');
+    }
+  }
+
+  function dimRowHtml(label, value){
+    return `
+      <div class="ecs-dim-row">
+        <div class="ecs-dim-name">${label}</div>
+        <div class="ecs-dim-track"><div class="ecs-dim-fill" style="width:${value}%; background:${scoreColor(value)}"></div></div>
+        <div class="ecs-dim-val">${value}</div>
+      </div>
+    `;
+  }
+
+  function scoreColor(v){
+    if(v >= 80) return 'var(--good)';
+    if(v >= 60) return 'var(--warn)';
+    return 'var(--bad)';
+  }
+
+  function computeStreak(sessions){
+    if(sessions.length === 0) return 0;
+    const days = [...new Set(sessions.map(s => new Date(s.timestamp).toDateString()))];
+    const daySet = new Set(days);
+    let streak = 0;
+    let cursor = new Date();
+    // if no session today yet, still count backward from yesterday
+    if(!daySet.has(cursor.toDateString())){
+      cursor.setDate(cursor.getDate()-1);
+    }
+    while(daySet.has(cursor.toDateString())){
+      streak++;
+      cursor.setDate(cursor.getDate()-1);
+    }
+    return streak;
+  }
+
+  function formatDate(ts){
+    const d = new Date(ts);
+    return d.toLocaleDateString(undefined, {month:'short', day:'numeric'});
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  // ---------- Prompt selection ----------
+  async function pickPrompt(){
+    const sessions = await loadSessions();
+    let candidate;
+
+    if(sessions.length >= 3 && Math.random() < 0.3){
+      const recent = sessions.slice(-10);
+      let weakest = null, weakestAvg = 101;
+      DIMENSIONS.forEach(d => {
+        const vals = recent.map(s => s.scores[d.key]).filter(v => typeof v === 'number');
+        if(vals.length){
+          const avg = vals.reduce((a,b)=>a+b,0)/vals.length;
+          if(avg < weakestAvg){ weakestAvg = avg; weakest = d.key; }
+        }
+      });
+      if(weakest){
+        const pool = PROMPTS.filter(p => p.dim === weakest);
+        if(pool.length) candidate = pool[Math.floor(Math.random()*pool.length)];
+      }
+    }
+
+    if(!candidate){
+      candidate = PROMPTS[Math.floor(Math.random()*PROMPTS.length)];
+    }
+
+    return candidate;
+  }
+
+  // ---------- Start session ----------
+  document.getElementById('ecsStartBtn').addEventListener('click', async () => {
+    currentPrompt = await pickPrompt();
+    document.getElementById('ecsModeTag').textContent = currentPrompt.mode;
+    document.getElementById('ecsPromptText').textContent = currentPrompt.text;
+    document.getElementById('ecsTranscriptBox').value = '';
+    finalTranscript = '';
+    document.getElementById('ecsSubmitBtn').disabled = true;
+    resetRecUI();
+
+    const hint = document.getElementById('ecsInputHint');
+    const recArea = document.getElementById('ecsRecArea');
+    if(speechSupported){
+      recArea.style.display = 'block';
+      hint.textContent = 'Speak your answer, then stop the recording. You can edit the text before submitting.';
+    }else{
+      recArea.style.display = 'none';
+      hint.textContent = 'Voice recognition isn\'t available in this browser - type your response instead.';
+    }
+
+    showScreen('prompt');
+  });
+
+  document.getElementById('ecsBackBtn').addEventListener('click', () => {
+    stopRecognition();
+    showScreen('home');
+  });
+
+  // ---------- Recording ----------
+  function resetRecUI(){
+    document.getElementById('ecsRecDot').classList.remove('live');
+    document.getElementById('ecsRecTimer').textContent = '00:00';
+    document.getElementById('ecsRecBtn').textContent = 'Start Recording';
+    clearInterval(recTimerInterval);
+  }
+
+  function setupRecognition(){
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SR();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+
+    recognition.onresult = (event) => {
+      let interim = '';
+      for(let i = event.resultIndex; i < event.results.length; i++){
+        const transcriptPiece = event.results[i][0].transcript;
+        if(event.results[i].isFinal){
+          finalTranscript += transcriptPiece + ' ';
+        }else{
+          interim += transcriptPiece;
+        }
+      }
+      document.getElementById('ecsTranscriptBox').value = (finalTranscript + interim).trim();
+      updateSubmitState();
+    };
+
+    recognition.onerror = () => {
+      stopRecognition();
+    };
+
+    recognition.onend = () => {
+      if(recognizing){
+        // Chrome sometimes ends sessions on silence; restart if user hasn't stopped manually
+        try{ recognition.start(); }catch(e){}
+      }
+    };
+  }
+
+  document.getElementById('ecsRecBtn').addEventListener('click', () => {
+    if(!recognizing){
+      startRecognition();
+    }else{
+      stopRecognition();
+    }
+  });
+
+  function startRecognition(){
+    if(!speechSupported) return;
+    if(!recognition) setupRecognition();
+    recognizing = true;
+    try{ recognition.start(); }catch(e){}
+    document.getElementById('ecsRecDot').classList.add('live');
+    document.getElementById('ecsRecBtn').textContent = 'Stop Recording';
+    recStartTime = Date.now();
+    recTimerInterval = setInterval(updateRecTimer, 300);
+  }
+
+  function stopRecognition(){
+    recognizing = false;
+    if(recognition){
+      try{ recognition.stop(); }catch(e){}
+    }
+    document.getElementById('ecsRecDot').classList.remove('live');
+    document.getElementById('ecsRecBtn').textContent = 'Start Recording';
+    clearInterval(recTimerInterval);
+    updateSubmitState();
+  }
+
+  function updateRecTimer(){
+    const elapsed = Math.floor((Date.now() - recStartTime) / 1000);
+    const m = String(Math.floor(elapsed/60)).padStart(2,'0');
+    const s = String(elapsed%60).padStart(2,'0');
+    document.getElementById('ecsRecTimer').textContent = `${m}:${s}`;
+  }
+
+  document.getElementById('ecsTranscriptBox').addEventListener('input', updateSubmitState);
+
+  function updateSubmitState(){
+    const text = document.getElementById('ecsTranscriptBox').value.trim();
+    document.getElementById('ecsSubmitBtn').disabled = text.length < 10;
+  }
+
+  // ---------- Submit for evaluation ----------
+  document.getElementById('ecsSubmitBtn').addEventListener('click', async () => {
+    stopRecognition();
+    const transcript = document.getElementById('ecsTranscriptBox').value.trim();
+    if(transcript.length < 10) return;
+
+    showScreen('loading');
+
+    try{
+      currentEval = await evaluateResponse(currentPrompt, transcript);
+      renderFeedback(currentEval);
+
+      const session = {
+        id: 'sess_' + Date.now(),
+        timestamp: Date.now(),
+        mode: currentPrompt.mode,
+        promptText: currentPrompt.text,
+        dim: currentPrompt.dim,
+        transcript: transcript,
+        scores: currentEval.scores,
+        feedback: {
+          strengths: currentEval.strengths,
+          improve: currentEval.improve,
+          rewriteBefore: currentEval.rewriteBefore,
+          rewriteAfter: currentEval.rewriteAfter
+        }
+      };
+
+      const sessions = await loadSessions();
+      sessions.push(session);
+      await saveSessions(sessions);
+
+      showScreen('feedback');
+    }catch(err){
+      console.error(err);
+      showScreen('prompt');
+      const hint = document.getElementById('ecsInputHint');
+      const reason = (err && err.message) ? err.message : 'unknown error';
+      hint.innerHTML = '<span style="color:var(--bad)">Evaluation failed - ' + escapeHtml(reason) + '</span>';
+    }
+  });
+
+  async function evaluateResponse(prompt, transcript){
+    const systemPrompt = `You are a blunt, precise communication coach for software engineers. You evaluate a spoken response to a realistic workplace communication prompt.
+
+Score the response on these six dimensions, each 0-100:
+- clarity: is the point immediately understandable?
+- structure: does it follow a logical order (situation, action, outcome, etc.)?
+- tradeoffs: does it acknowledge trade-offs or alternatives where relevant?
+- businessAwareness: does it connect to business/customer impact appropriately?
+- leadership: does it take ownership and guide the listener, rather than just describe?
+- conciseness: does it avoid padding, hedging, and repetition?
+
+Also compute an overall score 0-100 (not a simple average - weight it by what matters most for this specific prompt).
+
+Respond with ONLY raw JSON, no markdown fences, no preamble, in exactly this shape:
+{
+  "scores": {"clarity": 0, "structure": 0, "tradeoffs": 0, "businessAwareness": 0, "leadership": 0, "conciseness": 0, "overall": 0},
+  "strengths": ["short specific strength", "short specific strength"],
+  "improve": ["short specific improvement", "short specific improvement"],
+  "rewriteBefore": "a short weak phrase pulled directly from their actual response",
+  "rewriteAfter": "a stronger rewrite of that same phrase"
+}
+
+Keep strengths and improve items short (under 15 words each), specific to what was actually said, never generic. rewriteBefore must be an actual phrase from their response, not invented.`;
+
+    const userPrompt = `PROMPT (${prompt.mode}):\n${prompt.text}\n\nRESPONSE:\n${transcript}`;
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: [{role: 'user', content: userPrompt}]
+      })
+    });
+
+    const data = await response.json();
+
+    if(!response.ok){
+      const msg = (data && data.error && data.error.message) ? data.error.message : ('HTTP ' + response.status);
+      throw new Error('API error: ' + msg);
+    }
+
+    const textBlock = (data.content || []).find(b => b.type === 'text');
+    if(!textBlock) throw new Error('No text block in API response');
+
+    let clean = textBlock.text.trim();
+    clean = clean.replace(/```json/gi, '').replace(/```/g, '').trim();
+
+    // Defensive: pull out just the {...} block in case the model added any stray text
+    const firstBrace = clean.indexOf('{');
+    const lastBrace = clean.lastIndexOf('}');
+    if(firstBrace === -1 || lastBrace === -1 || lastBrace < firstBrace){
+      throw new Error('Could not find JSON in model response: ' + clean.slice(0, 200));
+    }
+    clean = clean.slice(firstBrace, lastBrace + 1);
+
+    let parsed;
+    try{
+      parsed = JSON.parse(clean);
+    }catch(parseErr){
+      throw new Error('Failed to parse evaluation JSON: ' + parseErr.message);
+    }
+
+    // Defensive: make sure every dimension exists so the UI never renders NaN/undefined
+    const requiredDims = ['clarity','structure','tradeoffs','businessAwareness','leadership','conciseness','overall'];
+    parsed.scores = parsed.scores || {};
+    requiredDims.forEach(k => {
+      if(typeof parsed.scores[k] !== 'number') parsed.scores[k] = 0;
+    });
+    parsed.strengths = Array.isArray(parsed.strengths) ? parsed.strengths : [];
+    parsed.improve = Array.isArray(parsed.improve) ? parsed.improve : [];
+
+    return parsed;
+  }
+
+  function renderFeedback(evalData){
+    document.getElementById('ecsOverallNum').textContent = evalData.scores.overall;
+    document.getElementById('ecsOverallNum').style.color = scoreColor(evalData.scores.overall);
+
+    const dimList = document.getElementById('ecsFbDimList');
+    dimList.innerHTML = DIMENSIONS.map(d => dimRowHtml(d.label, evalData.scores[d.key] ?? 0)).join('');
+
+    document.getElementById('ecsFbGood').innerHTML = (evalData.strengths || []).map(s => `<li>${escapeHtml(s)}</li>`).join('');
+    document.getElementById('ecsFbImprove').innerHTML = (evalData.improve || []).map(s => `<li>${escapeHtml(s)}</li>`).join('');
+
+    document.getElementById('ecsRewriteBefore').textContent = evalData.rewriteBefore ? `"${evalData.rewriteBefore}"` : '';
+    document.getElementById('ecsRewriteAfter').textContent = evalData.rewriteAfter ? `"${evalData.rewriteAfter}"` : '';
+
+    document.getElementById('ecsFbError').innerHTML = '';
+  }
+
+  document.getElementById('ecsDoneBtn').addEventListener('click', async () => {
+    await renderHome();
+    showScreen('home');
+  });
+
+  // ---------- About overlay ----------
+  document.getElementById('ecsAboutBtn').addEventListener('click', () => {
+    document.getElementById('ecsOverlay').classList.add('active');
+  });
+  document.getElementById('ecsOverlayClose').addEventListener('click', () => {
+    document.getElementById('ecsOverlay').classList.remove('active');
+  });
+  document.getElementById('ecsOverlay').addEventListener('click', (e) => {
+    if(e.target.id === 'ecsOverlay'){
+      document.getElementById('ecsOverlay').classList.remove('active');
+    }
+  });
+
+  // ---------- Init ----------
+  renderHome();
+
+})();
+</script>

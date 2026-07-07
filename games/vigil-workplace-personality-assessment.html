@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vigil. Workplace Personality Assessment</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+:root{
+  --bg: #0B1014;
+  --panel: #121A1F;
+  --panel-2: #0E1519;
+  --line: #1F2C33;
+  --text: #E7EEF1;
+  --text-dim: #8FA3AC;
+  --text-faint: #5A6E77;
+  --accent: #3DDC97;
+  --accent-dim: #235942;
+  --amber: #E8A54B;
+  --cyan: #5EC8E8;
+  --violet: #B693E8;
+  --rose: #E88AA0;
+  --lime: #C6E85E;
+  --radius: 10px;
+  --scale: 1;
+}
+
+*{ box-sizing: border-box; }
+html,body{ height:100%; }
+body{
+  margin:0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-size: calc(15px * var(--scale));
+  -webkit-font-smoothing: antialiased;
+}
+
+#app{
+  min-height: 100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+/* ---------- top bar ---------- */
+.topbar{
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  padding: 0.9rem 1.25rem;
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(180deg, var(--panel), var(--panel-2));
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:0.65rem;
+}
+.brand-dot{
+  width: 0.6rem; height: 0.6rem; border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0.5rem var(--accent);
+  animation: pulse 2.4s ease-in-out infinite;
+}
+@keyframes pulse{ 0%,100%{opacity:1} 50%{opacity:0.35} }
+.brand-text{
+  font-family:'JetBrains Mono', monospace;
+  font-weight:600;
+  letter-spacing: 0.06em;
+  font-size: 0.95rem;
+  color: var(--text);
+}
+.brand-sub{
+  font-family:'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--text-faint);
+  letter-spacing: 0.08em;
+  margin-left: 0.5rem;
+  border-left: 1px solid var(--line);
+  padding-left: 0.5rem;
+}
+.topbar-controls{
+  display:flex;
+  align-items:center;
+  gap: 0.5rem;
+}
+.ctrl-group{
+  display:flex;
+  align-items:center;
+  gap: 0.15rem;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 0.2rem;
+}
+.icon-btn{
+  width: 2rem; height: 2rem;
+  display:flex; align-items:center; justify-content:center;
+  background: transparent;
+  border: none;
+  border-radius: calc(var(--radius) - 3px);
+  color: var(--text-dim);
+  cursor: pointer;
+  font-family:'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  transition: background 0.15s, color 0.15s;
+}
+.icon-btn:hover{ background: var(--line); color: var(--text); }
+.zoom-readout{
+  font-family:'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--text-faint);
+  min-width: 2.6rem;
+  text-align:center;
+}
+.dock-btn{
+  font-family:'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 0.45rem 0.7rem;
+  cursor:pointer;
+  letter-spacing: 0.04em;
+}
+.dock-btn:hover{ border-color: var(--accent); color: var(--accent); }
+
+/* ---------- layout ---------- */
+.layout{
+  flex:1;
+  display:flex;
+  min-height: 0;
+  position: relative;
+}
+.layout.is-floating .side-panel{
+  position: fixed;
+  top: 5.2rem;
+  right: 1.25rem;
+  width: 19rem;
+  max-height: calc(100vh - 6.5rem);
+  overflow-y:auto;
+  z-index: 40;
+  box-shadow: 0 1.2rem 3rem rgba(0,0,0,0.55);
+  border-radius: var(--radius);
+}
+.layout.is-floating .main{
+  margin-right: 0;
+}
+
+.main{
+  flex:1;
+  min-width: 0;
+  padding: 1.5rem;
+  overflow-y:auto;
+}
+.side-panel{
+  width: 19rem;
+  flex-shrink:0;
+  border-left: 1px solid var(--line);
+  background: var(--panel);
+  padding: 1.1rem;
+  overflow-y:auto;
+}
+.side-panel.collapsed{
+  width: 3rem;
+  padding: 1.1rem 0.5rem;
+  overflow: hidden;
+}
+.side-panel.collapsed .panel-content{ display:none; }
+.side-panel.collapsed .panel-head span{ display:none; }
+
+.panel-head{
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+.panel-head span{
+  font-family:'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  color: var(--text-faint);
+}
+
+/* ---------- cards ---------- */
+.card{
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+}
+.card + .card{ margin-top: 1rem; }
+
+/* ---------- dashboard ---------- */
+.dash-header{
+  display:flex;
+  justify-content: space-between;
+  align-items:flex-end;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+.dash-title{
+  font-family:'JetBrains Mono', monospace;
+  font-size: 1.05rem;
+  letter-spacing: 0.03em;
+}
+.dash-title small{
+  display:block;
+  font-family:'Inter', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  margin-top: 0.3rem;
+  font-weight: 400;
+  letter-spacing: normal;
+}
+
+.readiness-strip{
+  display:flex;
+  align-items:center;
+  gap: 0.9rem;
+  padding: 1rem 1.25rem;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  margin-bottom: 1.1rem;
+}
+.readiness-ring{
+  width: 3.4rem; height: 3.4rem;
+  border-radius: 50%;
+  flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'JetBrains Mono', monospace;
+  font-weight:700;
+  font-size: 0.95rem;
+  background: conic-gradient(var(--accent) calc(var(--pct,0) * 1%), var(--line) 0);
+  position:relative;
+}
+.readiness-ring::before{
+  content:'';
+  position:absolute;
+  inset: 0.28rem;
+  border-radius:50%;
+  background: var(--panel-2);
+}
+.readiness-ring span{ position:relative; z-index:1; }
+.readiness-copy .label{
+  font-family:'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--text-faint);
+  letter-spacing: 0.08em;
+}
+.readiness-copy .value{
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 0.15rem;
+}
+.readiness-copy .detail{
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  margin-top: 0.15rem;
+}
+
+/* trait gauge rows, dashboard-style */
+.gauge-row{
+  display:flex;
+  align-items:center;
+  gap: 0.75rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--line);
+}
+.gauge-row:last-child{ border-bottom:none; }
+.gauge-name{
+  width: 8.2rem;
+  flex-shrink:0;
+  font-family:'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
+  color: var(--text-dim);
+}
+.gauge-track{
+  flex:1;
+  height: 0.45rem;
+  background: var(--line);
+  border-radius: 999px;
+  overflow:hidden;
+  position:relative;
+}
+.gauge-fill{
+  height:100%;
+  border-radius: 999px;
+  transition: width 0.5s ease;
+}
+.gauge-pct{
+  width: 3rem;
+  text-align:right;
+  font-family:'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+.gauge-status{
+  width: 4.6rem;
+  text-align:right;
+  font-family:'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.05em;
+  color: var(--text-faint);
+}
+
+.side-section-title{
+  font-family:'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+  margin: 1.1rem 0 0.5rem;
+}
+.history-row{
+  display:flex;
+  justify-content:space-between;
+  font-size: 0.78rem;
+  padding: 0.4rem 0;
+  border-bottom: 1px dashed var(--line);
+  color: var(--text-dim);
+}
+.history-row:last-child{ border-bottom:none; }
+.history-row .n{ color: var(--text); font-family:'JetBrains Mono', monospace; }
+
+.start-btn{
+  width:100%;
+  margin-top: 1.1rem;
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius);
+  border: none;
+  background: var(--accent);
+  color: #06110C;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: transform 0.1s, box-shadow 0.15s;
+}
+.start-btn:hover{ box-shadow: 0 0 0 3px var(--accent-dim); }
+.start-btn:active{ transform: scale(0.98); }
+.reset-link{
+  display:block;
+  text-align:center;
+  margin-top: 0.7rem;
+  font-size: 0.72rem;
+  color: var(--text-faint);
+  cursor:pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ---------- session view ---------- */
+.session-progress{
+  display:flex;
+  align-items:center;
+  gap: 0.7rem;
+  margin-bottom: 1.25rem;
+}
+.progress-track{
+  flex:1;
+  height: 0.4rem;
+  background: var(--line);
+  border-radius: 999px;
+  overflow:hidden;
+}
+.progress-fill{
+  height:100%;
+  background: var(--accent);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+.progress-label{
+  font-family:'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  white-space:nowrap;
+}
+.trait-chip{
+  display:inline-block;
+  font-family:'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  color: var(--text-faint);
+  margin-bottom: 0.9rem;
+}
+.question-text{
+  font-size: 1.2rem;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+}
+.likert{
+  display:flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.likert-option{
+  display:flex;
+  align-items:center;
+  gap: 0.8rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  cursor:pointer;
+  background: var(--panel-2);
+  transition: border-color 0.15s, background 0.15s;
+}
+.likert-option:hover{ border-color: var(--text-faint); }
+.likert-option.selected{
+  border-color: var(--accent);
+  background: rgba(61,220,151,0.08);
+}
+.likert-radio{
+  width: 1.1rem; height: 1.1rem;
+  border-radius: 50%;
+  border: 1.5px solid var(--text-faint);
+  flex-shrink:0;
+  position:relative;
+}
+.likert-option.selected .likert-radio{ border-color: var(--accent); }
+.likert-option.selected .likert-radio::after{
+  content:'';
+  position:absolute;
+  inset: 0.2rem;
+  border-radius:50%;
+  background: var(--accent);
+}
+.likert-text{ font-size: 0.9rem; }
+.session-nav{
+  display:flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+}
+.nav-btn{
+  padding: 0.7rem 1.4rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  color: var(--text-dim);
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.nav-btn.primary{
+  background: var(--accent);
+  color: #06110C;
+  border-color: var(--accent);
+}
+.nav-btn:disabled{ opacity: 0.35; cursor: not-allowed; }
+
+/* ---------- results view ---------- */
+.result-hero{
+  text-align:center;
+  padding: 1.5rem 1rem 2rem;
+}
+.result-score{
+  font-family:'JetBrains Mono', monospace;
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+.result-label{
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  margin-top: 0.25rem;
+}
+.result-grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+.result-trait-card{
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 0.9rem;
+  text-align:center;
+}
+.result-trait-card .t-name{
+  font-family:'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  color: var(--text-faint);
+}
+.result-trait-card .t-val{
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-top: 0.3rem;
+}
+.result-trait-card .t-delta{
+  font-size: 0.7rem;
+  margin-top: 0.2rem;
+}
+.delta-up{ color: var(--accent); }
+.delta-down{ color: var(--rose); }
+.delta-flat{ color: var(--text-faint); }
+
+.hint-box{
+  margin-top: 1.25rem;
+  padding: 0.9rem 1.1rem;
+  background: var(--panel-2);
+  border-left: 3px solid var(--cyan);
+  border-radius: 6px;
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+.feedback-box{
+  margin-top: 1rem;
+  padding: 1rem 1.1rem;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--cyan);
+  border-radius: 6px;
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  line-height: 1.55;
+}
+.feedback-box .fb-row{ margin-bottom: 0.5rem; }
+.feedback-box .fb-row:last-child{ margin-bottom: 0; }
+.feedback-box .fb-label{
+  font-family:'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  color: var(--text-faint);
+  display:block;
+  margin-bottom: 0.15rem;
+}
+.feedback-box .fb-signal{ color: var(--text); font-weight: 600; }
+.feedback-box .fb-disclaimer{
+  margin-top: 0.7rem;
+  padding-top: 0.6rem;
+  border-top: 1px dashed var(--line);
+  font-size: 0.72rem;
+  color: var(--text-faint);
+}
+
+/* guide / docs portal */
+.guide-nav{
+  display:flex;
+  flex-wrap:wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+.guide-nav button{
+  font-family:'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  color: var(--text-dim);
+  cursor: pointer;
+}
+.guide-nav button.active{
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.guide-section h2{
+  font-family:'JetBrains Mono', monospace;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  margin: 0 0 0.6rem;
+  color: var(--text);
+}
+.guide-section p{
+  font-size: 0.86rem;
+  line-height: 1.65;
+  color: var(--text-dim);
+  margin: 0 0 0.9rem;
+}
+.guide-section ul{
+  margin: 0 0 1rem;
+  padding-left: 1.2rem;
+}
+.guide-section li{
+  font-size: 0.86rem;
+  line-height: 1.6;
+  color: var(--text-dim);
+  margin-bottom: 0.4rem;
+}
+.guide-section .trait-block{
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--t-color, var(--accent));
+  border-radius: 6px;
+  padding: 0.8rem 1rem;
+  margin-bottom: 0.7rem;
+  background: var(--panel-2);
+}
+.guide-section .trait-block h3{
+  font-family:'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  margin: 0 0 0.3rem;
+}
+.guide-section .trait-block p{ margin:0; font-size:0.8rem; }
+
+footer.foot-note{
+  text-align:center;
+  padding: 1rem;
+  font-size: 0.7rem;
+  color: var(--text-faint);
+  border-top: 1px solid var(--line);
+}
+
+@media (max-width: 760px){
+  .side-panel{ display:none; }
+  .layout.is-floating .side-panel.force-visible{ display:block; }
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-dot"></div>
+      <div class="brand-text">VIGIL.</div>
+      <div class="brand-sub">WORKPLACE PERSONALITY ASSESSMENT · DEVOPS TRACK</div>
+    </div>
+    <div class="topbar-controls">
+      <div class="ctrl-group" title="Interface zoom">
+        <button class="icon-btn" id="zoomOut">−</button>
+        <span class="zoom-readout" id="zoomReadout">100%</span>
+        <button class="icon-btn" id="zoomIn">+</button>
+        <button class="icon-btn" id="zoomReset" title="Reset zoom">⟲</button>
+      </div>
+      <button class="dock-btn" id="guideBtn">📘 GUIDE</button>
+      <button class="dock-btn" id="dockToggle">⇥ FLOAT PANEL</button>
+    </div>
+  </div>
+
+  <div class="layout" id="layout">
+    <div class="main" id="main"></div>
+    <div class="side-panel" id="sidePanel">
+      <div class="panel-head">
+        <span>▸ COLLAPSE</span>
+        <button class="icon-btn" id="collapseToggle">≡</button>
+      </div>
+      <div class="panel-content" id="panelContent"></div>
+    </div>
+  </div>
+
+  <footer class="foot-note">Practice tool only — not a certified assessment. Answer as yourself, not as who you think the role wants.</footer>
+</div>
+
+<script>
+/* ============================================================
+   QUESTION BANK — 60 items, 12 per trait, Likert 1–5
+   r:true marks a reverse-scored item
+============================================================ */
+const BANK = [
+  // EXTRAVERSION
+  {id:'E01', trait:'E', text:"I feel comfortable speaking up during incident calls even when I don't have all the answers yet.", r:false},
+  {id:'E02', trait:'E', text:"I prefer working through problems alone rather than discussing them with teammates.", r:true},
+  {id:'E03', trait:'E', text:"I actively start conversations with other teams when a dependency might affect my work.", r:false},
+  {id:'E04', trait:'E', text:"Large stand-up meetings drain my energy more than they help me.", r:true},
+  {id:'E05', trait:'E', text:"I enjoy presenting post-incident reviews to a wider audience.", r:false},
+  {id:'E06', trait:'E', text:"I'd rather send a written update than join a call to explain something.", r:true},
+  {id:'E07', trait:'E', text:"I find it easy to build rapport quickly with new members of the on-call rotation.", r:false},
+  {id:'E08', trait:'E', text:"I tend to stay quiet in meetings unless directly asked a question.", r:true},
+  {id:'E09', trait:'E', text:"I look forward to cross-team war rooms during major outages.", r:false},
+  {id:'E10', trait:'E', text:"I recharge by stepping away from people, not by talking things through.", r:true},
+  {id:'E11', trait:'E', text:"I volunteer to be the primary point of contact during high-visibility deployments.", r:false},
+  {id:'E12', trait:'E', text:"I keep my status updates brief because I'd rather not draw attention to my work.", r:true},
+
+  // AGREEABLENESS
+  {id:'A01', trait:'A', text:"I go out of my way to help a teammate debug an issue even when it's not my ticket.", r:false},
+  {id:'A02', trait:'A', text:"It's hard for me to hide my irritation when a colleague's change breaks my pipeline.", r:true},
+  {id:'A03', trait:'A', text:"I try to find common ground with security or compliance reviewers rather than digging in.", r:false},
+  {id:'A04', trait:'A', text:"I'll push back sharply on someone's approach if I think it's wrong, regardless of how it lands.", r:true},
+  {id:'A05', trait:'A', text:"I give teammates the benefit of the doubt when a deploy goes wrong.", r:false},
+  {id:'A06', trait:'A', text:"I'm quick to point out whose fault an outage was.", r:true},
+  {id:'A07', trait:'A', text:"I make an effort to onboard new engineers patiently, even when it slows me down.", r:false},
+  {id:'A08', trait:'A', text:"I get frustrated when I have to explain the same thing more than once.", r:true},
+  {id:'A09', trait:'A', text:"I value keeping the team harmonious even if it means compromising on my preferred tool.", r:false},
+  {id:'A10', trait:'A', text:"I think being right matters more than being liked.", r:true},
+  {id:'A11', trait:'A', text:"I check in on teammates who seem overloaded during a stressful release.", r:false},
+  {id:'A12', trait:'A', text:"I don't feel obligated to make exceptions for colleagues who repeatedly miss deadlines.", r:true},
+
+  // CONSCIENTIOUSNESS
+  {id:'C01', trait:'C', text:"I double-check rollback plans before every production deployment, even routine ones.", r:false},
+  {id:'C02', trait:'C', text:"I sometimes skip documenting a fix when I'm confident I'll remember the details.", r:true},
+  {id:'C03', trait:'C', text:"I keep meticulous records of configuration changes for audit purposes.", r:false},
+  {id:'C04', trait:'C', text:"Deadlines can slip on my tasks if something more interesting comes up.", r:true},
+  {id:'C05', trait:'C', text:"I follow the defined change-management process even when it feels slow.", r:false},
+  {id:'C06', trait:'C', text:"I've pushed a quick fix straight to production without going through review.", r:true},
+  {id:'C07', trait:'C', text:"I maintain runbooks and keep them updated after every incident.", r:false},
+  {id:'C08', trait:'C', text:"I tend to leave cleanup tasks — old resources, stale alerts — for later.", r:true},
+  {id:'C09', trait:'C', text:"I plan my sprint work in detail before diving in.", r:false},
+  {id:'C10', trait:'C', text:"I sometimes cut corners on testing when under time pressure.", r:true},
+  {id:'C11', trait:'C', text:"I take ownership of a task from start through verification, not just the code part.", r:false},
+  {id:'C12', trait:'C', text:"I lose track of minor to-do items unless someone reminds me.", r:true},
+
+  // EMOTIONAL STABILITY
+  {id:'S01', trait:'S', text:"I stay level-headed when a critical service goes down at 3 a.m.", r:false},
+  {id:'S02', trait:'S', text:"A failed deployment can put me in a bad mood for the rest of the day.", r:true},
+  {id:'S03', trait:'S', text:"I can separate a stressful on-call week from my life outside work.", r:false},
+  {id:'S04', trait:'S', text:"I replay mistakes in my head long after they've been resolved.", r:true},
+  {id:'S05', trait:'S', text:"Unexpected alerts don't rattle me — I just start troubleshooting.", r:false},
+  {id:'S06', trait:'S', text:"I feel anxious in the hours before a major release even when everything's tested.", r:true},
+  {id:'S07', trait:'S', text:"I recover quickly from a tense postmortem meeting.", r:false},
+  {id:'S08', trait:'S', text:"Criticism of my work during a review tends to stick with me for days.", r:true},
+  {id:'S09', trait:'S', text:"I keep my composure when a client-facing outage attracts leadership attention.", r:false},
+  {id:'S10', trait:'S', text:"I worry about things going wrong even when there's no clear evidence they will.", r:true},
+  {id:'S11', trait:'S', text:"I can prioritize calmly when multiple systems fail at once.", r:false},
+  {id:'S12', trait:'S', text:"Small setbacks — a flaky test, a failed build — frustrate me more than they should.", r:true},
+
+  // OPENNESS
+  {id:'O01', trait:'O', text:"I enjoy experimenting with new tools even if our current stack works fine.", r:false},
+  {id:'O02', trait:'O', text:"I prefer sticking to the automation approach I already know rather than trying something unproven.", r:true},
+  {id:'O03', trait:'O', text:"I like exploring the reasoning behind a legacy system before changing it.", r:false},
+  {id:'O04', trait:'O', text:"I find abstract architecture discussions tedious compared to hands-on work.", r:true},
+  {id:'O05', trait:'O', text:"I actively read about emerging practices, like new IaC patterns or observability approaches.", r:false},
+  {id:'O06', trait:'O', text:"I'm skeptical of new methodologies until they've been proven elsewhere first.", r:true},
+  {id:'O07', trait:'O', text:"I enjoy prototyping alternative solutions even when the current one already works.", r:false},
+  {id:'O08', trait:'O', text:"I'd rather follow an established playbook than improvise a new approach.", r:true},
+  {id:'O09', trait:'O', text:"I like connecting ideas from unrelated fields to solve infrastructure problems.", r:false},
+  {id:'O10', trait:'O', text:"Routine, predictable work suits me better than novel challenges.", r:true},
+  {id:'O11', trait:'O', text:"I'm curious about the compliance and clinical side of healthcare systems, not just the tech.", r:false},
+  {id:'O12', trait:'O', text:"I stick to familiar solutions because experimenting feels like unnecessary risk.", r:true},
+];
+
+const TRAIT_META = {
+  E: {name:'EXTRAVERSION', color:'var(--cyan)',
+      desc:'How much you draw energy from social interaction and assertive communication, versus from focused, independent work.',
+      relevance:'Matters for incident calls, cross-team coordination, and stakeholder updates — but DevOps work is often heads-down, so neither extreme is a red flag on its own.'},
+  A: {name:'AGREEABLENESS', color:'var(--lime)',
+      desc:'How much you prioritize cooperation, trust, and accommodation versus directness and self-interest in disagreements.',
+      relevance:'Moderate levels tend to fit best here: collaborative enough to work across dev, security, and clinical IT, but willing to push back on unsafe shortcuts.'},
+  C: {name:'CONSCIENTIOUSNESS', color:'var(--accent)',
+      desc:'How organized, detail-oriented, and reliable you are about following through on commitments and procedures.',
+      relevance:'Usually the most heavily weighted trait for infrastructure roles, especially in healthcare where change control and audit trails are compliance requirements, not preferences.'},
+  S: {name:'EMOTIONAL STABILITY', color:'var(--violet)',
+      desc:'How steady your mood and stress response stay under pressure, criticism, or unexpected setbacks.',
+      relevance:'Relevant for on-call pressure and production incidents — staying functional during a 3am page without it bleeding into judgment or wellbeing.'},
+  O: {name:'OPENNESS', color:'var(--amber)',
+      desc:'How much you seek out novelty, abstract ideas, and unfamiliar approaches versus proven, established methods.',
+      relevance:'Useful for adopting new tooling and automation, balanced against the more regulated, change-controlled culture typical of healthcare IT.'},
+};
+const TRAIT_ORDER = ['E','A','C','S','O'];
+
+const LIKERT_OPTIONS = [
+  {val:1, text:'Strongly disagree'},
+  {val:2, text:'Disagree'},
+  {val:3, text:'Neutral'},
+  {val:4, text:'Agree'},
+  {val:5, text:'Strongly agree'},
+];
+
+const SESSION_SIZE = 10;
+const STORAGE_KEY = 'bigfive-devops:state';
+
+/* ============================================================
+   STATE
+============================================================ */
+let persisted = null;   // cumulative data, loaded from window.storage
+let ui = {
+  scale: 1,
+  docked: true,
+  collapsed: false,
+  view: 'loading',       // loading | dashboard | session | results
+  session: null,         // {questions:[], index:0, answers:{}}
+  lastResult: null,
+};
+
+function defaultPersisted(){
+  return {
+    sessionsCompleted: 0,
+    questionsAnsweredTotal: 0,
+    usedQuestionIds: [],
+    perTrait: {
+      E:{sum:0,count:0}, A:{sum:0,count:0}, C:{sum:0,count:0}, S:{sum:0,count:0}, O:{sum:0,count:0}
+    },
+    history: [] // {sessionNumber, timestamp, overallAvg, perTrait:{E:pct,...}}
+  };
+}
+
+async function loadState(){
+  try{
+    const res = await window.storage.get(STORAGE_KEY, false);
+    persisted = res ? JSON.parse(res.value) : defaultPersisted();
+  }catch(e){
+    persisted = defaultPersisted();
+  }
+  ui.view = 'dashboard';
+  render();
+}
+
+async function saveState(){
+  try{
+    await window.storage.set(STORAGE_KEY, JSON.stringify(persisted), false);
+  }catch(e){
+    console.error('Storage error', e);
+  }
+}
+
+/* ============================================================
+   SESSION LOGIC
+============================================================ */
+function pickSessionQuestions(){
+  let pool = BANK.filter(q => !persisted.usedQuestionIds.includes(q.id));
+  if(pool.length < SESSION_SIZE){
+    // exhausted the bank — reshuffle a fresh cycle
+    persisted.usedQuestionIds = [];
+    pool = BANK.slice();
+  }
+  const shuffled = pool.slice().sort(() => Math.random() - 0.5);
+  const chosen = shuffled.slice(0, SESSION_SIZE);
+  chosen.forEach(q => persisted.usedQuestionIds.push(q.id));
+  return chosen.sort(() => Math.random() - 0.5);
+}
+
+function startSession(){
+  ui.session = {
+    questions: pickSessionQuestions(),
+    index: 0,
+    answers: {}
+  };
+  ui.view = 'session';
+  render();
+}
+
+function scoreValue(q, rawVal){
+  return q.r ? (6 - rawVal) : rawVal;
+}
+
+function pctFromAvg(avg){
+  // avg is 1-5 scale -> 0-100
+  return Math.round(((avg - 1) / 4) * 100);
+}
+
+function statusWord(pct){
+  if(pct >= 75) return 'STRONG';
+  if(pct >= 55) return 'NOMINAL';
+  if(pct >= 35) return 'WATCH';
+  return 'LOW';
+}
+
+async function finishSession(){
+  const {questions, answers} = ui.session;
+  const sessionPerTrait = {};
+  TRAIT_ORDER.forEach(t => sessionPerTrait[t] = {sum:0,count:0});
+
+  questions.forEach(q => {
+    const raw = answers[q.id];
+    const scored = scoreValue(q, raw);
+    sessionPerTrait[q.trait].sum += scored;
+    sessionPerTrait[q.trait].count += 1;
+
+    persisted.perTrait[q.trait].sum += scored;
+    persisted.perTrait[q.trait].count += 1;
+  });
+
+  const sessionPctByTrait = {};
+  let overallSum = 0, overallCount = 0;
+  TRAIT_ORDER.forEach(t => {
+    const c = sessionPerTrait[t];
+    if(c.count > 0){
+      const avg = c.sum / c.count;
+      sessionPctByTrait[t] = pctFromAvg(avg);
+      overallSum += avg * c.count;
+      overallCount += c.count;
+    } else {
+      sessionPctByTrait[t] = null;
+    }
+  });
+  const overallAvg = overallCount ? overallSum/overallCount : 0;
+  const overallPct = pctFromAvg(overallAvg);
+
+  persisted.sessionsCompleted += 1;
+  persisted.questionsAnsweredTotal += questions.length;
+  persisted.history.unshift({
+    sessionNumber: persisted.sessionsCompleted,
+    timestamp: new Date().toISOString(),
+    overallPct,
+    perTrait: sessionPctByTrait
+  });
+  persisted.history = persisted.history.slice(0, 20);
+
+  ui.lastResult = {
+    overallPct,
+    perTrait: sessionPctByTrait,
+    cumulativePerTraitAtTimeOfSession: cumulativeTraitPct()
+  };
+
+  await saveState();
+  ui.view = 'results';
+  render();
+}
+
+function cumulativeTraitPct(){
+  const out = {};
+  TRAIT_ORDER.forEach(t => {
+    const c = persisted.perTrait[t];
+    out[t] = c.count > 0 ? pctFromAvg(c.sum/c.count) : null;
+  });
+  return out;
+}
+
+function readinessLevel(){
+  const n = persisted.sessionsCompleted;
+  if(n === 0) return {label:'NOT STARTED', pct:0, detail:'Run your first session to calibrate.'};
+  if(n <= 2) return {label:'WARMING UP', pct: Math.min(100, n*15), detail:`${n} session${n>1?'s':''} logged — keep going to build a stable read.`};
+  if(n <= 5) return {label:'BUILDING CONSISTENCY', pct: Math.min(100, 25 + n*10), detail:`${n} sessions logged — patterns are starting to settle.`};
+  if(n <= 8) return {label:'PRACTICED', pct: Math.min(100, 55 + n*4), detail:`${n} sessions logged — responses look consistent across trait areas.`};
+  return {label:'ASSESSMENT READY', pct:100, detail:`${n} sessions logged — full bank cycled at least once with stable scoring.`};
+}
+
+/* ============================================================
+   RENDER: DASHBOARD
+============================================================ */
+function renderDashboard(){
+  const rl = readinessLevel();
+  const cum = cumulativeTraitPct();
+
+  const gaugeRows = TRAIT_ORDER.map(t => {
+    const meta = TRAIT_META[t];
+    const pct = cum[t];
+    const display = pct === null ? '—' : pct + '%';
+    const width = pct === null ? 0 : pct;
+    const status = pct === null ? 'NO DATA' : statusWord(pct);
+    return `
+      <div class="gauge-row">
+        <div class="gauge-name">${meta.name}</div>
+        <div class="gauge-track"><div class="gauge-fill" style="width:${width}%; background:${meta.color};"></div></div>
+        <div class="gauge-pct">${display}</div>
+        <div class="gauge-status">${status}</div>
+      </div>`;
+  }).join('');
+
+  document.getElementById('main').innerHTML = `
+    <div class="dash-header">
+      <div class="dash-title">SESSION DASHBOARD
+        <small>${BANK.length} questions in bank · ${SESSION_SIZE} per session · shuffled each run</small>
+      </div>
+    </div>
+
+    <div class="readiness-strip">
+      <div class="readiness-ring" style="--pct:${rl.pct}"><span>${rl.pct}%</span></div>
+      <div class="readiness-copy">
+        <div class="label">READINESS LEVEL</div>
+        <div class="value">${rl.label}</div>
+        <div class="detail">${rl.detail}</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="side-section-title" style="margin-top:0;">CUMULATIVE TRAIT READ</div>
+      ${gaugeRows}
+    </div>
+
+    <button class="start-btn" id="startBtn">▶ START NEXT SESSION (${SESSION_SIZE} QUESTIONS)</button>
+    <span class="reset-link" id="resetLink">reset all cumulative data</span>
+  `;
+
+  document.getElementById('startBtn').onclick = startSession;
+  document.getElementById('resetLink').onclick = async () => {
+    if(confirm('This clears all cumulative scores and session history. Continue?')){
+      persisted = defaultPersisted();
+      await saveState();
+      render();
+    }
+  };
+}
+
+/* ============================================================
+   RENDER: SESSION
+============================================================ */
+function renderSession(){
+  const {questions, index, answers} = ui.session;
+  const q = questions[index];
+  const meta = TRAIT_META[q.trait];
+  const answered = answers[q.id];
+  const pctDone = Math.round((index / questions.length) * 100);
+
+  document.getElementById('main').innerHTML = `
+    <div class="session-progress">
+      <div class="progress-track"><div class="progress-fill" style="width:${pctDone}%"></div></div>
+      <div class="progress-label">${index+1} / ${questions.length}</div>
+    </div>
+    <div class="trait-chip" style="color:${meta.color}; border-color:${meta.color};">${meta.name}</div>
+    <div class="question-text">${q.text}</div>
+    <div class="likert" id="likertGroup">
+      ${LIKERT_OPTIONS.map(o => `
+        <div class="likert-option ${answered===o.val?'selected':''}" data-val="${o.val}">
+          <div class="likert-radio"></div>
+          <div class="likert-text">${o.text}</div>
+        </div>`).join('')}
+    </div>
+    ${answered ? renderQuestionFeedback(q, answered, meta) : ''}
+    <div class="session-nav">
+      <button class="nav-btn" id="prevBtn" ${index===0?'disabled':''}>← BACK</button>
+      <button class="nav-btn primary" id="nextBtn" ${answered?'':'disabled'}>${index === questions.length-1 ? 'FINISH SESSION' : 'NEXT →'}</button>
+    </div>
+  `;
+
+  document.querySelectorAll('.likert-option').forEach(el => {
+    el.onclick = () => {
+      const val = parseInt(el.dataset.val, 10);
+      ui.session.answers[q.id] = val;
+      renderSession();
+    };
+  });
+
+  document.getElementById('prevBtn').onclick = () => {
+    if(index > 0){ ui.session.index -= 1; renderSession(); }
+  };
+  document.getElementById('nextBtn').onclick = () => {
+    if(!ui.session.answers[q.id]) return;
+    if(index === questions.length - 1){
+      finishSession();
+    } else {
+      ui.session.index += 1;
+      renderSession();
+    }
+  };
+}
+
+function renderQuestionFeedback(q, rawVal, meta){
+  const scored = scoreValue(q, rawVal);
+  let signal;
+  if(scored >= 4) signal = `leans toward <strong>higher</strong> ${meta.name.toLowerCase()}`;
+  else if(scored <= 2) signal = `leans toward <strong>lower</strong> ${meta.name.toLowerCase()}`;
+  else signal = `sits near the <strong>midpoint</strong> for ${meta.name.toLowerCase()}`;
+
+  return `
+    <div class="feedback-box">
+      <div class="fb-row">
+        <span class="fb-label">WHAT THIS ITEM MEASURES</span>
+        ${meta.desc}
+      </div>
+      <div class="fb-row">
+        <span class="fb-label">YOUR RESPONSE SIGNALS</span>
+        <span class="fb-signal">This answer ${signal}</span>${q.r ? ' <span style="color:var(--text-faint)">(reverse-scored item — agreement here counts toward the lower end of the trait)</span>' : ''}.
+      </div>
+      <div class="fb-row">
+        <span class="fb-label">WHY IT MATTERS FOR THIS ROLE</span>
+        ${meta.relevance}
+      </div>
+      <div class="fb-disclaimer">There's no objectively correct answer here — this reflects a tendency, not accuracy. What matters most is answering the way you actually behave, and answering similarly-themed items consistently.</div>
+    </div>`;
+}
+
+/* ============================================================
+   RENDER: RESULTS
+============================================================ */
+function renderResults(){
+  const r = ui.lastResult;
+  const cards = TRAIT_ORDER.filter(t => r.perTrait[t] !== null).map(t => {
+    const meta = TRAIT_META[t];
+    const sessionPct = r.perTrait[t];
+    const cumPct = r.cumulativePerTraitAtTimeOfSession[t];
+    let deltaClass = 'delta-flat', deltaText = 'first data point';
+    if(cumPct !== null && persisted.sessionsCompleted > 1){
+      const diff = sessionPct - cumPct;
+      if(diff > 2){ deltaClass='delta-up'; deltaText = `+${diff} vs avg`; }
+      else if(diff < -2){ deltaClass='delta-down'; deltaText = `${diff} vs avg`; }
+      else { deltaText = 'in line with avg'; }
+    }
+    return `
+      <div class="result-trait-card">
+        <div class="t-name">${meta.name}</div>
+        <div class="t-val" style="color:${meta.color}">${sessionPct}%</div>
+        <div class="t-delta ${deltaClass}">${deltaText}</div>
+      </div>`;
+  }).join('');
+
+  document.getElementById('main').innerHTML = `
+    <div class="card">
+      <div class="result-hero">
+        <div class="result-score">${r.overallPct}%</div>
+        <div class="result-label">SESSION SCORE · session ${persisted.sessionsCompleted} of history</div>
+        <div class="result-grid">${cards}</div>
+      </div>
+      <div class="hint-box">
+        This score reflects response pattern across the traits sampled this round, not a "pass" or "fail." Values that swing more than a few points from your running average across sessions are usually a signal you answered inconsistently on similarly-themed items — worth a look if it keeps happening.
+      </div>
+      <button class="start-btn" id="anotherBtn">▶ RUN ANOTHER SESSION</button>
+      <button class="nav-btn" id="dashBtn" style="width:100%; margin-top:0.6rem;">← BACK TO DASHBOARD</button>
+    </div>
+  `;
+  document.getElementById('anotherBtn').onclick = startSession;
+  document.getElementById('dashBtn').onclick = () => { ui.view = 'dashboard'; render(); };
+}
+
+/* ============================================================
+   RENDER: SIDE PANEL
+============================================================ */
+function renderPanel(){
+  const rl = readinessLevel();
+  const historyRows = persisted.history.length
+    ? persisted.history.map(h => `
+        <div class="history-row">
+          <span>Session <span class="n">${h.sessionNumber}</span></span>
+          <span class="n">${h.overallPct}%</span>
+        </div>`).join('')
+    : `<div class="history-row"><span>No sessions logged yet</span></div>`;
+
+  document.getElementById('panelContent').innerHTML = `
+    <div class="card" style="padding:1rem;">
+      <div class="side-section-title" style="margin-top:0;">READINESS</div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:1.3rem; font-weight:700; color:var(--accent);">${rl.pct}%</div>
+      <div style="font-size:0.75rem; color:var(--text-dim); margin-top:0.2rem;">${rl.label}</div>
+    </div>
+    <div class="side-section-title">SESSIONS COMPLETED</div>
+    <div style="font-family:'JetBrains Mono',monospace; font-size:1rem;">${persisted.sessionsCompleted}</div>
+    <div class="side-section-title">QUESTIONS ANSWERED</div>
+    <div style="font-family:'JetBrains Mono',monospace; font-size:1rem;">${persisted.questionsAnsweredTotal}</div>
+    <div class="side-section-title">SESSION LOG</div>
+    ${historyRows}
+  `;
+}
+
+/* ============================================================
+   MASTER RENDER
+============================================================ */
+function render(){
+  if(ui.view === 'loading'){
+    document.getElementById('main').innerHTML = `<div class="card">Loading your practice history…</div>`;
+    return;
+  }
+  if(ui.view === 'dashboard') renderDashboard();
+  if(ui.view === 'session') renderSession();
+  if(ui.view === 'results') renderResults();
+  if(ui.view === 'guide') renderGuide();
+  renderPanel();
+}
+
+/* ============================================================
+   RENDER: GUIDE / DOCS PORTAL
+============================================================ */
+const GUIDE_SECTIONS = ['overview','scoring','traits','honesty'];
+let guideSection = 'overview';
+
+function traitBlocksHTML(){
+  return TRAIT_ORDER.map(t => {
+    const m = TRAIT_META[t];
+    return `
+      <div class="trait-block" style="--t-color:${m.color}">
+        <h3 style="color:${m.color}">${m.name}</h3>
+        <p>${m.desc} ${m.relevance}</p>
+      </div>`;
+  }).join('');
+}
+
+function renderGuide(){
+  const sections = {
+    overview: `
+      <div class="guide-section">
+        <h2>WHAT THIS TOOL IS</h2>
+        <p><strong>Vigil</strong> is a practice console for a Big Five (OCEAN) style workplace personality questionnaire, built around scenarios common to DevOps roles in regulated healthcare environments. It draws from a bank of ${BANK.length} statements across the five trait dimensions, delivered in shuffled sessions of ${SESSION_SIZE}.</p>
+        <p>These questionnaires are profiling tools, not knowledge tests. There is no single "correct" answer to a statement like "I stay calm during outages" — the tool is checking your typical tendency and, importantly, whether your answers are internally consistent across similarly-themed items. That's the main thing worth practicing: reading each item once, answering based on your actual typical behavior, and not overthinking it.</p>
+      </div>`,
+    scoring: `
+      <div class="guide-section">
+        <h2>HOW SCORING WORKS</h2>
+        <p>Each statement uses a 1–5 scale from Strongly Disagree to Strongly Agree. About half the items in each trait are reverse-scored — worded so that disagreement, not agreement, indicates a higher standing on the trait. This mirrors how real assessments catch straight-line answering (selecting the same option repeatedly without reading items).</p>
+        <p>A trait score is the average of all scored responses for that trait, converted to a 0–100% scale. Cumulative scores blend every session you've completed, weighted equally per question. The <strong>readiness level</strong> in the dashboard reflects how many sessions you've logged, not how "good" your scores are — it's a measure of how much practice and self-consistency data you've built up, since one session isn't enough to draw conclusions from.</p>
+        <p>There is no pass/fail threshold anywhere in this tool, on purpose. Real employers use these results for fit assessment, not scoring against a bar.</p>
+      </div>`,
+    traits: `
+      <div class="guide-section">
+        <h2>THE FIVE DIMENSIONS</h2>
+        <p>What each trait measures, and why it tends to matter for a DevOps role at a healthcare organization specifically:</p>
+        ${traitBlocksHTML()}
+      </div>`,
+    honesty: `
+      <div class="guide-section">
+        <h2>ANSWERING HONESTLY</h2>
+        <ul>
+          <li>Answer based on your actual typical behavior at work, not how you'd like to be seen or how you act on your best day.</li>
+          <li>Don't try to reverse-engineer an "ideal DevOps profile" — consistency checks are specifically designed to catch answers that look too good to be true, and a mismatched hire is a bad outcome for you too.</li>
+          <li>Avoid extreme answers ("always," "never") unless they're genuinely accurate. Moderate, considered answers tend to read as more reliable than uniformly extreme ones.</li>
+          <li>If you notice your answer to an item contradicts how you answered a similar one earlier in the bank, that's useful signal — it usually means one of the two answers wasn't quite honest, not that you need to go back and "fix" it.</li>
+          <li>Use the per-question feedback in each session to understand what a statement is really probing, not to figure out which option to pick.</li>
+        </ul>
+      </div>`
+  };
+
+  document.getElementById('main').innerHTML = `
+    <div class="dash-header">
+      <div class="dash-title">GUIDE<small>Reference documentation for this practice tool</small></div>
+    </div>
+    <div class="guide-nav">
+      <button data-s="overview" class="${guideSection==='overview'?'active':''}">OVERVIEW</button>
+      <button data-s="scoring" class="${guideSection==='scoring'?'active':''}">SCORING</button>
+      <button data-s="traits" class="${guideSection==='traits'?'active':''}">THE FIVE TRAITS</button>
+      <button data-s="honesty" class="${guideSection==='honesty'?'active':''}">ANSWERING HONESTLY</button>
+    </div>
+    <div class="card">${sections[guideSection]}</div>
+    <button class="nav-btn" id="guideBackBtn" style="width:100%; margin-top:1rem;">← BACK</button>
+  `;
+
+  document.querySelectorAll('.guide-nav button').forEach(btn => {
+    btn.onclick = () => { guideSection = btn.dataset.s; renderGuide(); };
+  });
+  document.getElementById('guideBackBtn').onclick = () => {
+    ui.view = ui.previousView || 'dashboard';
+    render();
+  };
+}
+
+/* ============================================================
+   ZOOM CONTROLS
+============================================================ */
+const MIN_SCALE = 0.75, MAX_SCALE = 1.6, STEP = 0.1;
+function applyScale(){
+  document.documentElement.style.setProperty('--scale', ui.scale);
+  document.getElementById('zoomReadout').textContent = Math.round(ui.scale*100) + '%';
+}
+document.getElementById('zoomIn').onclick = () => {
+  ui.scale = Math.min(MAX_SCALE, +(ui.scale + STEP).toFixed(2));
+  applyScale();
+};
+document.getElementById('zoomOut').onclick = () => {
+  ui.scale = Math.max(MIN_SCALE, +(ui.scale - STEP).toFixed(2));
+  applyScale();
+};
+document.getElementById('zoomReset').onclick = () => {
+  ui.scale = 1;
+  applyScale();
+};
+
+/* ============================================================
+   DOCK / COLLAPSE CONTROLS
+============================================================ */
+document.getElementById('guideBtn').onclick = () => {
+  if(ui.view !== 'guide'){
+    ui.previousView = ui.view;
+    ui.view = 'guide';
+    render();
+  }
+};
+document.getElementById('dockToggle').onclick = () => {
+  ui.docked = !ui.docked;
+  const layout = document.getElementById('layout');
+  const btn = document.getElementById('dockToggle');
+  if(ui.docked){
+    layout.classList.remove('is-floating');
+    btn.textContent = '⇥ FLOAT PANEL';
+  } else {
+    layout.classList.add('is-floating');
+    btn.textContent = '⇤ DOCK PANEL';
+  }
+};
+document.getElementById('collapseToggle').onclick = () => {
+  ui.collapsed = !ui.collapsed;
+  document.getElementById('sidePanel').classList.toggle('collapsed', ui.collapsed);
+};
+
+/* ============================================================
+   INIT
+============================================================ */
+loadState();
+</script>
+</body>
+</html>

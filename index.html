@@ -2256,25 +2256,20 @@
   }
 
   // ── KICK OFF THE WATERFALL ───────────────────────────────────────
-  const GAP = 2000; // 2 second pause between stages (except portrait→terminal which is immediate)
+  const NAV_STATS_GAP = 4000; // 4 second pause between nav finish and stats arm
 
   stagePortraitGlitch(() => {
     // Portrait done → terminal starts immediately (0s gap)
     stageTerminalType(() => {
-      setTimeout(() => {
-
-        stageNavReveal(() => {
-          setTimeout(() => {
-
-            // Stage 4: arm terminal scroll controller only
-            // (stats respond to scroll immediately from load)
-            terminalScrollEnabled = true;
-            updateHeroTyping(); // sync terminal with current scroll position
-
-          }, GAP);
-        });
-
-      }, GAP);
+      // Terminal done → nav starts immediately (0s gap)
+      stageNavReveal(() => {
+        // Nav done → 4 second pause → stats armed
+        setTimeout(() => {
+          terminalScrollEnabled = true;
+          updateHeroTyping();
+          statsArmed = true; // stats now respond to scroll
+        }, NAV_STATS_GAP);
+      });
     });
   });
 
@@ -2317,51 +2312,37 @@
     }, stepTime);
   }
 
-  // Stats count up as the user scrolls — each stat fills proportionally
-  // to how far past the hero-stats row the visitor has scrolled (item 5).
+  // Stats scroll-scrub: numbers roll up as user scrolls the stats row into
+  // view. Starts when the stats enter the bottom of the viewport, completes
+  // when they reach roughly the vertical center — well within hero view.
   const heroStatsEl = document.getElementById('heroStats');
-  const STATS_SCROLL_RANGE = 600; // px of scroll over which all stats fill
-  let statsPrevProgress = -1;
-
-  const STAT_TARGETS = [5, 8, 5, null]; // null = infinity (updated per resume)
+  const STAT_TARGETS = [6, 8, 5, null]; // matches HTML data-target values
   const STAT_SUFFIXES = ['+', '', '', ''];
-  // Each stat starts at a staggered scroll threshold so they fire sequentially
-  const STAT_STARTS = [0, 0.25, 0.5, 0.75];
+  const STAT_STARTS   = [0, 0.25, 0.5, 0.75]; // staggered start within range
+  let statsArmed = false; // only activates after stage 4 arms it
 
-  function getStatsPageTop() {
-    if (!heroStatsEl) return 0;
-    // getBoundingClientRect().top + scrollY gives true absolute page position
-    // regardless of any nested offset parents
-    return heroStatsEl.getBoundingClientRect().top + window.scrollY;
-  }
-
-  function renderStatAtProgress(el, target, suffix, localProgress) {
-    const p = Math.max(0, Math.min(1, localProgress));
+  function renderStatAtProgress(el, target, suffix, p) {
+    p = Math.max(0, Math.min(1, p));
     if (target === null) {
-      // Infinity: flicker between random chars then lock in
-      el.textContent = p >= 1 ? '∞' : (Math.random() > 0.5 ? '∞' : '0');
+      el.textContent = p >= 1 ? '∞' : (Math.floor(Math.random() * 9)).toString();
     } else {
-      const val = Math.floor(p * target);
-      el.textContent = val + (p >= 1 ? suffix : '');
+      el.textContent = Math.floor(p * target) + (p >= 1 ? suffix : '');
     }
   }
 
   function updateStatsOnScroll() {
-    if (!heroStatsEl || statEls.length === 0) return;
-    const statsTop = getStatsPageTop();
-    const scrollY = window.scrollY;
-    const overallProgress = Math.max(0, Math.min(1,
-      (scrollY - statsTop) / STATS_SCROLL_RANGE
+    if (!statsArmed || !heroStatsEl || statEls.length === 0) return;
+    const rect = heroStatsEl.getBoundingClientRect();
+    const vh = window.innerHeight;
+    // progress: 0 when stats are at bottom of viewport, 1 when at center
+    const progress = Math.max(0, Math.min(1,
+      (vh - rect.top) / (vh * 0.5)
     ));
-    if (overallProgress === statsPrevProgress) return;
-    statsPrevProgress = overallProgress;
-
     statEls.forEach((el, i) => {
-      const start = STAT_STARTS[i];
-      const localProgress = Math.max(0, Math.min(1,
-        (overallProgress - start) / (1 - start)
+      const localP = Math.max(0, Math.min(1,
+        (progress - STAT_STARTS[i]) / (1 - STAT_STARTS[i])
       ));
-      renderStatAtProgress(el, STAT_TARGETS[i], STAT_SUFFIXES[i], localProgress);
+      renderStatAtProgress(el, STAT_TARGETS[i], STAT_SUFFIXES[i], localP);
     });
   }
 
