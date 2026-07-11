@@ -1,67 +1,119 @@
-# Control Panel
+<div align="center">
 
-A static homepage that acts as the front door to your whole ecosystem of HTML
-apps. Pure HTML/CSS/JS, no build step, no backend — deploys straight to
-GitHub Pages.
+```text
+████████╗██╗████████╗ █████╗ ███╗   ██╗
+╚══██╔══╝██║╚══██╔══╝██╔══██╗████╗  ██║
+   ██║   ██║   ██║   ███████║██╔██╗ ██║
+   ██║   ██║   ██║   ██╔══██║██║╚██╗██║
+   ██║   ██║   ██║   ██║  ██║██║ ╚████║
+   ╚═╝   ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝
 
-## Structure
-
-```
-control-panel/
-├── index.html          Homepage (sidebar, search, portal grid, recents)
-├── css/style.css        Design tokens + all styling
-├── js/data.js            ★ Edit this to add/remove portals & quick actions
-├── js/app.js              Rendering, command palette, keyboard shortcuts
-├── docs/                Docs portal (Strategy/Architecture/Whitepapers/…)
-│   ├── index.html
-│   └── data.js          ★ Edit this to add your writing
-├── library/              Library portal (opens PDFs in the native viewer)
-│   ├── index.html
-│   └── data.js           ★ Edit this to add books/papers/references
-├── titan/  pretitan/  interview/  evaluator/
-├── meridian/  boss/  music/       Placeholder folders — drop your existing
-                                    app's files in here, replacing the
-                                    stub index.html. No other changes needed.
+Platform Engineering Laboratory
 ```
 
-## Adding or changing a portal
+Building cloud platforms, AI infrastructure and production systems.
 
-Open `js/data.js` and edit the `PORTALS` array. Each entry needs:
+</div>
 
-```js
-{
-  id: "titan",              // unique, used internally
-  name: "TITAN",            // shown on the card
-  path: "titan/index.html", // where it links to
-  category: "build",        // controls the accent color — see CATEGORIES
-  description: "…",
-  icon: "titan",             // key into the ICONS map in js/app.js
-  shortcut: "T",             // single-key jump from the homepage
-}
+---
+
+## `visitor@github:~$ ssh daniel@titan`
+
+```text
+Connected.
+
+Welcome to the engineering laboratory of
+
+Daniel S. Amanyi
+
+DevOps Engineer
+Platform Engineering Researcher
+Future AI Platform Engineer
 ```
 
-Nothing else needs to change — the sidebar, portal grid, command palette,
-and keyboard shortcuts all read from this one list.
+---
 
-## Adding documents / library items
+## `daniel@titan:~$ whoami`
 
-- `docs/data.js` — add entries to `DOCUMENTS`, set `category` to one of the
-  values in `DOC_CATEGORIES`, and point `href` at the actual page/file.
-- `library/data.js` — add entries to `LIBRARY_ITEMS`, set `category` to one
-  of `LIBRARY_CATEGORIES`, and point `href` directly at a PDF (or other
-  file). Library links open in a new tab and use the browser's own PDF
-  viewer — there's no custom reader to maintain.
+```text
+Role............... DevOps Engineer
+Current Focus...... Platform Engineering
+Mission............ Build production-grade AI infrastructure
+Cloud.............. AWS
+Primary Stack...... Kubernetes • Terraform • Python • Linux
+```
 
-## Navigation
+---
 
-- `⌘K` / `Ctrl+K` (or `/`) opens the command palette — fuzzy search across
-  every portal, document, and quick action, arrow keys + Enter to jump.
-- Single-letter shortcuts (shown on each card) jump straight to a portal
-  from the homepage, e.g. press `T` for TITAN.
-- "Recently Visited" and "Recent Documents" are tracked automatically in
-  `localStorage` as you click around — nothing to configure.
+## `daniel@titan:~$ pwd`
 
-## Deploying
+```text
+/home/daniel/projects
 
-Push this folder to a GitHub repo and enable Pages (Settings → Pages →
-Deploy from branch). No build step required.
+├── kubernetes
+├── terraform
+├── platform-engineering
+├── github-actions
+├── cloud-architecture
+├── research
+└── titan
+```
+
+---
+
+## `daniel@titan:~$ cat roadmap.txt`
+
+```text
+✓ AWS
+✓ Terraform
+✓ Docker
+✓ Kubernetes
+
+→ Platform Engineering
+→ Observability
+→ GitOps
+→ AI Infrastructure
+→ Machine Learning Platforms
+```
+
+---
+
+## `daniel@titan:~$ ls repositories`
+
+| Repository | Purpose |
+|------------|---------|
+| TITAN | Engineering ecosystem |
+| Kubernetes Labs | Production Kubernetes practice |
+| Terraform Labs | Infrastructure as Code |
+| Platform Engineering | Research & experiments |
+| AI Infrastructure | Coming soon |
+
+---
+
+## `daniel@titan:~$ stats`
+
+<p align="center">
+
+<img height="170" src="https://github-readme-stats.vercel.app/api?username=DanielAmanyi&show_icons=true&theme=transparent"/>
+
+<img height="170" src="https://github-readme-streak-stats.herokuapp.com/?user=DanielAmanyi&theme=transparent"/>
+
+</p>
+
+---
+
+## `daniel@titan:~$ connect`
+
+<p>
+
+<a href="https://linkedin.com/in/YOUR-LINKEDIN">LinkedIn</a> •
+
+<a href="https://danielamanyi.github.io">Portfolio</a>
+
+</p>
+
+---
+
+```text
+daniel@titan:~$ █
+```
