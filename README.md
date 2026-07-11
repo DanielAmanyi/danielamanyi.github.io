@@ -106,7 +106,7 @@ Primary Stack...... Kubernetes • Terraform • Python • Linux
 
 <p>
 
-<a href="https://linkedin.com/in/YOUR-LINKEDIN">LinkedIn</a> •
+<a href="https://www.linkedin.com/in/daniel-amanyi-87169472/">LinkedIn</a> •
 
 <a href="https://danielamanyi.github.io">Portfolio</a>
 
