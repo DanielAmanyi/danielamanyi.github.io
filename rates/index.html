@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Post-Production Rate Card — Daniel Amanyi</title>
+<title>Post-Production Rate Card — Supersoniq Audio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -148,6 +148,9 @@
   .rate-row .price{font-family:var(--font-mono); font-weight:600; font-size:15px; color:var(--amber); white-space:nowrap; text-align:right;}
 
   .qty-stepper{
+    display:flex; flex-direction:column; align-items:center; gap:5px;
+  }
+  .stepper-row{
     display:flex; align-items:center; gap:0; border:1px solid var(--line); border-radius:7px; overflow:hidden;
   }
   .qty-stepper button{
@@ -155,9 +158,12 @@
     font-size:14px; cursor:pointer; font-family:var(--font-mono);
   }
   .qty-stepper button:hover{background:#242a2d;}
-  .qty-stepper span{
+  .qty-stepper span:not(.dur-label){
     width:32px; text-align:center; font-family:var(--font-mono); font-size:13px; background:var(--bg);
     height:28px; display:flex; align-items:center; justify-content:center;
+  }
+  .dur-label{
+    font-family:var(--font-mono); font-size:10.5px; color:var(--teal); white-space:nowrap;
   }
   .qty-stepper.flat{visibility:hidden;}
 
@@ -263,6 +269,44 @@
   }
   .confirm-note.show{display:block;}
 
+  #summarySection{padding-top:0; padding-bottom:60px;}
+  .summary-head{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:14px; flex-wrap:wrap; gap:6px;}
+  .summary-head h2{font-family:var(--font-display); font-size:19px; margin:0; font-weight:600;}
+  .summary-sub{color:var(--text-muted); font-size:12.5px; font-family:var(--font-mono);}
+  .summary-table{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden;
+  }
+  .summary-row{
+    display:grid; grid-template-columns:2fr 1.2fr 1fr 1fr auto; gap:14px; align-items:center;
+    padding:13px 18px; border-bottom:1px solid var(--line); font-size:13px;
+  }
+  .summary-row.head-row{
+    background:var(--surface-2); color:var(--text-muted); font-size:11px; text-transform:uppercase;
+    letter-spacing:0.05em; font-family:var(--font-mono); padding:10px 18px;
+  }
+  .summary-row:last-child{border-bottom:none;}
+  .summary-row .sr-name{font-weight:600; font-family:var(--font-body);}
+  .summary-row .sr-cat{color:var(--text-muted); font-size:12px;}
+  .summary-row .sr-dur{font-family:var(--font-mono); font-size:12.5px; color:var(--text-muted);}
+  .summary-row .sr-price{font-family:var(--font-mono); font-size:13px; color:var(--amber); text-align:right;}
+  .summary-row .sr-remove{background:none; border:none; color:var(--danger); font-size:11.5px; cursor:pointer; justify-self:end;}
+  .summary-empty{padding:36px 18px; text-align:center; color:var(--text-muted); font-size:13.5px;}
+  .summary-total-row{
+    display:flex; justify-content:space-between; align-items:center;
+    background:var(--surface-2); border:1px solid var(--line); border-top:none; border-radius:0 0 var(--radius) var(--radius);
+    padding:16px 20px; margin-top:-1px;
+  }
+  .summary-total-row .label{font-family:var(--font-body); color:var(--text-muted); font-size:13px;}
+  .summary-total-row .amt{font-family:var(--font-mono); font-weight:700; font-size:19px; color:var(--teal);}
+  .summary-cta{margin-top:18px; max-width:280px;}
+
+  @media (max-width:720px){
+    .summary-row{grid-template-columns:1fr; gap:4px; text-align:left;}
+    .summary-row.head-row{display:none;}
+    .summary-row .sr-price{text-align:left;}
+    .summary-row .sr-remove{justify-self:start;}
+  }
+
   footer{
     border-top:1px solid var(--line); padding:28px 24px; text-align:center;
     color:var(--text-muted); font-size:12.5px;
@@ -281,12 +325,13 @@
 
 <header>
   <div class="header-inner">
-    <div class="brand"><span class="dot"></span>SupersoniQ Audio — Post-Production </div>
+    <div class="brand"><span class="dot"></span>Supersoniq Audio — Post-Production</div>
     <div class="header-actions">
       <div class="fx-toggle" id="fxToggle">
         <button data-cur="NGN" class="active">₦ NGN</button>
         <button data-cur="USD">$ USD</button>
       </div>
+      <span class="fx-rate-note" id="fxNote">loading rate…</span>
       <a class="back-btn" href="https://danielamanyi.github.io/music/">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         Main site
@@ -300,8 +345,8 @@
     <div class="meter-strip" id="meterStrip"></div>
     Rate card
   </div>
-  <h1>Audio post-production rates</h1>
-  <p>Select a service track below, add what you need to your quote, and send us the brief. Rates update live against current exchange rates. Toggle Currency using the ₦ / $ anytime.</p>
+  <h1>Audio post-production, priced by the minute.</h1>
+  <p>Select a service track below, add what you need to your quote, and send us the brief. Rates update live against current exchange rates — toggle ₦ / $ anytime.</p>
 </section>
 
 <div class="switcher-wrap">
@@ -357,6 +402,19 @@
     </div>
   </div>
 
+</div>
+
+<div class="panel-wrap" id="summarySection">
+  <div class="summary-head">
+    <h2>Your selections</h2>
+    <span class="summary-sub" id="summarySub">Nothing added yet</span>
+  </div>
+  <div class="summary-table" id="summaryTable"></div>
+  <div class="summary-total-row" id="summaryTotalRow" style="display:none;">
+    <span class="label">Estimated total (<span id="summaryCurLabel">NGN</span>)</span>
+    <span class="amt" id="summaryTotal">₦0</span>
+  </div>
+  <button class="primary-btn summary-cta" id="summaryProceedBtn" disabled>Continue to project details</button>
 </div>
 
 <footer>
@@ -435,7 +493,7 @@
 
     <div class="field"><label>Project description</label><textarea id="q_desc" placeholder="Tell us about the project, references, or anything we should know..."></textarea></div>
 
-    <div class="confirm-note" id="confirmNote">Your email app should now be open with everything pre-filled. be sure to check validate our email address: supersoniqproductions@gmail.com </div>
+    <div class="confirm-note" id="confirmNote">Your email app should now be open with everything pre-filled. Just hit send.</div>
 
     <div class="modal-actions">
       <button class="ghost-btn" id="cancelModal">Back to cart</button>
@@ -450,29 +508,29 @@ const CATALOG = {
   longform: {
     label: "Long Form",
     services: [
-      {id:"lf1", name:"Dialogue Editing", amount:50000, unit:"per 7 min", perUnit:true},
-      {id:"lf2", name:"Foley", amount:50000, unit:"per 7 min", perUnit:true},
-      {id:"lf3", name:"Music Composition & Scoring", amount:50000, unit:"per 7 min", perUnit:true},
-      {id:"lf4", name:"Sound Effects (SFX)", amount:50000, unit:"per 7 min", perUnit:true},
-      {id:"lf5", name:"Ambience (AMB)", amount:30000, unit:"per 7 min", perUnit:true},
+      {id:"lf1", name:"Dialogue Editing", amount:50000, unit:"per 7 min", perUnit:true, block:{value:7, unit:"min"}},
+      {id:"lf2", name:"Foley", amount:50000, unit:"per 7 min", perUnit:true, block:{value:7, unit:"min"}},
+      {id:"lf3", name:"Music Composition & Scoring", amount:50000, unit:"per 7 min", perUnit:true, block:{value:7, unit:"min"}},
+      {id:"lf4", name:"Sound Effects (SFX)", amount:50000, unit:"per 7 min", perUnit:true, block:{value:7, unit:"min"}},
+      {id:"lf5", name:"Ambience (AMB)", amount:30000, unit:"per 7 min", perUnit:true, block:{value:7, unit:"min"}},
       {id:"lf6", name:"Final Mix & Mastering", amount:100000, unit:"flat rate", perUnit:false}
     ]
   },
   jingles: {
     label: "Jingles & Commercial",
     services: [
-      {id:"jg1", name:"Dialogue Editing", amount:100000, unit:"per 30 sec", perUnit:true},
-      {id:"jg2", name:"Foley", amount:100000, unit:"per 30 sec", perUnit:true},
-      {id:"jg3", name:"Music Composition & Scoring", amount:100000, unit:"per 30 sec", perUnit:true},
-      {id:"jg4", name:"Sound Effects (SFX)", amount:100000, unit:"per 30 sec", perUnit:true},
-      {id:"jg5", name:"Ambience (AMB)", amount:60000, unit:"per 30 sec", perUnit:true},
+      {id:"jg1", name:"Dialogue Editing", amount:100000, unit:"per 30 sec", perUnit:true, block:{value:30, unit:"sec"}},
+      {id:"jg2", name:"Foley", amount:100000, unit:"per 30 sec", perUnit:true, block:{value:30, unit:"sec"}},
+      {id:"jg3", name:"Music Composition & Scoring", amount:100000, unit:"per 30 sec", perUnit:true, block:{value:30, unit:"sec"}},
+      {id:"jg4", name:"Sound Effects (SFX)", amount:100000, unit:"per 30 sec", perUnit:true, block:{value:30, unit:"sec"}},
+      {id:"jg5", name:"Ambience (AMB)", amount:60000, unit:"per 30 sec", perUnit:true, block:{value:30, unit:"sec"}},
       {id:"jg6", name:"Final Mix & Mastering", amount:250000, unit:"flat rate", perUnit:false}
     ]
   },
   music: {
     label: "Music Production",
     services: [
-      {id:"mu1", name:"Original Music Score", amount:400000, unit:"per 3 min", perUnit:true, native:"NGN"},
+      {id:"mu1", name:"Original Music Score", amount:400000, unit:"per 3 min", perUnit:true, native:"NGN", block:{value:3, unit:"min"}},
       {id:"mu2", name:"Music Production (Instrumental + License)", amount:400, unit:"flat rate", perUnit:false, native:"USD"},
       {id:"mu3", name:"Mix & Mastering", amount:500, unit:"flat rate", perUnit:false, native:"USD"},
       {id:"mu4", name:"Audio Surgery (Editing, Restoration & Repair)", amount:250, unit:"flat rate", perUnit:false, native:"USD"}
@@ -486,17 +544,33 @@ Object.values(CATALOG).forEach(cat => cat.services.forEach(s => { if(!s.native) 
 let fxRate = 1600; // fallback NGN per 1 USD
 let displayCurrency = "NGN";
 
+const FX_SOURCES = [
+  { url: "https://open.er-api.com/v6/latest/USD", getRate: d => d?.rates?.NGN },
+  { url: "https://api.exchangerate-api.com/v4/latest/USD", getRate: d => d?.rates?.NGN },
+  { url: "https://api.frankfurter.app/latest?from=USD&to=NGN", getRate: d => d?.rates?.NGN }
+];
+
 async function loadFx(){
-  try{
-    const res = await fetch("https://open.er-api.com/v6/latest/USD");
-    const data = await res.json();
-    if(data && data.rates && data.rates.NGN){
-      fxRate = data.rates.NGN;
-      document.getElementById("fxNote") && (document.getElementById("fxNote").textContent = `1 USD ≈ ₦${fxRate.toLocaleString(undefined,{maximumFractionDigits:0})}`);
+  const noteEl = document.getElementById("fxNote");
+  for(const source of FX_SOURCES){
+    try{
+      const res = await fetch(source.url);
+      if(!res.ok) throw new Error("bad response");
+      const data = await res.json();
+      const rate = source.getRate(data);
+      if(rate){
+        fxRate = rate;
+        if(noteEl) noteEl.textContent = `1 USD ≈ ₦${fxRate.toLocaleString(undefined,{maximumFractionDigits:0})} (live)`;
+        renderAllTables();
+        renderCart();
+        return;
+      }
+    }catch(e){
+      console.warn("FX source failed: " + source.url, e);
     }
-  }catch(e){
-    console.warn("FX fetch failed, using fallback rate", e);
   }
+  // all sources failed — fall back to fixed estimate, but be upfront about it
+  if(noteEl) noteEl.textContent = `1 USD ≈ ₦${fxRate.toLocaleString(undefined,{maximumFractionDigits:0})} (estimate — live rate unavailable)`;
   renderAllTables();
   renderCart();
 }
@@ -507,6 +581,15 @@ function toDisplay(amount, native){
   if(native === "NGN" && displayCurrency === "USD") return amount / fxRate;
   if(native === "USD" && displayCurrency === "NGN") return amount * fxRate;
   return amount;
+}
+function fmtDuration(qty, block){
+  if(!block) return "";
+  const total = qty * block.value;
+  if(block.unit === "min") return total + " min";
+  // seconds -> show as Xm Ys when over 60
+  if(total < 60) return total + " sec";
+  const m = Math.floor(total/60), s = total%60;
+  return s === 0 ? `${m} min` : `${m} min ${s} sec`;
 }
 function fmtMoney(amount, currency){
   if(currency === "USD"){
@@ -531,31 +614,41 @@ function renderTable(catKey){
     row.className = "rate-row";
     const priceNative = svc.amount;
     const priceDisplay = toDisplay(priceNative, svc.native);
+    const durationLabel = svc.perUnit ? fmtDuration(qtyState[svc.id], svc.block) : "";
     row.innerHTML = `
       <div>
         <div class="svc-name">${svc.name}</div>
-        <div class="svc-unit">${svc.unit}${svc.perUnit ? " · qty = number of blocks" : ""}</div>
+        <div class="svc-unit">${svc.unit}${svc.perUnit ? ` · steps by ${svc.block.value} ${svc.block.unit}` : ""}</div>
       </div>
       <div class="price">${fmtMoney(priceDisplay, displayCurrency)}</div>
       <div class="qty-stepper ${svc.perUnit ? "" : "flat"}">
-        <button class="qminus" data-id="${svc.id}">−</button>
-        <span id="qty-${svc.id}">${qtyState[svc.id]}</span>
-        <button class="qplus" data-id="${svc.id}">+</button>
+        <div class="stepper-row">
+          <button class="qminus" data-id="${svc.id}">−</button>
+          <span id="qty-${svc.id}">${qtyState[svc.id]}</span>
+          <button class="qplus" data-id="${svc.id}">+</button>
+        </div>
+        ${svc.perUnit ? `<span class="dur-label" id="dur-${svc.id}">${durationLabel}</span>` : ""}
       </div>
       <button class="add-btn" data-id="${svc.id}" data-cat="${catKey}">Add to quote</button>
     `;
     container.appendChild(row);
   });
 
+  function refreshQtyDisplay(catKeyLocal, id){
+    const svcLocal = CATALOG[catKeyLocal].services.find(s => s.id === id);
+    document.getElementById("qty-"+id).textContent = qtyState[id];
+    const durEl = document.getElementById("dur-"+id);
+    if(durEl) durEl.textContent = fmtDuration(qtyState[id], svcLocal.block);
+  }
   container.querySelectorAll(".qminus").forEach(btn => btn.addEventListener("click", () => {
     const id = btn.dataset.id;
     qtyState[id] = Math.max(1, (qtyState[id]||1) - 1);
-    document.getElementById("qty-"+id).textContent = qtyState[id];
+    refreshQtyDisplay(catKey, id);
   }));
   container.querySelectorAll(".qplus").forEach(btn => btn.addEventListener("click", () => {
     const id = btn.dataset.id;
     qtyState[id] = Math.min(99, (qtyState[id]||1) + 1);
-    document.getElementById("qty-"+id).textContent = qtyState[id];
+    refreshQtyDisplay(catKey, id);
   }));
   container.querySelectorAll(".add-btn").forEach(btn => btn.addEventListener("click", () => {
     addToCart(btn.dataset.cat, btn.dataset.id, btn);
@@ -626,6 +719,53 @@ function renderCart(){
   });
   body.querySelectorAll(".remove").forEach(btn => btn.addEventListener("click", () => removeFromCart(btn.dataset.id)));
   totalEl.textContent = fmtMoney(total, displayCurrency);
+
+  renderSummary();
+}
+
+function renderSummary(){
+  const table = document.getElementById("summaryTable");
+  const sub = document.getElementById("summarySub");
+  const totalRow = document.getElementById("summaryTotalRow");
+  const totalEl = document.getElementById("summaryTotal");
+  const curLabel = document.getElementById("summaryCurLabel");
+  const proceedBtn = document.getElementById("summaryProceedBtn");
+
+  curLabel.textContent = displayCurrency;
+  proceedBtn.disabled = cart.length === 0;
+
+  if(cart.length === 0){
+    table.innerHTML = `<div class="summary-empty">Your quote sheet is empty. Add services from any of the three tracks above — they'll be listed here before you send your request.</div>`;
+    sub.textContent = "Nothing added yet";
+    totalRow.style.display = "none";
+    return;
+  }
+
+  sub.textContent = `${cart.length} service${cart.length > 1 ? "s" : ""} selected`;
+  totalRow.style.display = "flex";
+
+  let total = 0;
+  let rows = `
+    <div class="summary-row head-row">
+      <span>Service</span><span>Category</span><span>Duration</span><span>Price</span><span></span>
+    </div>`;
+  cart.forEach(item => {
+    const lineNative = item.amount * item.qty;
+    const lineDisplay = toDisplay(lineNative, item.native);
+    total += lineDisplay;
+    const durText = item.perUnit ? `${item.qty} × ${item.unit}` : item.unit;
+    rows += `
+      <div class="summary-row">
+        <span class="sr-name">${item.name}</span>
+        <span class="sr-cat">${item.category}</span>
+        <span class="sr-dur">${durText}</span>
+        <span class="sr-price">${fmtMoney(lineDisplay, displayCurrency)}</span>
+        <button class="sr-remove" data-id="${item.id}">Remove</button>
+      </div>`;
+  });
+  table.innerHTML = rows;
+  table.querySelectorAll(".sr-remove").forEach(btn => btn.addEventListener("click", () => removeFromCart(btn.dataset.id)));
+  totalEl.textContent = fmtMoney(total, displayCurrency);
 }
 
 /* ---------------- Switcher ---------------- */
@@ -663,6 +803,11 @@ const quoteModal = document.getElementById("quoteModal");
 document.getElementById("proceedBtn").addEventListener("click", () => {
   if(cart.length === 0) return;
   closeDrawerFn();
+  document.getElementById("confirmNote").classList.remove("show");
+  quoteModal.classList.add("open");
+});
+document.getElementById("summaryProceedBtn").addEventListener("click", () => {
+  if(cart.length === 0) return;
   document.getElementById("confirmNote").classList.remove("show");
   quoteModal.classList.add("open");
 });
